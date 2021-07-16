@@ -1,4 +1,5 @@
 ##PyCharm Setup
+TODO - look into a settings repository
 
 - clone
 - open project in my pycharm
