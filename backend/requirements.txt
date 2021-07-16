@@ -1,0 +1,16 @@
+pandas
+aiofiles
+authlib
+bs4
+httpx
+fastapi
+uvicorn
+requests
+requests-oauthlib
+itsdangerous
+hsclient
+psycopg2-binary
+SQLAlchemy
+pytest
+fastapi-users[sqlalchemy]
+alembic
