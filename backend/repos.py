@@ -25,16 +25,6 @@ def _access_token(request: Request, repository: str):
         pass
     return db[orcid][repository]['access_token']
 
-
-@app.route('/')
-def home(request: Request):
-    orcid = request.session.get('orcid')
-    if orcid:
-        if orcid in db:
-            return JSONResponse(content={orcid: db[orcid]})
-        return JSONResponse(content={"status": f"{orcid} not recognized"})
-    return JSONResponse(content={"status": "Not logged in"})
-
 @app.get("/create/{repository}/")
 def create_url(request: Request, repository: str):
     if repository not in repository_config:

@@ -16,8 +16,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     depends_on:
-        - backend
-        - nginx
+      - backend
+      - nginx
     ports:
       - 5001:5001
     restart: on-failure
