@@ -1,15 +1,15 @@
 import time
 import typing
 
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import Request, HTTPException, APIRouter
 from fastapi.security import OAuth2PasswordBearer
 from starlette.config import Config
 from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse
-from db import db
+from db import database
 
 from authlib.integrations.starlette_client import OAuth, OAuthError
 
-app = FastAPI()
+app = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
@@ -33,23 +33,23 @@ oauth.register(name='zenodo',
 outside_host = "localhost"
 
 def _url_for(name: str, **path_params: typing.Any) -> str:
-    url_path = app.router.url_path_for(name, **path_params)
+    url_path = app.url_path_for(name, **path_params)
     # TOOD - get the parent router path instead of hardcoding /api
     return "http://{}/api{}".format(outside_host, url_path)
 
 def _access_token(request: Request, repository: str):
     orcid = request.session.get('orcid')
-    expires_at = db[orcid][repository]['expires_at']
+    expires_at = database[orcid][repository]['expires_at']
     if expires_at < time.time():
         pass
-    return db[orcid][repository]['access_token']
+    return database[orcid][repository]['access_token']
 
 
 @app.route('/')
 def home(request: Request):
     orcid = request.session.get('orcid')
     if orcid:
-        if orcid in db:
+        if orcid in database:
             return JSONResponse(content={orcid: db[orcid]})
         return JSONResponse(content={"status": f"{orcid} not recognized"})
     return JSONResponse(content={"status": "Not logged in"})
@@ -84,11 +84,11 @@ async def auth(request: Request):
         token = await oauth.orcid.authorize_access_token(request)
     except OAuthError as error:
         return HTMLResponse(f'<h1>{error.error}</h1>')
-    if token['orcid'] in db:
-        db[token['orcid']]['name'] = token['name']
-        db[token['orcid']]['access_token'] = token['access_token']
+    if token['orcid'] in database:
+        database[token['orcid']]['name'] = token['name']
+        database[token['orcid']]['access_token'] = token['access_token']
     else:
-        db[token['orcid']] = {"name": token['name'], 'access_token': token['access_token']}
+        database[token['orcid']] = {"name": token['name'], 'access_token': token['access_token']}
     request.session['orcid'] = token['orcid']
     return RedirectResponse(url='/api')
 

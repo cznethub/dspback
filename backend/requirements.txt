@@ -10,7 +10,9 @@ requests-oauthlib
 itsdangerous
 hsclient
 psycopg2-binary
+asyncpg
 SQLAlchemy
 pytest
+pytest-asyncio
 fastapi-users[sqlalchemy]
 alembic

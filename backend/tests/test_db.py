@@ -1,19 +1,21 @@
 import sqlalchemy
 import pytest
 
+from backend.db import database
 
-database = sqlalchemy.create_engine('postgresql://username:password@database:5432/default_database')
 
 @pytest.fixture()
-def db():
-    database.execute("DROP TABLE IF EXISTS testing")
-    database.execute("CREATE TABLE testing (id integer PRIMARY KEY, name varchar(40));")
+@pytest.mark.asyncio
+async def db():
+    await database.execute("DROP TABLE IF EXISTS testing")
+    await database.execute("CREATE TABLE testing (id integer PRIMARY KEY, name varchar(40));")
     yield database
-    database.execute("DROP TABLE IF EXISTS testing")
+    await database.execute("DROP TABLE IF EXISTS testing")
 
-def test_the_db(db):
-    db.execute("INSERT INTO testing (id, name) VALUES (100, 'testingvarchar')")
-    result_set = db.execute("SELECT * FROM testing")
+@pytest.mark.asyncio
+async def test_the_db(db):
+    await db.execute("INSERT INTO testing (id, name) VALUES (100, 'testingvarchar')")
+    result_set = await db.execute("SELECT * FROM testing")
     for (r) in result_set:
         assert r[0] == 100
         assert r[1] == 'testingvarchar'

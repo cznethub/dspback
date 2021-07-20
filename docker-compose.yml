@@ -34,6 +34,7 @@ services:
       - database
     ports:
       - 5002:5002
+      - 5003:5003
     restart: on-failure
 
   database:
