@@ -6,8 +6,12 @@ services:
     image: nginx:1.17.10
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/config:/etc/ssl
     ports:
-      - 80:80
+      - 443:443
+    depends_on:
+      - backend
+      - frontend
 
   frontend:
     image: frontend
@@ -17,7 +21,6 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - backend
-      - nginx
     ports:
       - 5001:5001
     restart: on-failure
@@ -26,7 +29,7 @@ services:
     image: backend
     container_name: backend
     volumes:
-      - ./backend:/app
+      - ./backend:/backend
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -34,7 +37,6 @@ services:
       - database
     ports:
       - 5002:5002
-      - 5003:5003
     restart: on-failure
 
   database:

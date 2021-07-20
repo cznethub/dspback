@@ -12,7 +12,7 @@ from repos import app as repo_app
 
 
 app = FastAPI()
-#app.add_middleware(SessionMiddleware, secret_key="!secret")
+app.add_middleware(SessionMiddleware, secret_key="!secret")
 
 
 app.include_router(oauth_client_app, prefix="/api", tags=["api"])
@@ -57,4 +57,4 @@ async def shutdown():
         await database.disconnect()
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=5002)
+    uvicorn.run(app, host="0.0.0.0", port=5002, ssl_keyfile="config/example.com+5-key.pem", ssl_certfile="config/example.com+5.pem")

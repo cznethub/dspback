@@ -13,7 +13,7 @@ app = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
-config = Config('/app/config/.env')
+config = Config('config/.env')
 oauth = OAuth(config)
 oauth.register(name='hydroshare',
                authorize_url="https://www.hydroshare.org/o/authorize/",

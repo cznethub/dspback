@@ -1,7 +1,7 @@
 import sqlalchemy
 import pytest
 
-from backend.db import database
+from ..db import database
 
 
 @pytest.fixture()
