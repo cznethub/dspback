@@ -6,7 +6,7 @@ from fastapi_users.authentication import CookieAuthentication
 from starlette.middleware.sessions import SessionMiddleware
 
 from backend.db import database
-from routers.users import fastapi_users, SECRET
+from routers.users import fastapi_users, SECRET, cookie_authentication
 from oauth_client import app as oauth_client_app
 from repos import app as repo_app
 
@@ -19,9 +19,6 @@ app.include_router(oauth_client_app, prefix="/api", tags=["api"])
 app.include_router(repo_app, prefix="/api", tags=["api"])
 
 # users
-cookie_authentication = CookieAuthentication(
-    secret=SECRET, lifetime_seconds=3600
-)
 
 app.include_router(
     fastapi_users.get_auth_router(cookie_authentication), prefix="/api/auth/cookie", tags=["auth"]
