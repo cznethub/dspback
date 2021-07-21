@@ -2,7 +2,7 @@ import time
 
 from fastapi import Request, APIRouter
 from starlette.responses import HTMLResponse
-from db import database
+from backend.database import database
 
 
 app = APIRouter()

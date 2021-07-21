@@ -2,12 +2,16 @@ import time
 import typing
 
 from fastapi import Request, HTTPException, APIRouter
+from fastapi.params import Depends
 from fastapi.security import OAuth2PasswordBearer
 from starlette.config import Config
 from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse
-from db import database
 
 from authlib.integrations.starlette_client import OAuth, OAuthError
+
+from backend import fastapi_users
+from backend.database import database
+from backend.database import User
 
 app = APIRouter()
 
@@ -45,14 +49,9 @@ def _access_token(request: Request, repository: str):
     return database[orcid][repository]['access_token']
 
 
-@app.route('/')
-def home(request: Request):
-    orcid = request.session.get('orcid')
-    if orcid:
-        if orcid in database:
-            return JSONResponse(content={orcid: db[orcid]})
-        return JSONResponse(content={"status": f"{orcid} not recognized"})
-    return JSONResponse(content={"status": "Not logged in"})
+@app.get('/')
+def home(user: User = Depends(fastapi_users.current_user())):
+    return JSONResponse(content={"status": f"Logged in as {user.email}"})
 
 
 @app.route('/login')
