@@ -10,14 +10,28 @@ from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse
 from authlib.integrations.starlette_client import OAuth, OAuthError
 
 from backend import fastapi_users
-from backend.database import database
+from backend.database import database, RepositoryCreate
 from backend.database import User
+
+from httpx_oauth.oauth2 import OAuth2
+
 
 app = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
 config = Config('config/.env')
+
+
+orcid_client = OAuth2(
+    config.get('ORCID_CLIENT_ID'),
+    config.get('ORCID_CLIENT_SECRET'),
+    "https://sandbox.orcid.org/oauth/authorize",
+    "https://sandbox.orcid.org/oauth/token",
+    #refresh_token_endpoint="https://sandbox.orcid.org/oauth/refresh",
+    revoke_token_endpoint="https://sandbox.orcid.org/oauth/revoke",
+)
+
 oauth = OAuth(config)
 oauth.register(name='hydroshare',
                authorize_url="https://www.hydroshare.org/o/authorize/",
@@ -54,42 +68,10 @@ def home(user: User = Depends(fastapi_users.current_user())):
     return JSONResponse(content={"status": f"Logged in as {user.email}"})
 
 
-@app.route('/login')
-async def login(request: Request):
-    redirect_uri = _url_for('auth')
-    if 'X-Forwarded-Proto' in request.headers:
-        redirect_uri = redirect_uri.replace('http:', request.headers['X-Forwarded-Proto'] + ':')
-    return await oauth.orcid.authorize_redirect(request, redirect_uri)
-
-
-@app.route('/logout')
-async def logout(request: Request):
-    request.session.pop('orcid', None)
-    return RedirectResponse(url='/')
-
-
 @app.get('/authorize/{repository}')
-async def authorize_repository(repository: str, request: Request):
-    orcid = request.session.get('orcid')
-    if not orcid:
-        return RedirectResponse("/login")
+async def authorize_repository(repository: str, request: Request, user: User = Depends(fastapi_users.current_user())):
     redirect_uri = _url_for('auth_repository', repository=repository)
     return await getattr(oauth, repository).authorize_redirect(request, redirect_uri)
-
-
-@app.route('/auth')
-async def auth(request: Request):
-    try:
-        token = await oauth.orcid.authorize_access_token(request)
-    except OAuthError as error:
-        return HTMLResponse(f'<h1>{error.error}</h1>')
-    if token['orcid'] in database:
-        database[token['orcid']]['name'] = token['name']
-        database[token['orcid']]['access_token'] = token['access_token']
-    else:
-        database[token['orcid']] = {"name": token['name'], 'access_token': token['access_token']}
-    request.session['orcid'] = token['orcid']
-    return RedirectResponse(url='/api')
 
 
 @app.get("/auth/{repository}")
@@ -102,5 +84,6 @@ async def auth_repository(request: Request, repository: str):
     orcid = request.session.get('orcid')
     if not orcid:
         raise HTTPException(status_code=400, detail="No logged in with an orcid, cannot authorize hydroshare")
-    db[orcid][repository] = token
+
+    repo = RepositoryCreate(type=str(token['name']).upper(), access_token=token['access_token'])
     return RedirectResponse(url='/api')
