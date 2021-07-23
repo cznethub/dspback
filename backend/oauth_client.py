@@ -19,7 +19,7 @@ from jose import JWTError, jwt
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from starlette.status import HTTP_403_FORBIDDEN
 
-from backend.database import TokenData, ORCIDResponse, UserTable
+from backend.database import TokenData, ORCIDResponse, UserTable, RepositoryTable
 from backend.database import User
 
 
@@ -131,7 +131,7 @@ def create_user(db: Session, orcid_response):
     db.refresh(db_user)
     return db_user
 
-def update_user(db: Session, db_user: User, orcid_response: ORCIDResponse):
+def update_user(db: Session, db_user: UserTable, orcid_response):
     db_user.access_token = orcid_response['access_token']
     db_user.refresh_token = orcid_response['refresh_token']
     db_user.expires_in = orcid_response['expires_in']
@@ -141,8 +141,27 @@ def update_user(db: Session, db_user: User, orcid_response: ORCIDResponse):
     db.refresh(db_user)
     return db_user
 
+def create_repository(db: Session, user: UserTable, repository_response):
+    # zenodo does not have a refresh_token apparently
+    db_repository = RepositoryTable(type='zenodo', access_token=repository_response['access_token'], repo_user_id='blah', user_id=user.id)
+    db.add(db_repository)
+    db.commit()
+    db.refresh(db_repository)
+    return db_repository
+
+def update_repository(db: Session, db_repository: RepositoryTable, repository_response):
+    db_repository.access_token = repository_response['access_token']
+    #db_repository.refresh_token = repository_response['refresh_token']
+    db.add(db_repository)
+    db.commit()
+    db.refresh(db_repository)
+    return db_repository
+
 def get_user(db: Session, orcid: str):
     return db.query(UserTable).filter(UserTable.orcid == orcid).first()
+
+def get_repository(db: Session, user: UserTable, type):
+    return db.query(RepositoryTable).filter(RepositoryTable.user_id == user.id, RepositoryTable.type == type).first()
 
 def get_db(request: Request):
     return request.state.db
@@ -168,7 +187,10 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
 
 @app.get('/')
 def home(user: User = Depends(get_current_user)):
-    return JSONResponse(content={"status": f"Logged in as {user.orcid}"})
+    reponse_dict = {"orcid": user.orcid, "orcid_access_token": user.access_token}
+    for repo in user.repositories:
+        reponse_dict[f"{repo.type}_access_token"] = repo.access_token
+    return JSONResponse(content=reponse_dict)
 
 @app.get('/login')
 async def login(request: Request):
@@ -216,15 +238,17 @@ async def authorize_repository(repository: str, request: Request, user: User = D
 
 
 @app.get("/auth/{repository}")
-async def auth_repository(request: Request, repository: str, user: User = Depends(get_current_user)):
+async def auth_repository(request: Request, repository: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         repo = getattr(oauth, repository)
         token = await repo.authorize_access_token(request)
     except OAuthError as error:
         return HTMLResponse(f'<h1>{error.error}</h1>')
-    orcid = request.session.get('orcid')
-    if not orcid:
-        raise HTTPException(status_code=400, detail="No logged in with an orcid, cannot authorize hydroshare")
 
+    db_repository: User = get_repository(db, user, repository)
+    if db_repository:
+        update_repository(db, db_repository, token)
+    else:
+        create_repository(db, user, token)
     #repo = RepositoryCreate(type=str(token['name']).upper(), access_token=token['access_token'])
-    return RedirectResponse(url='/api')
+    return RedirectResponse(_url_for("home"))
