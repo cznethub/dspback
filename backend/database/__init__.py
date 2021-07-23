@@ -1,61 +1,88 @@
 from enum import Enum
 from typing import List, Optional
 
-import databases
+#import databases
 import sqlalchemy
-from fastapi_users import models, FastAPIUsers
-from fastapi_users.authentication import CookieAuthentication
-from fastapi_users.db import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
-from fastapi_users.db.sqlalchemy import SQLAlchemyBaseOAuthAccountTable
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey, BigInteger
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
-from sqlalchemy.orm import relationship
-from pydantic import UUID4, BaseModel
-
+from sqlalchemy.orm import relationship, sessionmaker
+from pydantic import UUID4, BaseModel, EmailStr
 
 Base: DeclarativeMeta = declarative_base()
 
 DATABASE_URL = 'postgresql://username:password@database:5432/default_database'
 
-database = databases.Database(DATABASE_URL)
+#database = databases.Database(DATABASE_URL)
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    orcid: Optional[str] = None
 
 class StringEnum(str, Enum):
     pass
 
-class TypeEnum(StringEnum):
+class Repo(StringEnum):
     ZENODO = "zenodo"
-    ORCID = "orcid"
     HYDROSHARE = "hydroshare"
 
-class Repository(BaseModel):
+class ORCIDResponse(BaseModel):
+    access_token: str
+    token_type: str
+    refresh_token: str
+    expires_in: int
+    scope: str
+    name: str
+    orcid: str
+    id_token: str
+    expires_at: str
+
+class RepositoryBase(BaseModel):
     id: UUID4 = None
-    type: TypeEnum = TypeEnum.ORCID
+    repo: Repo = None
     access_token: str = None
     repo_user_id: Optional[str] = None
     refresh_token: Optional[str] = None
 
-class RepositoryCreate(BaseModel):
-    type: TypeEnum = TypeEnum.ORCID
-    access_token: str = None
-    repo_user_id: Optional[str] = None
-    refresh_token: Optional[str] = None
+class Repository(RepositoryBase):
 
-class User(models.BaseUser, models.BaseOAuthAccountMixin):
+    class Config:
+        orm_mode = True
+
+class UserBase(BaseModel):
+    id: Optional[UUID4] = None
+    name: str = None
+    #email: EmailStr = None
+    orcid: str = None
+    access_token: str = None
+    refresh_token: str = None
+    expires_in: int = None
+    expires_at: int = None
     repositories: List[Repository] = None
 
-class UserCreate(models.BaseUserCreate):
-    pass
+class User(UserBase):
 
-class UserUpdate(User, models.BaseUserUpdate):
-    pass
+    class Config:
+        orm_mode = True
 
-class UserDB(User, models.BaseUserDB):
-    pass
+class UserTable(Base):
 
-class UserTable(Base, SQLAlchemyBaseUserTable):
-    repositories = relationship("Repository", back_populates="repository")
+    __tablename__ = "user"
 
-class Repository(Base):
+    id = Column(Integer, primary_key=True)
+    name = Column(String(length=64), nullable=False)
+    #email = Column(String(length=64), nullable=False)
+    orcid = Column(String(length=64), nullable=False)
+    access_token = Column(String(length=64), nullable=False)
+    refresh_token = Column(String(length=128), nullable=True)
+    expires_in = Column(BigInteger, nullable=True)
+    expires_at = Column(BigInteger, nullable=True)
+    repositories = relationship("RepositoryTable")
+
+class RepositoryTable(Base):
     """Base SQLAlchemy users table definition."""
 
     __tablename__ = "repository"
@@ -65,31 +92,14 @@ class Repository(Base):
     access_token = Column(String(length=128), nullable=False)
     repo_user_id = Column(String(length=64), nullable=True)
     refresh_token = Column(String(length=128), nullable=True)
-
-class OAuthAccount(SQLAlchemyBaseOAuthAccountTable, Base):
-    pass
+    user_id = Column(Integer, ForeignKey('user.id'))
 
 
 SECRET = "SECRET"
-cookie_authentication = CookieAuthentication(
-    secret=SECRET, lifetime_seconds=3600
-)
-
-user_db = SQLAlchemyUserDatabase(UserDB, database, UserTable.__table__, OAuthAccount.__table__)
-
-fastapi_users = FastAPIUsers(
-    user_db,
-    [cookie_authentication],
-    User,
-    UserCreate,
-    UserUpdate,
-    UserDB,
-)
-
-
 
 engine = sqlalchemy.create_engine(
     DATABASE_URL
 )
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base.metadata.create_all(engine)

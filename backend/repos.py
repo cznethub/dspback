@@ -2,7 +2,6 @@ import time
 
 from fastapi import Request, APIRouter
 from starlette.responses import HTMLResponse
-from backend.database import database
 
 
 app = APIRouter()
@@ -20,10 +19,10 @@ repository_config = {
 
 def _access_token(request: Request, repository: str):
     orcid = request.session.get('orcid')
-    expires_at = database[orcid][repository]['expires_at']
+    expires_at = None#database[orcid][repository]['expires_at']
     if expires_at < time.time():
         pass
-    return database[orcid][repository]['access_token']
+    return None#database[orcid][repository]['access_token']
 
 @app.get("/create/{repository}/")
 def create_url(request: Request, repository: str):

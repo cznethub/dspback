@@ -14,5 +14,5 @@ asyncpg
 SQLAlchemy
 pytest
 pytest-asyncio
-fastapi-users[sqlalchemy,oauth]
 alembic
+python-jose
