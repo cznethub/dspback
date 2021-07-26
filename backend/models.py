@@ -12,12 +12,15 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     orcid: Optional[str] = None
 
+
 class StringEnum(str, Enum):
     pass
+
 
 class Repo(StringEnum):
     ZENODO = "zenodo"
     HYDROSHARE = "hydroshare"
+
 
 class ORCIDResponse(BaseModel):
     access_token: str
@@ -30,6 +33,7 @@ class ORCIDResponse(BaseModel):
     id_token: str
     expires_at: str
 
+
 class RepositoryBase(BaseModel):
     id: UUID4 = None
     repo: Repo = None
@@ -37,15 +41,16 @@ class RepositoryBase(BaseModel):
     repo_user_id: Optional[str] = None
     refresh_token: Optional[str] = None
 
-class Repository(RepositoryBase):
 
+class Repository(RepositoryBase):
     class Config:
         orm_mode = True
+
 
 class UserBase(BaseModel):
     id: Optional[UUID4] = None
     name: str = None
-    #email: EmailStr = None
+    # email: EmailStr = None
     orcid: str = None
     access_token: str = None
     refresh_token: str = None
@@ -53,7 +58,7 @@ class UserBase(BaseModel):
     expires_at: int = None
     repositories: List[Repository] = None
 
-class User(UserBase):
 
+class User(UserBase):
     class Config:
         orm_mode = True

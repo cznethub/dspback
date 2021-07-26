@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from starlette import status
 from starlette.status import HTTP_403_FORBIDDEN
 
-from backend.config import outside_host, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from backend.config import outside_host, JWT_SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from backend.models import TokenData
 from backend.database.models import UserTable, RepositoryTable
 
@@ -21,12 +21,13 @@ class OAuth2AuthorizationBearerToken(OAuth2):
     Handles a bearer Authorization token in both a header or a cookie, making it compatible with both web and API
     requests.
     '''
+
     def __init__(
-        self,
-        tokenUrl: str,
-        scheme_name: str = None,
-        scopes: dict = None,
-        auto_error: bool = True,
+            self,
+            tokenUrl: str,
+            scheme_name: str = None,
+            scopes: dict = None,
+            auto_error: bool = True,
     ):
         if not scopes:
             scopes = {}
@@ -66,24 +67,29 @@ class OAuth2AuthorizationBearerToken(OAuth2):
                 return None
         return param
 
+
 class Token(BaseModel):
     access_token: str
     token_type: str
 
+
 oauth2_scheme = OAuth2AuthorizationBearerToken(tokenUrl="/token")
+
 
 def url_for(request: Request, name: str, **path_params: typing.Any) -> str:
     url_path = request.app.url_path_for(name, **path_params)
     # TOOD - get the parent router path instead of hardcoding /api
     return "https://{}{}".format(outside_host, url_path)
 
+
 def access_token(request: Request, repository: str):
-    #orcid = request.session.get('orcid')
-    #expires_at = database[orcid][repository]['expires_at']
-    #if expires_at < time.time():
+    # orcid = request.session.get('orcid')
+    # expires_at = database[orcid][repository]['expires_at']
+    # if expires_at < time.time():
     #    pass
-    #return database[orcid][repository]['access_token']
+    # return database[orcid][repository]['access_token']
     return None
+
 
 def create_access_token(data: dict, minutes: typing.Optional[timedelta] = None):
     to_encode = data.copy()
@@ -93,15 +99,19 @@ def create_access_token(data: dict, minutes: typing.Optional[timedelta] = None):
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+
 def create_user(db: Session, orcid_response):
-    db_user = UserTable(name=orcid_response['name'], orcid=orcid_response['orcid'], access_token=orcid_response['access_token'], refresh_token=orcid_response['refresh_token'], expires_in=orcid_response['expires_in'], expires_at=orcid_response['expires_at'])
+    db_user = UserTable(name=orcid_response['name'], orcid=orcid_response['orcid'],
+                        access_token=orcid_response['access_token'], refresh_token=orcid_response['refresh_token'],
+                        expires_in=orcid_response['expires_in'], expires_at=orcid_response['expires_at'])
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
+
 
 def update_user(db: Session, db_user: UserTable, orcid_response):
     db_user.access_token = orcid_response['access_token']
@@ -113,30 +123,37 @@ def update_user(db: Session, db_user: UserTable, orcid_response):
     db.refresh(db_user)
     return db_user
 
+
 def create_repository(db: Session, user: UserTable, repository_response):
     # zenodo does not have a refresh_token apparently
-    db_repository = RepositoryTable(type='zenodo', access_token=repository_response['access_token'], repo_user_id='blah', user_id=user.id)
+    db_repository = RepositoryTable(type='zenodo', access_token=repository_response['access_token'],
+                                    repo_user_id='blah', user_id=user.id)
     db.add(db_repository)
     db.commit()
     db.refresh(db_repository)
     return db_repository
 
+
 def update_repository(db: Session, db_repository: RepositoryTable, repository_response):
     db_repository.access_token = repository_response['access_token']
-    #db_repository.refresh_token = repository_response['refresh_token']
+    # db_repository.refresh_token = repository_response['refresh_token']
     db.add(db_repository)
     db.commit()
     db.refresh(db_repository)
     return db_repository
+
 
 def get_user(db: Session, orcid: str):
     return db.query(UserTable).filter(UserTable.orcid == orcid).first()
 
+
 def get_repository(db: Session, user: UserTable, type):
     return db.query(RepositoryTable).filter(RepositoryTable.user_id == user.id, RepositoryTable.type == type).first()
 
+
 def get_db(request: Request):
     return request.state.db
+
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
@@ -145,7 +162,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
         orcid: str = payload.get("sub")
         if orcid is None:
             raise credentials_exception

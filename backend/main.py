@@ -4,15 +4,17 @@ from fastapi import FastAPI, Response, Request
 
 from starlette.middleware.sessions import SessionMiddleware
 
+from backend.config import SESSION_SECRET_KEY
 from backend.database import SessionLocal
-from routers import oauth_client, repos
+from routers import authentication, repository_authorization, repository_CRUD
 
 app = FastAPI()
-app.add_middleware(SessionMiddleware, secret_key="!secret")
+app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET_KEY)
 
 
-app.include_router(oauth_client.router, prefix="/api", tags=["api"])
-app.include_router(repos.router, prefix="/api", tags=["api"])
+app.include_router(authentication.router, prefix="/api", tags=["api"])
+app.include_router(repository_authorization.router, prefix="/api", tags=["api"])
+app.include_router(repository_CRUD.router, prefix="/api", tags=["api"])
 
 
 @app.middleware("http")

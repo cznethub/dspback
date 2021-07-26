@@ -9,10 +9,11 @@ from authlib.integrations.starlette_client import OAuthError
 
 from backend.config import oauth
 from backend.dependencies import get_current_user, url_for, get_user, update_user, create_user, create_access_token, \
-    get_db, get_repository, update_repository, create_repository
+    get_db
 from backend.models import User
 
 router = APIRouter()
+
 
 @router.get('/')
 def home(user: User = Depends(get_current_user)):
@@ -21,6 +22,7 @@ def home(user: User = Depends(get_current_user)):
         reponse_dict[f"{repo.type}_access_token"] = repo.access_token
     return JSONResponse(content=reponse_dict)
 
+
 @router.get('/login')
 async def login(request: Request):
     redirect_uri = url_for(request, 'auth')
@@ -28,11 +30,13 @@ async def login(request: Request):
         redirect_uri = redirect_uri.replace('http:', request.headers['X-Forwarded-Proto'] + ':')
     return await oauth.orcid.authorize_redirect(request, redirect_uri)
 
+
 @router.get('/logout')
 async def logout(request: Request):
     response = RedirectResponse(url=url_for(request, 'home'))
     response.delete_cookie("Authorization", domain="localhost")
     return response
+
 
 @router.get('/auth')
 async def auth(request: Request, db: Session = Depends(get_db)):
@@ -58,25 +62,3 @@ async def auth(request: Request, db: Session = Depends(get_db)):
         f"Bearer {token}",
     )
     return response
-
-@router.get('/authorize/{repository}')
-async def authorize_repository(repository: str, request: Request, user: User = Depends(get_current_user)):
-    redirect_uri = url_for(request, 'auth_repository', repository=repository)
-    return await getattr(oauth, repository).authorize_redirect(request, redirect_uri)
-
-
-@router.get("/auth/{repository}")
-async def auth_repository(request: Request, repository: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    try:
-        repo = getattr(oauth, repository)
-        token = await repo.authorize_access_token(request)
-    except OAuthError as error:
-        return HTMLResponse(f'<h1>{error.error}</h1>')
-
-    db_repository: User = get_repository(db, user, repository)
-    if db_repository:
-        update_repository(db, db_repository, token)
-    else:
-        create_repository(db, user, token)
-    #repo = RepositoryCreate(type=str(token['name']).upper(), access_token=token['access_token'])
-    return RedirectResponse(url_for(request, "home"))
