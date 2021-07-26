@@ -1,0 +1,82 @@
+from fastapi import Request, APIRouter
+from fastapi.encoders import jsonable_encoder
+from fastapi.params import Depends
+from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse
+
+from sqlalchemy.orm import Session
+
+from authlib.integrations.starlette_client import OAuthError
+
+from backend.config import oauth
+from backend.dependencies import get_current_user, url_for, get_user, update_user, create_user, create_access_token, \
+    get_db, get_repository, update_repository, create_repository
+from backend.models import User
+
+router = APIRouter()
+
+@router.get('/')
+def home(user: User = Depends(get_current_user)):
+    reponse_dict = {"orcid": user.orcid, "orcid_access_token": user.access_token}
+    for repo in user.repositories:
+        reponse_dict[f"{repo.type}_access_token"] = repo.access_token
+    return JSONResponse(content=reponse_dict)
+
+@router.get('/login')
+async def login(request: Request):
+    redirect_uri = url_for(request, 'auth')
+    if 'X-Forwarded-Proto' in request.headers:
+        redirect_uri = redirect_uri.replace('http:', request.headers['X-Forwarded-Proto'] + ':')
+    return await oauth.orcid.authorize_redirect(request, redirect_uri)
+
+@router.get('/logout')
+async def logout(request: Request):
+    response = RedirectResponse(url=url_for(request, 'home'))
+    response.delete_cookie("Authorization", domain="localhost")
+    return response
+
+@router.get('/auth')
+async def auth(request: Request, db: Session = Depends(get_db)):
+    try:
+        orcid_response = await oauth.orcid.authorize_access_token(request)
+    except OAuthError as error:
+        return HTMLResponse(f'<h1>{error.error}</h1>')
+    db_user: User = get_user(db, orcid_response['orcid'])
+    if db_user:
+        update_user(db, db_user, orcid_response)
+    else:
+        create_user(db, orcid_response)
+
+    access_token = create_access_token(
+        data={"sub": db_user.orcid}
+    )
+
+    token = jsonable_encoder(access_token)
+
+    response = RedirectResponse(url=url_for(request, 'home'))
+    response.set_cookie(
+        "Authorization",
+        f"Bearer {token}",
+    )
+    return response
+
+@router.get('/authorize/{repository}')
+async def authorize_repository(repository: str, request: Request, user: User = Depends(get_current_user)):
+    redirect_uri = url_for(request, 'auth_repository', repository=repository)
+    return await getattr(oauth, repository).authorize_redirect(request, redirect_uri)
+
+
+@router.get("/auth/{repository}")
+async def auth_repository(request: Request, repository: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        repo = getattr(oauth, repository)
+        token = await repo.authorize_access_token(request)
+    except OAuthError as error:
+        return HTMLResponse(f'<h1>{error.error}</h1>')
+
+    db_repository: User = get_repository(db, user, repository)
+    if db_repository:
+        update_repository(db, db_repository, token)
+    else:
+        create_repository(db, user, token)
+    #repo = RepositoryCreate(type=str(token['name']).upper(), access_token=token['access_token'])
+    return RedirectResponse(url_for(request, "home"))
