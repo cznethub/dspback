@@ -1,8 +1,12 @@
+import pathlib
+
 from starlette.config import Config
 from authlib.integrations.starlette_client import OAuth
 
+config_path = "/backend/config/.env"
 
-config = Config('config/.env')
+
+config = Config(config_path)
 
 oauth = OAuth(config)
 oauth.register(name='hydroshare',

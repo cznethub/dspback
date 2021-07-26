@@ -48,7 +48,7 @@ async def auth(request: Request, db: Session = Depends(get_db)):
     if db_user:
         update_user(db, db_user, orcid_response)
     else:
-        create_user(db, orcid_response)
+        db_user = create_user(db, orcid_response)
 
     access_token = create_access_token(
         data={"sub": db_user.orcid}

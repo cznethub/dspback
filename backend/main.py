@@ -6,7 +6,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from backend.config import SESSION_SECRET_KEY
 from backend.database import SessionLocal
-from routers import authentication, repository_authorization, repository_CRUD
+from backend.routers import authentication, repository_authorization, repository_CRUD
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET_KEY)
