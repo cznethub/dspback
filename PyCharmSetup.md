@@ -13,3 +13,6 @@ TODO - look into a settings repository
 - Run the tests/test_db::test_the_db in PyCharm to test containerized db connects
 
 
+## GUIDES
+- https://www.jetbrains.com/help/pycharm/docker.html
+- Do **File | Invalidate Caches / Restart... | Invalidate and Restart**
