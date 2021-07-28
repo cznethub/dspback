@@ -5,7 +5,7 @@ from fastapi import FastAPI, Response, Request
 from starlette.middleware.sessions import SessionMiddleware
 
 from dspback.config import SESSION_SECRET_KEY
-from dspback.database import SessionLocal
+from dspback.database.models import SessionLocal
 from dspback.routers import authentication, repository_authorization, repository_CRUD
 
 app = FastAPI()
