@@ -11,8 +11,8 @@ from sqlalchemy.orm import Session
 from starlette import status
 from starlette.status import HTTP_403_FORBIDDEN
 
-from config import outside_host, JWT_SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
-from models import TokenData
+from dspback.config import outside_host, JWT_SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from dspback.models import TokenData
 from dspback.database.models import UserTable, RepositoryTable
 
 
