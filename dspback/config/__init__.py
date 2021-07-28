@@ -1,9 +1,7 @@
-import pathlib
-
 from starlette.config import Config
 from authlib.integrations.starlette_client import OAuth
 
-config_path = "/backend/config/.env"
+config_path = "/dspback/dspback/config/.env"
 
 
 config = Config(config_path)

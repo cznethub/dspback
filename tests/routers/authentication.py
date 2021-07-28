@@ -3,9 +3,9 @@ import secrets
 import pytest
 from fastapi.testclient import TestClient
 
-from backend.config import oauth
-from backend.dependencies import url_for
-from backend.main import app
+from dspback.config import oauth
+from dspback.dependencies import url_for
+from dspback.main import app
 
 from urllib.parse import unquote
 from unittest.mock import patch

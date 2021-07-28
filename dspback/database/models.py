@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, BigInteger
 from sqlalchemy.orm import relationship
 
-from backend.database import Base
+from dspback.database import Base
 
 
 class UserTable(Base):

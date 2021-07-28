@@ -2,10 +2,12 @@ FROM python:3.9-slim-buster
 
 WORKDIR /dspback
 
-COPY . .
+COPY dspback .
 
 RUN pip install -r requirements.txt
 
 EXPOSE 5002
 
-CMD ["python", "main.py"]
+ENV PYTHONPATH "${PYTHONPATH}:/dspback/dspback"
+
+CMD ["python", "dspback/main.py"]

@@ -6,9 +6,9 @@ from sqlalchemy.orm import Session
 
 from authlib.integrations.starlette_client import OAuthError
 
-from backend.config import oauth
-from backend.dependencies import get_current_user, url_for, get_db, get_repository, update_repository, create_repository
-from backend.models import User
+from dspback.config import oauth
+from dspback.dependencies import get_current_user, url_for, get_db, get_repository, update_repository, create_repository
+from dspback.models import User
 
 router = APIRouter()
 

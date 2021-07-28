@@ -1,8 +1,8 @@
 from fastapi import Request, APIRouter
 from starlette.responses import HTMLResponse
 
-from backend.config import repository_config
-from backend.dependencies import access_token
+from dspback.config import repository_config
+from dspback.dependencies import access_token
 
 router = APIRouter()
 
