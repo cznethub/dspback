@@ -2,6 +2,8 @@ FROM python:3.9-slim-buster
 
 WORKDIR /dspback
 
+COPY requirements.txt requirements.txt
+
 COPY dspback .
 
 RUN pip install -r requirements.txt
