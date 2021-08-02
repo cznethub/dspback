@@ -1,18 +1,18 @@
 import typing
 
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, time
 from fastapi import Request, HTTPException, Depends
 from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from jose import JWTError, jwt
 from pydantic import BaseModel
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, subqueryload
 from starlette import status
 from starlette.status import HTTP_403_FORBIDDEN
 
 from dspback.config import outside_host, JWT_SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
-from dspback.models import TokenData
+from dspback.models import TokenData, Repo
 from dspback.database.models import UserTable, RepositoryTable
 
 
@@ -78,17 +78,17 @@ oauth2_scheme = OAuth2AuthorizationBearerToken(tokenUrl="/token")
 
 def url_for(request: Request, name: str, **path_params: typing.Any) -> str:
     url_path = request.app.url_path_for(name, **path_params)
-    # TOOD - get the parent router path instead of hardcoding /api
+    # TODO - get the parent router path instead of hardcoding /api
     return "https://{}{}".format(outside_host, url_path)
 
 
-def access_token(request: Request, repository: str):
-    # orcid = request.session.get('orcid')
-    # expires_at = database[orcid][repository]['expires_at']
-    # if expires_at < time.time():
-    #    pass
-    # return database[orcid][repository]['access_token']
-    return None
+def access_token(user: UserTable, repo_type: Repo):
+    repository = next(filter(lambda repo: repo.type == repo_type, user.repositories))
+    # TODO - setup configuration for extra tiem
+    if repository.expires_at and repository.expires_at < time.time():
+        # TODO - refresh_token and update the repository row
+        pass
+    return repository.access_token
 
 
 def create_access_token(data: dict, minutes: typing.Optional[timedelta] = None):
@@ -144,7 +144,7 @@ def update_repository(db: Session, db_repository: RepositoryTable, repository_re
 
 
 def get_user(db: Session, orcid: str):
-    return db.query(UserTable).filter(UserTable.orcid == orcid).first()
+    return db.query(UserTable).filter(UserTable.orcid == orcid).options(subqueryload('repositories')).first()
 
 
 def get_repository(db: Session, user: UserTable, type):

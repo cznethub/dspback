@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import List, Optional
 
-from pydantic import UUID4, BaseModel
+from pydantic import BaseModel
 
 
 class Token(BaseModel):
@@ -35,7 +35,7 @@ class ORCIDResponse(BaseModel):
 
 
 class RepositoryBase(BaseModel):
-    id: UUID4 = None
+    id: int = None
     repo: Repo = None
     access_token: str = None
     repo_user_id: Optional[str] = None
@@ -48,7 +48,7 @@ class Repository(RepositoryBase):
 
 
 class UserBase(BaseModel):
-    id: Optional[UUID4] = None
+    id: Optional[int] = None
     name: str = None
     # email: EmailStr = None
     orcid: str = None

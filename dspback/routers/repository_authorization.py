@@ -7,7 +7,8 @@ from sqlalchemy.orm import Session
 from authlib.integrations.starlette_client import OAuthError
 
 from dspback.config import oauth
-from dspback.dependencies import get_current_user, url_for, get_db, get_repository, update_repository, create_repository
+from dspback.dependencies import get_current_user, url_for, get_db, get_repository, update_repository, \
+    create_repository, access_token
 from dspback.models import User
 
 router = APIRouter()
@@ -34,3 +35,8 @@ async def auth_repository(request: Request, repository: str, user: User = Depend
     else:
         create_repository(db, user, token)
     return RedirectResponse(url_for(request, "home"))
+
+
+@router.get("/access_token/{repository}")
+async def get_access_token(repository: str, user: User = Depends(get_current_user)):
+    return access_token(user, repository)

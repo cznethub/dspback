@@ -6,7 +6,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from dspback.config import SESSION_SECRET_KEY
 from dspback.database.models import SessionLocal
-from dspback.routers import authentication, repository_authorization, repository_CRUD
+from dspback.routers import authentication, repository_authorization
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET_KEY)
@@ -14,7 +14,6 @@ app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET_KEY)
 
 app.include_router(authentication.router, prefix="/api", tags=["api"])
 app.include_router(repository_authorization.router, prefix="/api", tags=["api"])
-app.include_router(repository_CRUD.router, prefix="/api", tags=["api"])
 
 
 @app.middleware("http")

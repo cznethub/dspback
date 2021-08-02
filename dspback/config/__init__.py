@@ -39,8 +39,8 @@ repository_config = {
         "host": "sandbox.zenodo.org",
         "create": "/api/deposit/depositions",
         "update": "/api/deposit/depositions/%s",
-        "file_add": "/api/deposit/depositions/%s/files",
+        "file_create": "/api/deposit/depositions/%s/files",
         "file_delete": "/api/deposit/depositions/%s/files",
-        "view": "/api/deposit/depositions/%s",
+        "read": "/api/deposit/depositions/%s",
     }
 }

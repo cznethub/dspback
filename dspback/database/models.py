@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, BigInteger, create_engine
 from sqlalchemy.orm import relationship, DeclarativeMeta, declarative_base, sessionmaker
 
+from dspback.models import Repo
+
 DATABASE_URL = 'postgresql://username:password@database:5432/default_database'
 
 engine = create_engine(
@@ -34,6 +36,8 @@ class RepositoryTable(Base):
     access_token = Column(String(length=128), nullable=False)
     repo_user_id = Column(String(length=64), nullable=True)
     refresh_token = Column(String(length=128), nullable=True)
+    expires_in = Column(BigInteger, nullable=True)
+    expires_at = Column(BigInteger, nullable=True)
     user_id = Column(Integer, ForeignKey('user.id'))
 
 
