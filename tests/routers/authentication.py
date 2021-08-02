@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 
+from authlib.integrations.starlette_client import StarletteRemoteApp
 from dspback.config import oauth
 from dspback.dependencies import url_for
 from dspback.main import app
@@ -29,13 +30,13 @@ def test_login():
 
 def test_auth(authorize_response):
     # tests create user path
-    with patch.object(oauth.orcid, 'authorize_access_token', side_effect=[authorize_response]):
+    with patch.object(StarletteRemoteApp, 'authorize_access_token', side_effect=[authorize_response]):
         response = client.get(prefix + "/auth", allow_redirects=False)
         assert response.status_code == 307
         assert 'Authorization="Bearer' in response.headers["set-cookie"]
 
     # tests update user path
-    with patch.object(oauth.orcid, 'authorize_access_token', side_effect=[authorize_response]):
+    with patch.object(StarletteRemoteApp, 'authorize_access_token', side_effect=[authorize_response]):
         response = client.get(prefix + "/auth", allow_redirects=False)
         assert response.status_code == 307
         assert 'Authorization="Bearer' in response.headers["set-cookie"]

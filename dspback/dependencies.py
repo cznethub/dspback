@@ -83,7 +83,9 @@ def url_for(request: Request, name: str, **path_params: typing.Any) -> str:
 
 
 def access_token(user: UserTable, repo_type: Repo):
-    repository = next(filter(lambda repo: repo.type == repo_type, user.repositories))
+    repository = next(filter(lambda repo: repo.type == repo_type, user.repositories), None)
+    if not repository:
+        return None
     # TODO - setup configuration for extra tiem
     if repository.expires_at and repository.expires_at < time.time():
         # TODO - refresh_token and update the repository row

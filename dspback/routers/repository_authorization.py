@@ -1,6 +1,6 @@
-from fastapi import Request, APIRouter
+from fastapi import Request, APIRouter, status, HTTPException
 from fastapi.params import Depends
-from starlette.responses import HTMLResponse, RedirectResponse
+from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse
 
 from sqlalchemy.orm import Session
 
@@ -39,4 +39,7 @@ async def auth_repository(request: Request, repository: str, user: User = Depend
 
 @router.get("/access_token/{repository}")
 async def get_access_token(repository: str, user: User = Depends(get_current_user)):
-    return access_token(user, repository)
+    token = access_token(user, repository)
+    if not token:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    return JSONResponse({"token": token})
