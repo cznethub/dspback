@@ -33,7 +33,7 @@ async def auth_repository(request: Request, repository: str, user: User = Depend
     if db_repository:
         update_repository(db, db_repository, token)
     else:
-        create_repository(db, user, token)
+        create_repository(repository, db, user, token)
     return RedirectResponse(url_for(request, "home"))
 
 

@@ -126,9 +126,9 @@ def update_user(db: Session, db_user: UserTable, orcid_response):
     return db_user
 
 
-def create_repository(db: Session, user: UserTable, repository_response):
+def create_repository(repository: str, db: Session, user: UserTable, repository_response):
     # zenodo does not have a refresh_token apparently
-    db_repository = RepositoryTable(type='zenodo', access_token=repository_response['access_token'],
+    db_repository = RepositoryTable(type=repository, access_token=repository_response['access_token'],
                                     repo_user_id='blah', user_id=user.id)
     db.add(db_repository)
     db.commit()
@@ -149,8 +149,8 @@ def get_user(db: Session, orcid: str):
     return db.query(UserTable).filter(UserTable.orcid == orcid).options(subqueryload('repositories')).first()
 
 
-def get_repository(db: Session, user: UserTable, type):
-    return db.query(RepositoryTable).filter(RepositoryTable.user_id == user.id, RepositoryTable.type == type).first()
+def get_repository(db: Session, user: UserTable, repository: str):
+    return db.query(RepositoryTable).filter(RepositoryTable.user_id == user.id, RepositoryTable.type == repository).first()
 
 
 def get_db(request: Request):
