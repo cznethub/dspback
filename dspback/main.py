@@ -1,6 +1,7 @@
 import uvicorn as uvicorn
 
 from fastapi import FastAPI, Response, Request
+from fastapi.staticfiles import StaticFiles
 
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -11,6 +12,7 @@ from dspback.routers import authentication, repository_authorization
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET_KEY)
 
+app.mount("/api/schema", StaticFiles(directory="schemas"), name="schemas")
 
 app.include_router(authentication.router, prefix="/api", tags=["api"])
 app.include_router(repository_authorization.router, prefix="/api", tags=["api"])

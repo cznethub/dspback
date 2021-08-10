@@ -17,12 +17,9 @@ oauth.register(name='orcid',
                )
 
 oauth.register(name='earthchem',
-               authorize_url='https://sandbox.orcid.org/oauth/authorize',
-               token_endpoint='https://sandbox.orcid.org/oauth/token',
-               client_kwargs={'scope': 'openid'},
-               access_token_params={'grant_type': 'client_credentials', 'scope': '/read-public',
-                                    'client_id': config.get('ORCID_CLIENT_ID'),
-                                    'client_secret': config.get('ORCID_CLIENT_SECRET')}
+               authorize_url='https://orcid.org/oauth/authorize',
+               token_endpoint='https://orcid.org/oauth/token',
+               client_kwargs={'scope': 'openid'}
                )
 oauth.register(name='zenodo',
                authorize_url='https://sandbox.zenodo.org/oauth/authorize',
