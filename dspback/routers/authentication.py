@@ -32,8 +32,8 @@ async def login(request: Request):
 
 
 @router.get('/logout')
-async def logout(request: Request):
-    response = RedirectResponse(url=url_for(request, 'home'))
+async def logout():
+    response = RedirectResponse(url="/")
     response.delete_cookie("Authorization", domain="localhost")
     return response
 
@@ -56,7 +56,7 @@ async def auth(request: Request, db: Session = Depends(get_db)):
 
     token = jsonable_encoder(access_token)
 
-    response = RedirectResponse(url=url_for(request, 'home'))
+    response = RedirectResponse(url="/")
     response.set_cookie(
         "Authorization",
         f"Bearer {token}",

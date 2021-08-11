@@ -34,7 +34,7 @@ async def auth_repository(request: Request, repository: str, user: User = Depend
         update_repository(db, db_repository, token)
     else:
         create_repository(repository, db, user, token)
-    return RedirectResponse(url_for(request, "home"))
+    return RedirectResponse("/")
 
 
 @router.get("/access_token/{repository}")
