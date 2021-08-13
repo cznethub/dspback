@@ -12,7 +12,7 @@ from dspback.routers import authentication, repository_authorization
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET_KEY)
 
-app.mount("/api/schema", StaticFiles(directory="schemas"), name="schemas")
+app.mount("/api/schema", StaticFiles(directory="dspback/schemas"), name="schemas")
 
 app.include_router(authentication.router, prefix="/api", tags=["api"])
 app.include_router(repository_authorization.router, prefix="/api", tags=["api"])
