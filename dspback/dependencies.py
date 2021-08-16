@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session, subqueryload
 from starlette import status
 from starlette.status import HTTP_403_FORBIDDEN
 
-from dspback.config import outside_host, JWT_SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from dspback.config import OUTSIDE_HOST, JWT_SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from dspback.models import TokenData, Repo
 from dspback.database.models import UserTable, RepositoryTable
 
@@ -79,7 +79,7 @@ oauth2_scheme = OAuth2AuthorizationBearerToken(tokenUrl="/token")
 def url_for(request: Request, name: str, **path_params: typing.Any) -> str:
     url_path = request.app.url_path_for(name, **path_params)
     # TODO - get the parent router path instead of hardcoding /api
-    return "https://{}{}".format(outside_host, url_path)
+    return "https://{}{}".format(OUTSIDE_HOST, url_path)
 
 
 def access_token(user: UserTable, repo_type: Repo):

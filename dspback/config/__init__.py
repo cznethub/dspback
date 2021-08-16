@@ -29,18 +29,18 @@ oauth.register(name='zenodo',
                                     'client_id': config.get('ZENODO_CLIENT_ID'),
                                     'client_secret': config.get('ZENODO_CLIENT_SECRET')})
 
-outside_host = "localhost"
+OUTSIDE_HOST = config.get("OUTSIDE_HOST")
 
-JWT_SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+JWT_SECRET_KEY = config.get("JWT_SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-SESSION_SECRET_KEY = "!secret"
+SESSION_SECRET_KEY = config.get("SESSION_SECRET_KEY")
 
-DATABASE_USERNAME = "username"
-DATABASE_PASSWORD = "password"
+DATABASE_USERNAME = config.get("POSTGRES_USER")
+DATABASE_PASSWORD = config.get("POSTGRES_PASSWORD")
 DATABASE_PORT = "5432"
-DATABASE_NAME = "default_database"
+DATABASE_NAME = config.get("POSTGRES_DB")
 DATABASE_HOST = "database"
 
 DATABASE_URL = f'postgresql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}'
