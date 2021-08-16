@@ -4,7 +4,30 @@
   "description": "Describe information needed for deposit module.",
   "id": "http://zenodo.org/schemas/deposits/records/legacyjson.json",
   "properties": {
-    "$schema": {
+    "title": {
+      "description": "Record title.",
+      "type": "string"
+    },
+    "description": {
+      "description": "Description/abstract for record.",
+      "type": "string"
+    },
+    "upload_type": {
+      "additionalProperties": false,
+      "default": "publication",
+      "description": "Record upload type.",
+      "enum": [
+        "publication",
+        "poster",
+        "presentation",
+        "dataset",
+        "image",
+        "video",
+        "software",
+        "lesson",
+        "physicalobject",
+        "other"
+      ],
       "type": "string"
     },
     "access_conditions": {
@@ -114,10 +137,6 @@
         "type": "object"
       },
       "type": "array"
-    },
-    "description": {
-      "description": "Description/abstract for record.",
-      "type": "string"
     },
     "doi": {
       "description": "Digital Object Identifier (DOI).",
@@ -326,24 +345,6 @@
       },
       "type": "array"
     },
-    "upload_type": {
-      "additionalProperties": false,
-      "default": "publication",
-      "description": "Record upload type.",
-      "enum": [
-        "publication",
-        "poster",
-        "presentation",
-        "dataset",
-        "image",
-        "video",
-        "software",
-        "lesson",
-        "physicalobject",
-        "other"
-      ],
-      "type": "string"
-    },
     "publication_type": {
       "additionalProperties": false,
       "description": "Publication type.",
@@ -438,10 +439,6 @@
     },
     "thesis_university": {
       "description": "Awarding university in case of a thesis.",
-      "type": "string"
-    },
-    "title": {
-      "description": "Record title.",
       "type": "string"
     }
   },
