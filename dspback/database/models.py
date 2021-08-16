@@ -1,9 +1,8 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, BigInteger, create_engine
 from sqlalchemy.orm import relationship, DeclarativeMeta, declarative_base, sessionmaker
 
-from dspback.models import Repo
+from dspback.config import DATABASE_URL
 
-DATABASE_URL = 'postgresql://username:password@database:5432/default_database'
 
 engine = create_engine(
     DATABASE_URL
