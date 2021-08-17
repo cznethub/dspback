@@ -60,5 +60,6 @@ async def auth(request: Request, db: Session = Depends(get_db)):
     response.set_cookie(
         "Authorization",
         f"Bearer {token}",
+        domain=OUTSIDE_HOST
     )
     return response
