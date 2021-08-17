@@ -45,6 +45,9 @@ DATABASE_HOST = "database"
 
 DATABASE_URL = f'postgresql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}'
 
+SSL_CERT = config.get("SSL_CERT")
+SSL_KEY = config.get("SSL_KEY")
+
 repository_config = {
     "zenodo": {
         "host": "sandbox.zenodo.org",

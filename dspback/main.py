@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 
 from starlette.middleware.sessions import SessionMiddleware
 
-from dspback.config import SESSION_SECRET_KEY
+from dspback.config import SESSION_SECRET_KEY, SSL_CERT, SSL_KEY
 from dspback.database.models import SessionLocal
 from dspback.routers import authentication, repository_authorization
 
@@ -29,4 +29,4 @@ async def db_session_middleware(request: Request, call_next):
     return response
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=5002, ssl_keyfile="/dspback/dspback/config/example.com+5-key.pem", ssl_certfile="/dspback/dspback/config/example.com+5.pem")
+    uvicorn.run(app, host="0.0.0.0", port=5002, ssl_keyfile=SSL_KEY, ssl_certfile=SSL_CERT)
