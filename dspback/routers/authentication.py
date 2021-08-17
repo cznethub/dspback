@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from authlib.integrations.starlette_client import OAuthError
 
-from dspback.config import oauth
+from dspback.config import oauth, OUTSIDE_HOST
 from dspback.dependencies import get_current_user, url_for, get_user, update_user, create_user, create_access_token, \
     get_db
 from dspback.models import User
@@ -34,7 +34,7 @@ async def login(request: Request):
 @router.get('/logout')
 async def logout():
     response = RedirectResponse(url="/")
-    response.delete_cookie("Authorization", domain="localhost")
+    response.delete_cookie("Authorization", domain=OUTSIDE_HOST)
     return response
 
 
