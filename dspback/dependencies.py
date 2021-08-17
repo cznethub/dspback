@@ -93,13 +93,10 @@ def access_token(user: UserTable, repo_type: Repo):
     return repository.access_token
 
 
-def create_access_token(data: dict, minutes: typing.Optional[timedelta] = None):
+def create_access_token(data: dict):
     to_encode = data.copy()
-    if minutes:
-        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        expire = datetime.utcnow() + access_token_expires
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.utcnow() + access_token_expires
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
