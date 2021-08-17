@@ -47,11 +47,13 @@ DATABASE_URL = f'postgresql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@{DATABASE_
 
 repository_config = {
     "zenodo": {
-        "host": "sandbox.zenodo.org",
-        "create": "/api/deposit/depositions",
-        "update": "/api/deposit/depositions/%s",
-        "file_create": "/api/deposit/depositions/%s/files",
-        "file_delete": "/api/deposit/depositions/%s/files",
-        "read": "/api/deposit/depositions/%s",
+        "create": "https://sandbox.zenodo.org/api/deposit/depositions",
+        "update": "https://sandbox.zenodo.org/api/deposit/depositions/%s",
+        "read": "https://sandbox.zenodo.org/api/deposit/depositions/%s",
+        "file_create": "https://sandbox.zenodo.org/api/deposit/depositions/%s/files",
+        "file_delete": "https://sandbox.zenodo.org/api/deposit/depositions/%s/files/%s",
+        "file_read": "https://sandbox.zenodo.org/api/deposit/depositions/%s/files",
+        "schema": "/api/schema/zenodo.json",
+        "access_token": "/api/access_token/zenodo"
     }
 }

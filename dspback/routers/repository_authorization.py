@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from authlib.integrations.starlette_client import OAuthError
 
-from dspback.config import oauth
+from dspback.config import oauth, repository_config
 from dspback.dependencies import get_current_user, url_for, get_db, get_repository, update_repository, \
     create_repository, access_token
 from dspback.models import User
@@ -43,3 +43,10 @@ async def get_access_token(repository: str, user: User = Depends(get_current_use
     if not token:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return JSONResponse({"token": token})
+
+
+@router.get("/urls/{repository}")
+async def get_urls(repository: str, user: User = Depends(get_current_user)):
+    if repository not in repository_config:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    return JSONResponse(repository_config[repository])
