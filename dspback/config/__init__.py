@@ -8,8 +8,8 @@ config = Config(config_path)
 
 oauth = OAuth(config)
 oauth.register(name='hydroshare',
-               authorize_url="https://www.hydroshare.org/o/authorize/",
-               token_endpoint="https://www.hydroshare.org/o/token/")
+               authorize_url="https://new-testservices.hydroshare.org/o/authorize/",
+               token_endpoint="https://new-testservices.hydroshare.org/o/token/")
 oauth.register(name='orcid',
                authorize_url='https://sandbox.orcid.org/oauth/authorize',
                token_endpoint='https://sandbox.orcid.org/oauth/token',
@@ -54,6 +54,24 @@ repository_config = {
         "file_delete": "https://sandbox.zenodo.org/api/deposit/depositions/%s/files/%s",
         "file_read": "https://sandbox.zenodo.org/api/deposit/depositions/%s/files",
         "schema": "/api/schema/zenodo.json",
-        "access_token": "/api/access_token/zenodo"
+        "access_token": "/api/access_token/zenodo",
+        "authorize_url": "/api/authorize/zenodo",
+        "record_key": "record_id",
+        "files_key": "",
+        "metadata_key": "metadata"
+    },
+    "hydroshare": {
+        "create": "https://new-testservices.hydroshare.org/hsapi/resource/",
+        "update": "https://new-testservices.hydroshare.org/hsapi/resource/%s/json/",
+        "read": "https://new-testservices.hydroshare.org/hsapi/resource/%s/json/",
+        "file_create": "https://new-testservices.hydroshare.org/hsapi/resource/%s/files/",
+        "file_delete": "https://new-testservices.hydroshare.org/hsapi/resource/%s/files/%s/",
+        "file_read": "https://new-testservices.hydroshare.org/hsapi/resource/%s/files/",
+        "schema": "/api/schema/hydroshare.json",
+        "access_token": "/api/access_token/hydroshare",
+        "authorize_url": "/api/authorize/hydroshare",
+        "record_key": "resource_id",
+        "files_key": "results",
+        "metadata_key": ""
     }
 }
