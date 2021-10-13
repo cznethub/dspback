@@ -22,13 +22,13 @@ class UserTable(Base):
     refresh_token = Column(String(length=128), nullable=True)
     expires_in = Column(BigInteger, nullable=True)
     expires_at = Column(BigInteger, nullable=True)
-    repositories = relationship("RepositoryTable")
+    repository_tokens = relationship("RepositoryTokenTable")
 
 
-class RepositoryTable(Base):
+class RepositoryTokenTable(Base):
     """Base SQLAlchemy users table definition."""
 
-    __tablename__ = "repository"
+    __tablename__ = "repository_token"
 
     id = Column(Integer, primary_key=True)
     type = Column(String(length=64), nullable=False)

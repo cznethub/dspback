@@ -4,6 +4,15 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 
+class ORCIDResponse(BaseModel):
+    name: str
+    orcid: str
+    access_token: str
+    expires_in: str
+    expires_at: str
+    refresh_token: str
+
+
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -17,7 +26,7 @@ class StringEnum(str, Enum):
     pass
 
 
-class Repo(StringEnum):
+class RepositoryType(StringEnum):
     ZENODO = "zenodo"
     HYDROSHARE = "hydroshare"
 
@@ -34,15 +43,17 @@ class ORCIDResponse(BaseModel):
     expires_at: str
 
 
-class RepositoryBase(BaseModel):
+class RepositoryTokenBase(BaseModel):
     id: int = None
-    repo: Repo = None
+    type: RepositoryType = None
     access_token: str = None
     repo_user_id: Optional[str] = None
     refresh_token: Optional[str] = None
+    expires_in: str = None
+    expires_at: str = None
 
 
-class Repository(RepositoryBase):
+class RepositoryToken(RepositoryTokenBase):
     class Config:
         orm_mode = True
 
@@ -56,9 +67,12 @@ class UserBase(BaseModel):
     refresh_token: str = None
     expires_in: int = None
     expires_at: int = None
-    repositories: List[Repository] = None
+    repository_tokens: List[RepositoryToken] = []
 
 
 class User(UserBase):
     class Config:
         orm_mode = True
+
+    def repository_token(self, repo_type: RepositoryType) -> RepositoryToken:
+        return next(filter(lambda repo: repo.type == repo_type, self.repository_tokens), None)

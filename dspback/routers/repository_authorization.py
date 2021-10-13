@@ -7,9 +7,8 @@ from sqlalchemy.orm import Session
 from authlib.integrations.starlette_client import OAuthError
 
 from dspback.config import oauth, repository_config
-from dspback.dependencies import get_current_user, url_for, get_db, get_repository, update_repository, \
-    create_repository, access_token
-from dspback.models import User
+from dspback.dependencies import get_current_user, url_for, get_db, create_or_update_repository_token
+from dspback.schemas import User, RepositoryToken, RepositoryType
 
 router = APIRouter()
 
@@ -21,7 +20,7 @@ async def authorize_repository(repository: str, request: Request, user: User = D
 
 
 @router.get("/auth/{repository}")
-async def auth_repository(request: Request, repository: str, user: User = Depends(get_current_user),
+async def auth_repository(request: Request, repository: RepositoryType, user: User = Depends(get_current_user),
                           db: Session = Depends(get_db)):
     try:
         repo = getattr(oauth, repository)
@@ -29,24 +28,21 @@ async def auth_repository(request: Request, repository: str, user: User = Depend
     except OAuthError as error:
         return HTMLResponse(f'<h1>{error.error}</h1>')
 
-    db_repository: User = get_repository(db, user, repository)
-    if db_repository:
-        update_repository(db, db_repository, token)
-    else:
-        create_repository(repository, db, user, token)
+    create_or_update_repository_token(db, user, repository, token)
     return RedirectResponse("/")
 
 
-@router.get("/access_token/{repository}")
-async def get_access_token(repository: str, user: User = Depends(get_current_user)):
-    token = access_token(user, repository)
-    if not token:
+@router.get("/access_token/{repository}", response_model=RepositoryToken)
+async def get_access_token(repository: str, user: User = Depends(get_current_user)) -> RepositoryToken:
+    repository_token: RepositoryToken = user.repository_token(repository)
+    if not repository_token:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    return JSONResponse({"token": token})
+    return repository_token
 
 
 @router.get("/urls/{repository}")
 async def get_urls(repository: str, user: User = Depends(get_current_user)):
+    # TODO, build schema for repository config and validate
     if repository not in repository_config:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return JSONResponse(repository_config[repository])
