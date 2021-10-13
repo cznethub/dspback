@@ -1,5 +1,7 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, BigInteger, create_engine
+from datetime import datetime
+from sqlalchemy import Column, Integer, String, ForeignKey, BigInteger, create_engine, DateTime
 from sqlalchemy.orm import relationship, DeclarativeMeta, declarative_base, sessionmaker
+from sqlalchemy.sql import func
 
 from dspback.config import DATABASE_URL
 
@@ -12,6 +14,7 @@ Base: DeclarativeMeta = declarative_base()
 
 
 class UserTable(Base):
+    """Base SQLAlchemy users table definition."""
     __tablename__ = "user"
 
     id = Column(Integer, primary_key=True)
@@ -23,10 +26,11 @@ class UserTable(Base):
     expires_in = Column(BigInteger, nullable=True)
     expires_at = Column(BigInteger, nullable=True)
     repository_tokens = relationship("RepositoryTokenTable")
+    submissions = relationship("RepositorySubmissionTable")
 
 
 class RepositoryTokenTable(Base):
-    """Base SQLAlchemy users table definition."""
+    """Base SQLAlchemy repository token table definition."""
 
     __tablename__ = "repository_token"
 
@@ -37,6 +41,31 @@ class RepositoryTokenTable(Base):
     refresh_token = Column(String(length=128), nullable=True)
     expires_in = Column(BigInteger, nullable=True)
     expires_at = Column(BigInteger, nullable=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+
+
+class AuthorTable(Base):
+    """Base SQLAlchemy author table definition."""
+
+    __tablename__ = "author"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(), nullable=False)
+    repository_submission_id = Column(Integer, ForeignKey('repository_submission.id'))
+
+
+class RepositorySubmissionTable(Base):
+    """Base SQLAlchemy repository submission table definition."""
+
+    __tablename__ = "repository_submission"
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String(), nullable=False)
+    authors = relationship("AuthorTable")
+    repo_type = Column(String(length=64), nullable=False)
+    status = Column(String(length=32), nullable=False)
+    identifier = Column(String(), nullable=False)
+    submitted = Column(DateTime, default=datetime.utcnow)
     user_id = Column(Integer, ForeignKey('user.id'))
 
 

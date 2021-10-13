@@ -1,7 +1,10 @@
+from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, root_validator, validator
+
+from dspback.database.models import AuthorTable
 
 
 class ORCIDResponse(BaseModel):
@@ -44,7 +47,6 @@ class ORCIDResponse(BaseModel):
 
 
 class RepositoryTokenBase(BaseModel):
-    id: int = None
     type: RepositoryType = None
     access_token: str = None
     repo_user_id: Optional[str] = None
@@ -57,9 +59,33 @@ class RepositoryToken(RepositoryTokenBase):
     class Config:
         orm_mode = True
 
+    id: int = None
+
+
+class SubmissionBase(BaseModel):
+    title: str = None
+    authors: List[str] = []
+    repo_type: RepositoryType = None
+    status: str = None
+    identifier: str = None
+    submitted: datetime = None
+
+    @validator('authors', pre=True)
+    def extract_author_names(cls, values):
+        authors = []
+        for author in values:
+            authors.append(author.name)
+        return authors
+
+
+class Submission(SubmissionBase):
+    class Config:
+        orm_mode = True
+
+    id: int = None
+
 
 class UserBase(BaseModel):
-    id: Optional[int] = None
     name: str = None
     # email: EmailStr = None
     orcid: str = None
@@ -68,11 +94,38 @@ class UserBase(BaseModel):
     expires_in: int = None
     expires_at: int = None
     repository_tokens: List[RepositoryToken] = []
+    submissions: List[Submission] = []
 
 
 class User(UserBase):
     class Config:
         orm_mode = True
 
+    id: Optional[int] = None
+
     def repository_token(self, repo_type: RepositoryType) -> RepositoryToken:
         return next(filter(lambda repo: repo.type == repo_type, self.repository_tokens), None)
+
+
+class ZenodoRecord(BaseModel):
+    class Creator(BaseModel):
+        name: str = None
+        orcid: str = None
+
+    title: str = None
+    creators: List[Creator] = []
+    modified: datetime = None
+    status: str = "draft"
+    record_id: str = None
+
+    @root_validator(pre=True)
+    def extract_metadata(cls, values):
+        values.update(values['metadata'])
+        del values['metadata']
+        return values
+
+    def to_submission(self):
+        return SubmissionBase(title=self.title, authors=[creator.name for creator in self.creators],
+                              repo_type=RepositoryType.ZENODO, status=self.status, submitted=self.modified,
+                              identifier=self.record_id)
+

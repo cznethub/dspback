@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session, subqueryload
 from starlette import status
 from starlette.status import HTTP_403_FORBIDDEN
 
-from dspback.config import OUTSIDE_HOST, JWT_SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from dspback.config import OUTSIDE_HOST, JWT_SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, repository_config
 from dspback.schemas import TokenData, RepositoryType, User, ORCIDResponse, RepositoryToken
 from dspback.database.models import UserTable, RepositoryTokenTable
 
@@ -171,7 +171,7 @@ def get_repository_table(db: Session, user: UserTable, repository_type: Reposito
     return repository_table
 
 
-def get_db(request: Request):
+def get_db(request: Request) -> Session:
     return request.state.db
 
 
