@@ -1,26 +1,23 @@
 from fastapi import Request, APIRouter
 from fastapi.encoders import jsonable_encoder
 from fastapi.params import Depends
-from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse
+from starlette.responses import HTMLResponse, RedirectResponse
 
 from sqlalchemy.orm import Session
 
 from authlib.integrations.starlette_client import OAuthError
 
 from dspback.config import oauth, OUTSIDE_HOST
-from dspback.dependencies import get_current_user, url_for, get_user, update_user, create_user, create_access_token, \
-    get_db
-from dspback.models import User
+from dspback.database.models import UserTable
+from dspback.dependencies import get_current_user, url_for, create_access_token, get_db, create_or_update_user
+from dspback.schemas import User, ORCIDResponse
 
 router = APIRouter()
 
 
-@router.get('/')
-def home(user: User = Depends(get_current_user)):
-    reponse_dict = {"orcid": user.orcid, "orcid_access_token": user.access_token}
-    for repo in user.repositories:
-        reponse_dict[f"{repo.type}_access_token"] = repo.access_token
-    return JSONResponse(content=reponse_dict)
+@router.get('/', response_model=User)
+def home(user: UserTable = Depends(get_current_user)):
+    return User.from_orm(user)
 
 
 @router.get('/login')
@@ -42,16 +39,13 @@ async def logout():
 async def auth(request: Request, db: Session = Depends(get_db)):
     try:
         orcid_response = await oauth.orcid.authorize_access_token(request)
+        orcid_response = ORCIDResponse(**orcid_response)
     except OAuthError as error:
         return HTMLResponse(f'<h1>{error.error}</h1>')
-    db_user: User = get_user(db, orcid_response['orcid'])
-    if db_user:
-        update_user(db, db_user, orcid_response)
-    else:
-        db_user = create_user(db, orcid_response)
+    user: UserTable = create_or_update_user(db, orcid_response)
 
     access_token = create_access_token(
-        data={"sub": db_user.orcid}
+        data={"sub": user.orcid}
     )
 
     token = jsonable_encoder(access_token)
@@ -60,6 +54,7 @@ async def auth(request: Request, db: Session = Depends(get_db)):
     response.set_cookie(
         "Authorization",
         f"Bearer {token}",
-        domain=OUTSIDE_HOST
+        domain=OUTSIDE_HOST,
+        expires=orcid_response.expires_in
     )
     return response
