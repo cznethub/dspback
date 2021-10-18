@@ -12,7 +12,7 @@ from starlette import status
 from starlette.status import HTTP_403_FORBIDDEN
 
 from dspback.config import OUTSIDE_HOST, JWT_SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, repository_config
-from dspback.schemas import TokenData, RepositoryType, User, ORCIDResponse, RepositoryToken
+from dspback.schemas import TokenData, RepositoryType, ORCIDResponse, RepositoryToken
 from dspback.database.models import UserTable, RepositoryTokenTable
 
 
@@ -91,16 +91,16 @@ def create_access_token(data: dict) -> str:
     return encoded_jwt
 
 
-def create_or_update_user(db: Session, orcid_response: ORCIDResponse):
+def create_or_update_user(db: Session, orcid_response: ORCIDResponse) -> UserTable:
     db_user: UserTable = get_user_table(db, orcid_response.orcid)
     if db_user:
         db_user = update_user_table(db, db_user, orcid_response)
     else:
         db_user = create_user_table(db, orcid_response)
-    return User.from_orm(db_user)
+    return db_user
 
 
-def create_user_table(db: Session, orcid_response: ORCIDResponse):
+def create_user_table(db: Session, orcid_response: ORCIDResponse) -> UserTable:
     db_user = UserTable(name=orcid_response.name, orcid=orcid_response.orcid,
                         access_token=orcid_response.access_token, refresh_token=orcid_response.refresh_token,
                         expires_in=orcid_response.expires_in, expires_at=orcid_response.expires_at)
@@ -110,7 +110,7 @@ def create_user_table(db: Session, orcid_response: ORCIDResponse):
     return db_user
 
 
-def update_user_table(db: Session, db_user: UserTable, orcid_response: ORCIDResponse):
+def update_user_table(db: Session, db_user: UserTable, orcid_response: ORCIDResponse) -> UserTable:
     db_user.access_token = orcid_response.access_token
     db_user.refresh_token = orcid_response.refresh_token
     db_user.expires_in = orcid_response.expires_in
@@ -121,7 +121,7 @@ def update_user_table(db: Session, db_user: UserTable, orcid_response: ORCIDResp
     return db_user
 
 
-def create_or_update_repository_token(db, user, repository, token) -> RepositoryToken:
+def create_or_update_repository_token(db, user: UserTable, repository, token) -> RepositoryToken:
     repository_token_table: RepositoryTokenTable = get_repository_table(db, user, repository)
     if repository_token_table:
         repository_token_table = update_repository_token(db, repository_token_table, token)
@@ -130,7 +130,7 @@ def create_or_update_repository_token(db, user, repository, token) -> Repository
     return RepositoryToken.from_orm(repository_token_table)
 
 
-def create_repository_token(repository: str, db: Session, user: User, repository_response) -> RepositoryTokenTable:
+def create_repository_token(repository: str, db: Session, user: UserTable, repository_response) -> RepositoryTokenTable:
     # zenodo does not have a refresh_token apparently
     db_repository = RepositoryTokenTable(type=repository, access_token=repository_response['access_token'],
                                          repo_user_id='blah', user_id=user.id,
@@ -156,13 +156,8 @@ def update_repository_token(db: Session, db_repository: RepositoryTokenTable, re
 
 
 def get_user_table(db: Session, orcid: str) -> UserTable:
-    user_table = db.query(UserTable).filter(UserTable.orcid == orcid).options(subqueryload('repository_tokens')).first()
+    user_table = db.query(UserTable).filter(UserTable.orcid == orcid).first()
     return user_table
-
-
-def get_user(db: Session, orcid: str) -> User:
-    user_table = get_user_table(db, orcid)
-    return User.from_orm(user_table)
 
 
 def get_repository_table(db: Session, user: UserTable, repository_type: RepositoryType) -> RepositoryTokenTable:
@@ -175,7 +170,7 @@ def get_db(request: Request) -> Session:
     return request.state.db
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> UserTable:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -189,7 +184,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         token_data = TokenData(orcid=orcid)
     except JWTError:
         raise credentials_exception
-    user = get_user(db, orcid=token_data.orcid)
+    user: UserTable = get_user_table(db, orcid=token_data.orcid)
     if user is None:
         raise credentials_exception
     return user

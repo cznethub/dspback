@@ -4,8 +4,6 @@ from typing import List, Optional
 
 from pydantic import BaseModel, root_validator, validator
 
-from dspback.database.models import AuthorTable
-
 
 class ORCIDResponse(BaseModel):
     name: str
@@ -62,11 +60,16 @@ class RepositoryToken(RepositoryTokenBase):
     id: int = None
 
 
+class SubmissionStatus(StringEnum):
+    DRAFT = 'draft'
+    SUBMITTED = 'submitted'
+
+
 class SubmissionBase(BaseModel):
     title: str = None
     authors: List[str] = []
     repo_type: RepositoryType = None
-    status: str = None
+    status: SubmissionStatus = SubmissionStatus.DRAFT
     identifier: str = None
     submitted: datetime = None
 
@@ -74,7 +77,10 @@ class SubmissionBase(BaseModel):
     def extract_author_names(cls, values):
         authors = []
         for author in values:
-            authors.append(author.name)
+            if hasattr(author, 'name'):
+                authors.append(author.name)
+            else:
+                authors.append(author)
         return authors
 
 
@@ -115,7 +121,7 @@ class ZenodoRecord(BaseModel):
     title: str = None
     creators: List[Creator] = []
     modified: datetime = None
-    status: str = "draft"
+    status: SubmissionStatus = SubmissionStatus.DRAFT
     record_id: str = None
 
     @root_validator(pre=True)
@@ -124,8 +130,8 @@ class ZenodoRecord(BaseModel):
         del values['metadata']
         return values
 
-    def to_submission(self):
-        return SubmissionBase(title=self.title, authors=[creator.name for creator in self.creators],
-                              repo_type=RepositoryType.ZENODO, status=self.status, submitted=self.modified,
-                              identifier=self.record_id)
+    def to_submission(self) -> Submission:
+        return Submission(title=self.title, authors=[creator.name for creator in self.creators],
+                          repo_type=RepositoryType.ZENODO, status=self.status, submitted=self.modified,
+                          identifier=self.record_id)
 

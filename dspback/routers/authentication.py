@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from authlib.integrations.starlette_client import OAuthError
 
 from dspback.config import oauth, OUTSIDE_HOST
+from dspback.database.models import UserTable
 from dspback.dependencies import get_current_user, url_for, create_access_token, get_db, create_or_update_user
 from dspback.schemas import User, ORCIDResponse
 
@@ -15,8 +16,8 @@ router = APIRouter()
 
 
 @router.get('/', response_model=User)
-def home(user: User = Depends(get_current_user)):
-    return user
+def home(user: UserTable = Depends(get_current_user)):
+    return User.from_orm(user)
 
 
 @router.get('/login')
@@ -41,7 +42,7 @@ async def auth(request: Request, db: Session = Depends(get_db)):
         orcid_response = ORCIDResponse(**orcid_response)
     except OAuthError as error:
         return HTMLResponse(f'<h1>{error.error}</h1>')
-    user: User = create_or_update_user(db, orcid_response)
+    user: UserTable = create_or_update_user(db, orcid_response)
 
     access_token = create_access_token(
         data={"sub": user.orcid}
