@@ -25,7 +25,7 @@ oauth.register(name='zenodo',
                authorize_url='https://sandbox.zenodo.org/oauth/authorize',
                client_kwargs={'scope': 'deposit:write deposit:actions', 'response_type': "code"},
                token_endpoint='https://sandbox.zenodo.org/oauth/token',
-               access_token_params={'grant_type': 'client_credentials', 'scope': 'deposit:write deposit:actions',
+               access_token_params={'grant_type': 'authorization_code', 'scope': 'deposit:write deposit:actions',
                                     'client_id': config.get('ZENODO_CLIENT_ID'),
                                     'client_secret': config.get('ZENODO_CLIENT_SECRET')})
 
