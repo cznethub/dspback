@@ -25,6 +25,8 @@ async def save_submission(repository: RepositoryType, submission_id: str, status
     async with httpx.AsyncClient() as client:
         response = await client.get(read_url, params={"access_token": access_token})
     json_response = json.loads(response.text)
+    if 'metadata' not in json_response:
+        raise Exception(f"Unexpected response from zenodo, does not contain metadata {response.text}")
     record = ZenodoRecord(**json_response)
     submission = record.to_submission()
     submission.status = status
@@ -36,10 +38,7 @@ async def save_submission(repository: RepositoryType, submission_id: str, status
 @router.get('/draft/{repository}/{submission_id}')
 async def draft_repository_record(repository: RepositoryType, submission_id: str,
                                    user: UserTable = Depends(get_current_user), db: Session = Depends(get_db)):
-    try:
-        return await save_submission(repository, submission_id, SubmissionStatus.DRAFT, user, db)
-    except Exception as e:
-        raise
+    return await save_submission(repository, submission_id, SubmissionStatus.DRAFT, user, db)
 
 
 # TODO change get to post
