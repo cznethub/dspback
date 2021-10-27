@@ -1,0 +1,87 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Control",
+      "scope": "#/properties/title"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/description"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/access_conditions"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/access_right"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/communities"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/contributors"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/creators"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/embargo_date"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/funding"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/keywords"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/license"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/notes"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/publication_date"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/references"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/related_identifiers"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/resource_type"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/subjects"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/version"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/upload_type",
+      "rule": {
+        "effect": "DISABLE",
+        "condition": {
+          "scope": "#/properties/upload_type"
+        }
+      }
+    }
+  ]
+}

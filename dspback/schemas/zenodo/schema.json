@@ -16,9 +16,7 @@
       "default": "open",
       "enum": [
         "open",
-        "embargoed",
-        "restricted",
-        "closed"
+        "embargoed"
       ]
     },
     "communities": {
@@ -173,11 +171,6 @@
         "const": "CZNet"
       }
     },
-    "language": {
-      "description": "ISO 639-3 language code.",
-      "type": "string",
-      "default": "eng"
-    },
     "license": {
       "title": "License",
       "type": "object",
@@ -187,11 +180,6 @@
       "title": "Additional notes",
       "type": "string",
       "description": "Additional notes for record."
-    },
-    "publication_date": {
-      "title": "Publication date",
-      "type": "string",
-      "description": "Record publication date (IS8601-formatted) - YYYY-MM-DD."
     },
     "references": {
       "title": "References",
@@ -344,19 +332,28 @@
       "title": "Version",
       "type": "string",
       "description": "Record version tag. Mostly relevant for software and dataset uploads. Any string will be accepted, but semantically-versioned tag is recommended."
+    },
+    "upload_type": {
+      "additionalProperties": false,
+      "default": "dataset",
+      "description": "Record upload type.",
+      "enum": [
+        "publication",
+        "poster",
+        "presentation",
+        "dataset",
+        "image",
+        "video",
+        "software",
+        "lesson",
+        "physicalobject",
+        "other"
+      ],
+      "type": "string"
     }
   },
   "required": [
-    "access_right",
-    "communities",
-    "creators",
-    "description",
-    "funding",
-    "keywords",
-    "language",
-    "license",
-    "publication_date",
-    "resource_type",
-    "title"
+    "title",
+    "description"
   ]
 }
