@@ -8,8 +8,8 @@ config = Config(config_path)
 
 oauth = OAuth(config)
 oauth.register(name='hydroshare',
-               authorize_url="https://new-testservices.hydroshare.org/o/authorize/",
-               token_endpoint="https://new-testservices.hydroshare.org/o/token/")
+               authorize_url="https://beta.hydroshare.org/o/authorize/",
+               token_endpoint="https://beta.hydroshare.org/o/token/")
 oauth.register(name='orcid',
                authorize_url='https://sandbox.orcid.org/oauth/authorize',
                token_endpoint='https://sandbox.orcid.org/oauth/token',
@@ -63,13 +63,15 @@ repository_config = {
         "metadata_key": "metadata"
     },
     "hydroshare": {
-        "create": "https://new-testservices.hydroshare.org/hsapi/resource/",
-        "update": "https://new-testservices.hydroshare.org/hsapi/resource/%s/json/",
-        "read": "https://new-testservices.hydroshare.org/hsapi/resource/%s/json/",
-        "file_create": "https://new-testservices.hydroshare.org/hsapi/resource/%s/files/",
-        "file_delete": "https://new-testservices.hydroshare.org/hsapi/resource/%s/files/%s/",
-        "file_read": "https://new-testservices.hydroshare.org/hsapi/resource/%s/files/",
-        "schema": "/api/schema/hydroshare.json",
+        "create": "https://beta.hydroshare.org/hsapi/resource/",
+        "update": "https://beta.hydroshare.org/hsapi2/resource/%s/json/",
+        "read": "https://beta.hydroshare.org/hsapi2/resource/%s/json/",
+        "file_create": "https://beta.hydroshare.org/hsapi/resource/%s/files/",
+        "file_delete": "https://beta.hydroshare.org/hsapi/resource/%s/files/%s/",
+        "file_read": "https://beta.hydroshare.org/hsapi/resource/%s/files/",
+        "schema": "/api/schema/hydroshare/schema.json",
+        "uischema": "/api/schema/hydroshare/uischema.json",
+        "schema_defaults": "/api/schema/hydroshare/defaults.json",
         "access_token": "/api/access_token/hydroshare",
         "authorize_url": "/api/authorize/hydroshare",
         "record_key": "resource_id",
