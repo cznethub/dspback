@@ -57,10 +57,7 @@ repository_config = {
         "uischema": "/api/schema/zenodo/uischema.json",
         "schema_defaults": "/api/schema/zenodo/defaults.json",
         "access_token": "/api/access_token/zenodo",
-        "authorize_url": "/api/authorize/zenodo",
-        "record_key": "record_id",
-        "files_key": "",
-        "metadata_key": "metadata"
+        "authorize_url": "/api/authorize/zenodo"
     },
     "hydroshare": {
         "create": "https://beta.hydroshare.org/hsapi/resource/",
@@ -73,9 +70,6 @@ repository_config = {
         "uischema": "/api/schema/hydroshare/uischema.json",
         "schema_defaults": "/api/schema/hydroshare/defaults.json",
         "access_token": "/api/access_token/hydroshare",
-        "authorize_url": "/api/authorize/hydroshare",
-        "record_key": "resource_id",
-        "files_key": "results",
-        "metadata_key": ""
+        "authorize_url": "/api/authorize/hydroshare"
     }
 }
