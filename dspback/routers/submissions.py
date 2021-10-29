@@ -1,7 +1,7 @@
 import httpx
 import json
 
-from fastapi import Request, APIRouter
+from fastapi import Request, APIRouter, HTTPException
 from fastapi.params import Depends
 from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
@@ -27,6 +27,8 @@ async def save_submission(repository: RepositoryType, submission_id: str, status
     access_token = repo.access_token
     async with httpx.AsyncClient() as client:
         response = await client.get(read_url, params={"access_token": access_token})
+    if response.status_code != 200:
+        raise HTTPException(status_code=response.status_code, detail=response.text)
     json_response = json.loads(response.text)
     record = record_type_by_repo_type[repository](**json_response)
     submission = record.to_submission()

@@ -1,0 +1,62 @@
+{
+  "conceptrecid": "947939",
+  "created": "2021-10-27T14:48:45.885329+00:00",
+  "doi": "",
+  "doi_url": "https://doi.org/",
+  "files": [
+    {
+      "checksum": "5fe9f799df72509105eb04fe4c9922f2",
+      "filename": "model_instance_file_2.txt",
+      "filesize": 14,
+      "id": "ad3b0f9d-74f4-4f8f-b04e-df4f9abd9034",
+      "links": {
+        "download": "https://sandbox.zenodo.org/api/files/10e0ccad-d6ce-474b-ae50-f826c8693ee9/model_instance_file_2.txt",
+        "self": "https://sandbox.zenodo.org/api/deposit/depositions/947940/files/ad3b0f9d-74f4-4f8f-b04e-df4f9abd9034"
+      }
+    },
+    {
+      "checksum": "178f27220a1ff65b86032311cdc14145",
+      "filename": "model_program_file_3.txt",
+      "filesize": 7,
+      "id": "2720c24c-8066-4e86-b8a3-5d3b4c14a4fb",
+      "links": {
+        "download": "https://sandbox.zenodo.org/api/files/10e0ccad-d6ce-474b-ae50-f826c8693ee9/model_program_file_3.txt",
+        "self": "https://sandbox.zenodo.org/api/deposit/depositions/947940/files/2720c24c-8066-4e86-b8a3-5d3b4c14a4fb"
+      }
+    }
+  ],
+  "id": 947940,
+  "links": {
+    "bucket": "https://sandbox.zenodo.org/api/files/10e0ccad-d6ce-474b-ae50-f826c8693ee9",
+    "discard": "https://sandbox.zenodo.org/api/deposit/depositions/947940/actions/discard",
+    "edit": "https://sandbox.zenodo.org/api/deposit/depositions/947940/actions/edit",
+    "files": "https://sandbox.zenodo.org/api/deposit/depositions/947940/files",
+    "html": "https://sandbox.zenodo.org/deposit/947940",
+    "latest_draft": "https://sandbox.zenodo.org/api/deposit/depositions/947940",
+    "latest_draft_html": "https://sandbox.zenodo.org/deposit/947940",
+    "newversion": "https://sandbox.zenodo.org/api/deposit/depositions/947940/actions/newversion",
+    "publish": "https://sandbox.zenodo.org/api/deposit/depositions/947940/actions/publish",
+    "registerconceptdoi": "https://sandbox.zenodo.org/api/deposit/depositions/947940/actions/registerconceptdoi",
+    "self": "https://sandbox.zenodo.org/api/deposit/depositions/947940"
+  },
+  "metadata": {
+    "access_right": "open",
+    "description": "a description",
+    "doi": "",
+    "language": "eng",
+    "license": "CC0-1.0",
+    "prereserve_doi": {
+      "doi": "10.5072/zenodo.947940",
+      "recid": 947940
+    },
+    "publication_date": "2021-10-27",
+    "title": "a title",
+    "upload_type": "dataset"
+  },
+  "modified": "2021-10-27T14:49:01.936008+00:00",
+  "owner": 97238,
+  "record_id": 947940,
+  "state": "unsubmitted",
+  "submitted": false,
+  "title": "a title"
+}
