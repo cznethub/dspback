@@ -10,9 +10,12 @@ from dspback.config import oauth, repository_config
 from dspback.database.models import UserTable
 from dspback.database.procedures import create_or_update_submission
 from dspback.dependencies import get_current_user, get_db
-from dspback.schemas import RepositoryType, ZenodoRecord, SubmissionStatus
+from dspback.schemas import RepositoryType, ZenodoRecord, HydroShareRecord, SubmissionStatus
 
 router = APIRouter()
+
+
+record_type_by_repo_type = {RepositoryType.ZENODO: ZenodoRecord, RepositoryType.HYDROSHARE: HydroShareRecord}
 
 
 async def save_submission(repository: RepositoryType, submission_id: str, status: SubmissionStatus, user: UserTable, db: Session):
@@ -27,7 +30,7 @@ async def save_submission(repository: RepositoryType, submission_id: str, status
     json_response = json.loads(response.text)
     if 'metadata' not in json_response:
         raise Exception(f"Unexpected response from zenodo, does not contain metadata {response.text}")
-    record = ZenodoRecord(**json_response)
+    record = record_type_by_repo_type[repository](**json_response)
     submission = record.to_submission()
     submission.status = status
     create_or_update_submission(db, submission, user)

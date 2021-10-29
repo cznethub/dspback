@@ -113,10 +113,15 @@ class User(UserBase):
         return next(filter(lambda repo: repo.type == repo_type, self.repository_tokens), None)
 
 
-class ZenodoRecord(BaseModel):
+class BaseRecord(BaseModel):
+
+    def to_submission(self) -> Submission:
+        raise NotImplementedError()
+
+
+class ZenodoRecord(BaseRecord):
     class Creator(BaseModel):
         name: str = None
-        orcid: str = None
 
     title: str = None
     creators: List[Creator] = []
@@ -135,3 +140,22 @@ class ZenodoRecord(BaseModel):
                           repo_type=RepositoryType.ZENODO, status=self.status, submitted=self.modified,
                           identifier=self.record_id)
 
+
+class HydroShareRecord(BaseRecord):
+    class Creator(BaseModel):
+        name: str = None
+
+    title: str = None
+    creators: List[Creator] = []
+    modified: datetime = None
+    status: SubmissionStatus = SubmissionStatus.DRAFT
+    identifier: str = None
+
+    @validator("identifier")
+    def extract_identifier(cls, value):
+        return value.split("/")[-1]
+
+    def to_submission(self) -> Submission:
+        return Submission(title=self.title, authors=[creator.name for creator in self.creators],
+                          repo_type=RepositoryType.HYDROSHARE, status=self.status, submitted=self.modified,
+                          identifier=self.identifier)

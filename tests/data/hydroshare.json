@@ -1,0 +1,58 @@
+{
+  "type": "CompositeResource",
+  "url": "http://www.hydroshare.org/resource/470e2ef676e947e5ab2628556c309122",
+  "identifier": "http://www.hydroshare.org/resource/470e2ef676e947e5ab2628556c309122",
+  "title": "A demo composite resource",
+  "abstract": "A demo Composite Resource with some watersheds for the Blacksmith Fork watershed and some additional content.",
+  "language": "eng",
+  "subjects": [
+    "Blacksmith",
+    "Boundaries",
+    "VRT",
+    "Blacksmith Fork",
+    "Logan",
+    "Small",
+    "Watershed",
+    "Fork",
+    "Watersheds"
+  ],
+  "creators": [
+    {
+      "name": "Jeffery Horsburgh",
+      "phone": "(435) 797-2946",
+      "organization": "Utah State University",
+      "email": "jeff.horsburgh@usu.edu",
+      "description": "/user/10/",
+      "identifiers": {}
+    }
+  ],
+  "contributors": [],
+  "sources": [
+    "http://www.hydroshare.org/resource/9cc7a28a95cb4ecdbb258b10847e429d",
+    "http://www.hydroshare.org/resource/ae24db0cca8549c5b7dcbd12bc23f5b6"
+  ],
+  "relations": [
+    {
+      "type": "This resource is described by",
+      "value": "paper publication citation and DOI if applicable"
+    }
+  ],
+  "additional_metadata": [],
+  "rights": {
+    "statement": "This resource is shared under the Creative Commons Attribution CC BY.",
+    "url": "http://creativecommons.org/licenses/by/4.0/"
+  },
+  "created": "2018-04-24T21:20:44.438661+00:00",
+  "modified": "2018-10-08T18:58:17.154974+00:00",
+  "awards": [],
+  "spatial_coverage": {
+    "type": "box",
+    "northlimit": 41.84732649257394,
+    "eastlimit": -97.92170777387547,
+    "southlimit": 30.127513332692264,
+    "westlimit": -111.79812580632701,
+    "units": "Decimal degrees",
+    "projection": "WGS 84 EPSG:4326"
+  },
+  "citation": "Horsburgh, J. (2018). A demo composite resource, HydroShare, http://www.hydroshare.org/resource/470e2ef676e947e5ab2628556c309122"
+}
