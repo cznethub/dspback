@@ -28,8 +28,6 @@ async def save_submission(repository: RepositoryType, submission_id: str, status
     async with httpx.AsyncClient() as client:
         response = await client.get(read_url, params={"access_token": access_token})
     json_response = json.loads(response.text)
-    if 'metadata' not in json_response:
-        raise Exception(f"Unexpected response from zenodo, does not contain metadata {response.text}")
     record = record_type_by_repo_type[repository](**json_response)
     submission = record.to_submission()
     submission.status = status
