@@ -114,7 +114,6 @@ class User(UserBase):
 
 
 class BaseRecord(BaseModel):
-
     def to_submission(self) -> Submission:
         raise NotImplementedError()
 
@@ -136,9 +135,14 @@ class ZenodoRecord(BaseRecord):
         return values
 
     def to_submission(self) -> Submission:
-        return Submission(title=self.title, authors=[creator.name for creator in self.creators],
-                          repo_type=RepositoryType.ZENODO, status=self.status, submitted=self.modified,
-                          identifier=self.record_id)
+        return Submission(
+            title=self.title,
+            authors=[creator.name for creator in self.creators],
+            repo_type=RepositoryType.ZENODO,
+            status=self.status,
+            submitted=self.modified,
+            identifier=self.record_id,
+        )
 
 
 class HydroShareRecord(BaseRecord):
@@ -156,6 +160,11 @@ class HydroShareRecord(BaseRecord):
         return value.split("/")[-1]
 
     def to_submission(self) -> Submission:
-        return Submission(title=self.title, authors=[creator.name for creator in self.creators],
-                          repo_type=RepositoryType.HYDROSHARE, status=self.status, submitted=self.modified,
-                          identifier=self.identifier)
+        return Submission(
+            title=self.title,
+            authors=[creator.name for creator in self.creators],
+            repo_type=RepositoryType.HYDROSHARE,
+            status=self.status,
+            submitted=self.modified,
+            identifier=self.identifier,
+        )

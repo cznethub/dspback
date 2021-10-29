@@ -1,16 +1,14 @@
-from fastapi import Request, APIRouter
+from authlib.integrations.starlette_client import OAuthError
+from fastapi import APIRouter, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.params import Depends
+from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
-from sqlalchemy.orm import Session
-
-from authlib.integrations.starlette_client import OAuthError
-
-from dspback.config import oauth, OUTSIDE_HOST
+from dspback.config import OUTSIDE_HOST, oauth
 from dspback.database.models import UserTable
-from dspback.dependencies import get_current_user, url_for, create_access_token, get_db, create_or_update_user
-from dspback.schemas import User, ORCIDResponse
+from dspback.dependencies import create_access_token, create_or_update_user, get_current_user, get_db, url_for
+from dspback.schemas import ORCIDResponse, User
 
 router = APIRouter()
 
@@ -44,17 +42,10 @@ async def auth(request: Request, db: Session = Depends(get_db)):
         return HTMLResponse(f'<h1>{error.error}</h1>')
     user: UserTable = create_or_update_user(db, orcid_response)
 
-    access_token = create_access_token(
-        data={"sub": user.orcid}
-    )
+    access_token = create_access_token(data={"sub": user.orcid})
 
     token = jsonable_encoder(access_token)
 
     response = RedirectResponse(url="/")
-    response.set_cookie(
-        "Authorization",
-        f"Bearer {token}",
-        domain=OUTSIDE_HOST,
-        expires=orcid_response.expires_in
-    )
+    response.set_cookie("Authorization", f"Bearer {token}", domain=OUTSIDE_HOST, expires=orcid_response.expires_in)
     return response

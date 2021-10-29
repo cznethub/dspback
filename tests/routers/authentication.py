@@ -1,15 +1,13 @@
-from fastapi.testclient import TestClient
+from unittest.mock import patch
+from urllib.parse import unquote
 
 from authlib.integrations.starlette_client import StarletteRemoteApp
+from fastapi.testclient import TestClient
+
 from dspback.config import oauth
 from dspback.dependencies import url_for
 from dspback.main import app
-
-from urllib.parse import unquote
-from unittest.mock import patch
-
-from tests.routers import prefix, authorize_response
-
+from tests.routers import authorize_response, prefix
 
 client = TestClient(app)
 

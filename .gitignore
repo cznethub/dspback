@@ -3,3 +3,5 @@
 db-data
 .vscode/
 .idea/
+.coverage
+htmlcov/

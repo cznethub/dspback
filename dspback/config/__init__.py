@@ -1,5 +1,5 @@
-from starlette.config import Config
 from authlib.integrations.starlette_client import OAuth
+from starlette.config import Config
 
 config_path = "/dspback/dspback/config/.env"
 
@@ -7,33 +7,42 @@ config_path = "/dspback/dspback/config/.env"
 config = Config(config_path)
 
 oauth = OAuth(config)
-oauth.register(name='hydroshare',
-               authorize_url="https://beta.hydroshare.org/o/authorize/",
-               token_endpoint="https://beta.hydroshare.org/o/token/")
-oauth.register(name='orcid',
-               authorize_url='https://sandbox.orcid.org/oauth/authorize',
-               token_endpoint='https://sandbox.orcid.org/oauth/token',
-               client_kwargs={'scope': 'openid'},
-               )
+oauth.register(
+    name='hydroshare',
+    authorize_url="https://beta.hydroshare.org/o/authorize/",
+    token_endpoint="https://beta.hydroshare.org/o/token/",
+)
+oauth.register(
+    name='orcid',
+    authorize_url='https://sandbox.orcid.org/oauth/authorize',
+    token_endpoint='https://sandbox.orcid.org/oauth/token',
+    client_kwargs={'scope': 'openid'},
+)
 
-oauth.register(name='earthchem',
-               authorize_url='https://orcid.org/oauth/authorize',
-               token_endpoint='https://orcid.org/oauth/token',
-               client_kwargs={'scope': 'openid'}
-               )
-oauth.register(name='zenodo',
-               authorize_url='https://sandbox.zenodo.org/oauth/authorize',
-               client_kwargs={'scope': 'deposit:write deposit:actions', 'response_type': "code"},
-               token_endpoint='https://sandbox.zenodo.org/oauth/token',
-               access_token_params={'grant_type': 'authorization_code', 'scope': 'deposit:write deposit:actions',
-                                    'client_id': config.get('ZENODO_CLIENT_ID'),
-                                    'client_secret': config.get('ZENODO_CLIENT_SECRET')})
+oauth.register(
+    name='earthchem',
+    authorize_url='https://orcid.org/oauth/authorize',
+    token_endpoint='https://orcid.org/oauth/token',
+    client_kwargs={'scope': 'openid'},
+)
+oauth.register(
+    name='zenodo',
+    authorize_url='https://sandbox.zenodo.org/oauth/authorize',
+    client_kwargs={'scope': 'deposit:write deposit:actions', 'response_type': "code"},
+    token_endpoint='https://sandbox.zenodo.org/oauth/token',
+    access_token_params={
+        'grant_type': 'authorization_code',
+        'scope': 'deposit:write deposit:actions',
+        'client_id': config.get('ZENODO_CLIENT_ID'),
+        'client_secret': config.get('ZENODO_CLIENT_SECRET'),
+    },
+)
 
 OUTSIDE_HOST = config.get("OUTSIDE_HOST")
 
 JWT_SECRET_KEY = config.get("JWT_SECRET_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 12*60
+ACCESS_TOKEN_EXPIRE_MINUTES = 12 * 60
 
 SESSION_SECRET_KEY = config.get("SESSION_SECRET_KEY")
 
@@ -57,7 +66,7 @@ repository_config = {
         "uischema": "/api/schema/zenodo/uischema.json",
         "schema_defaults": "/api/schema/zenodo/defaults.json",
         "access_token": "/api/access_token/zenodo",
-        "authorize_url": "/api/authorize/zenodo"
+        "authorize_url": "/api/authorize/zenodo",
     },
     "hydroshare": {
         "create": "https://beta.hydroshare.org/hsapi/resource/",
@@ -70,6 +79,6 @@ repository_config = {
         "uischema": "/api/schema/hydroshare/uischema.json",
         "schema_defaults": "/api/schema/hydroshare/defaults.json",
         "access_token": "/api/access_token/hydroshare",
-        "authorize_url": "/api/authorize/hydroshare"
-    }
+        "authorize_url": "/api/authorize/hydroshare",
+    },
 }

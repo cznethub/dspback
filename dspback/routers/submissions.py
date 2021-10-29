@@ -1,7 +1,7 @@
-import httpx
 import json
 
-from fastapi import Request, APIRouter, HTTPException
+import httpx
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.params import Depends
 from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
@@ -10,7 +10,7 @@ from dspback.config import oauth, repository_config
 from dspback.database.models import UserTable
 from dspback.database.procedures import create_or_update_submission
 from dspback.dependencies import get_current_user, get_db
-from dspback.schemas import RepositoryType, ZenodoRecord, HydroShareRecord, SubmissionStatus
+from dspback.schemas import HydroShareRecord, RepositoryType, SubmissionStatus, ZenodoRecord
 
 router = APIRouter()
 
@@ -18,7 +18,9 @@ router = APIRouter()
 record_type_by_repo_type = {RepositoryType.ZENODO: ZenodoRecord, RepositoryType.HYDROSHARE: HydroShareRecord}
 
 
-async def save_submission(repository: RepositoryType, submission_id: str, status: SubmissionStatus, user: UserTable, db: Session):
+async def save_submission(
+    repository: RepositoryType, submission_id: str, status: SubmissionStatus, user: UserTable, db: Session
+):
     read_url = repository_config[repository]["read"]
     read_url = read_url % (submission_id,)
     repo = user.repository_token(db, repository)
@@ -39,15 +41,23 @@ async def save_submission(repository: RepositoryType, submission_id: str, status
 
 # TODO change get to post
 @router.get('/draft/{repository}/{submission_id}')
-async def draft_repository_record(repository: RepositoryType, submission_id: str,
-                                   user: UserTable = Depends(get_current_user), db: Session = Depends(get_db)):
+async def draft_repository_record(
+    repository: RepositoryType,
+    submission_id: str,
+    user: UserTable = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     return await save_submission(repository, submission_id, SubmissionStatus.DRAFT, user, db)
 
 
 # TODO change get to post
 @router.get('/submit/{repository}/{submission_id}')
-async def submit_repository_record(repository: RepositoryType, submission_id: str,
-                                   user: UserTable = Depends(get_current_user), db: Session = Depends(get_db)):
+async def submit_repository_record(
+    repository: RepositoryType,
+    submission_id: str,
+    user: UserTable = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     return await save_submission(repository, submission_id, SubmissionStatus.SUBMITTED, user, db)
 
 

@@ -1,19 +1,19 @@
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, BigInteger, create_engine, DateTime, UniqueConstraint
-from sqlalchemy.orm import relationship, DeclarativeMeta, declarative_base, sessionmaker, Session
+
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String, UniqueConstraint, create_engine
+from sqlalchemy.orm import DeclarativeMeta, Session, declarative_base, relationship, sessionmaker
 
 from dspback.config import DATABASE_URL
 from dspback.schemas import RepositoryType
 
-engine = create_engine(
-    DATABASE_URL
-)
+engine = create_engine(DATABASE_URL)
 
 Base: DeclarativeMeta = declarative_base()
 
 
 class UserTable(Base):
     """Base SQLAlchemy users table definition."""
+
     __tablename__ = "user"
 
     id = Column(Integer, primary_key=True)
@@ -29,8 +29,11 @@ class UserTable(Base):
 
     def repository_token(self, db: Session, repository: RepositoryType):
         repo_type = repository.value
-        return db.query(RepositoryTokenTable).filter(RepositoryTokenTable.user_id == self.id,
-                                                     RepositoryTokenTable.type == repo_type).first()
+        return (
+            db.query(RepositoryTokenTable)
+            .filter(RepositoryTokenTable.user_id == self.id, RepositoryTokenTable.type == repo_type)
+            .first()
+        )
 
 
 class RepositoryTokenTable(Base):

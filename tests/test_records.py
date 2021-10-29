@@ -48,5 +48,3 @@ def test_zenodo_to_submission(zenodo):
     assert zenodo_submission.status == SubmissionStatus.DRAFT
     assert zenodo_submission.submitted == zenodo_record.modified
     assert zenodo_submission.identifier == zenodo_record.record_id
-
-

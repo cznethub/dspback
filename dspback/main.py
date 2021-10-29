@@ -1,8 +1,6 @@
 import uvicorn as uvicorn
-
-from fastapi import FastAPI, Response, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
-
 from starlette.middleware.sessions import SessionMiddleware
 
 from dspback.config import SESSION_SECRET_KEY
@@ -28,6 +26,7 @@ async def db_session_middleware(request: Request, call_next):
     finally:
         request.state.db.close()
     return response
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=5002)

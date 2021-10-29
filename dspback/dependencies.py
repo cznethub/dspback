@@ -1,33 +1,33 @@
 import typing
+from datetime import datetime, timedelta
 
-from datetime import timedelta, datetime
-from fastapi import Request, HTTPException, Depends
+from fastapi import Depends, HTTPException, Request
+from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
-from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from jose import JWTError, jwt
 from pydantic import BaseModel
 from sqlalchemy.orm import Session, subqueryload
 from starlette import status
 from starlette.status import HTTP_403_FORBIDDEN
 
-from dspback.config import OUTSIDE_HOST, JWT_SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, repository_config
-from dspback.schemas import TokenData, RepositoryType, ORCIDResponse, RepositoryToken
-from dspback.database.models import UserTable, RepositoryTokenTable
+from dspback.config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, JWT_SECRET_KEY, OUTSIDE_HOST, repository_config
+from dspback.database.models import RepositoryTokenTable, UserTable
+from dspback.schemas import ORCIDResponse, RepositoryToken, RepositoryType, TokenData
 
 
 class OAuth2AuthorizationBearerToken(OAuth2):
-    '''
+    """
     Handles a bearer Authorization token in both a header or a cookie, making it compatible with both web and API
     requests.
-    '''
+    """
 
     def __init__(
-            self,
-            tokenUrl: str,
-            scheme_name: str = None,
-            scopes: dict = None,
-            auto_error: bool = True,
+        self,
+        tokenUrl: str,
+        scheme_name: str = None,
+        scopes: dict = None,
+        auto_error: bool = True,
     ):
         if not scopes:
             scopes = {}
@@ -38,12 +38,8 @@ class OAuth2AuthorizationBearerToken(OAuth2):
         header_authorization: str = request.headers.get("Authorization")
         cookie_authorization: str = request.cookies.get("Authorization")
 
-        header_scheme, header_param = get_authorization_scheme_param(
-            header_authorization
-        )
-        cookie_scheme, cookie_param = get_authorization_scheme_param(
-            cookie_authorization
-        )
+        header_scheme, header_param = get_authorization_scheme_param(header_authorization)
+        cookie_scheme, cookie_param = get_authorization_scheme_param(cookie_authorization)
 
         if header_scheme.lower() == "bearer":
             authorization = True
@@ -60,9 +56,7 @@ class OAuth2AuthorizationBearerToken(OAuth2):
 
         if not authorization or scheme.lower() != "bearer":
             if self.auto_error:
-                raise HTTPException(
-                    status_code=HTTP_403_FORBIDDEN, detail="Not authenticated"
-                )
+                raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Not authenticated")
             else:
                 return None
         return param
@@ -101,9 +95,14 @@ def create_or_update_user(db: Session, orcid_response: ORCIDResponse) -> UserTab
 
 
 def create_user_table(db: Session, orcid_response: ORCIDResponse) -> UserTable:
-    db_user = UserTable(name=orcid_response.name, orcid=orcid_response.orcid,
-                        access_token=orcid_response.access_token, refresh_token=orcid_response.refresh_token,
-                        expires_in=orcid_response.expires_in, expires_at=orcid_response.expires_at)
+    db_user = UserTable(
+        name=orcid_response.name,
+        orcid=orcid_response.orcid,
+        access_token=orcid_response.access_token,
+        refresh_token=orcid_response.refresh_token,
+        expires_in=orcid_response.expires_in,
+        expires_at=orcid_response.expires_at,
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -132,18 +131,24 @@ def create_or_update_repository_token(db, user: UserTable, repository, token) ->
 
 def create_repository_token(repository: str, db: Session, user: UserTable, repository_response) -> RepositoryTokenTable:
     # zenodo does not have a refresh_token apparently
-    db_repository = RepositoryTokenTable(type=repository, access_token=repository_response['access_token'],
-                                         repo_user_id='blah', user_id=user.id,
-                                         # refresh_token=repository_response['access_token'],
-                                         expires_in=repository_response['expires_in'],
-                                         expires_at=repository_response['expires_at'])
+    db_repository = RepositoryTokenTable(
+        type=repository,
+        access_token=repository_response['access_token'],
+        repo_user_id='blah',
+        user_id=user.id,
+        # refresh_token=repository_response['access_token'],
+        expires_in=repository_response['expires_in'],
+        expires_at=repository_response['expires_at'],
+    )
     db.add(db_repository)
     db.commit()
     db.refresh(db_repository)
     return db_repository
 
 
-def update_repository_token(db: Session, db_repository: RepositoryTokenTable, repository_response) -> RepositoryTokenTable:
+def update_repository_token(
+    db: Session, db_repository: RepositoryTokenTable, repository_response
+) -> RepositoryTokenTable:
     db_repository.access_token = repository_response['access_token']
     # db_repository.refresh_token = repository_response['refresh_token']
     db_repository.expires_in = repository_response['expires_in']
@@ -161,8 +166,11 @@ def get_user_table(db: Session, orcid: str) -> UserTable:
 
 
 def get_repository_table(db: Session, user: UserTable, repository_type: RepositoryType) -> RepositoryTokenTable:
-    repository_table = db.query(RepositoryTokenTable).filter(RepositoryTokenTable.user_id == user.id,
-                                                             RepositoryTokenTable.type == repository_type).first()
+    repository_table = (
+        db.query(RepositoryTokenTable)
+        .filter(RepositoryTokenTable.user_id == user.id, RepositoryTokenTable.type == repository_type)
+        .first()
+    )
     return repository_table
 
 
