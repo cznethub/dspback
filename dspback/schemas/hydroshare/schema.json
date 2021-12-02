@@ -78,7 +78,7 @@
       "description": "An object containing information about rights held in an over a resource",
       "allOf": [
         {
-          "$ref": "#/definitions/Rights"
+          "$ref": "#/definitions/rights"
         }
       ]
     },
@@ -317,7 +317,7 @@
         "value"
       ]
     },
-    "Rights": {
+    "rights": {
       "title": "Rights Metadata",
       "description": "A class used to represent the rights statement metadata associated with a resource",
       "type": "object",

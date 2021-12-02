@@ -35,15 +35,15 @@
     },
     {
       "type": "Group",
-      "label": "Rights",
+      "label": "Rigths",
       "elements": [
         {
           "type": "Control",
-          "scope": "#/definitions/Rights/properties/statement"
+          "scope": "#/definitions/rights/properties/statement"
         },
         {
           "type": "Control",
-          "scope": "#/definitions/Rights/properties/url"
+          "scope": "#/definitions/rights/properties/url"
         }
       ]
     },
@@ -53,7 +53,7 @@
     },
     {
       "type": "Group",
-      "label": "Spatial coverage",
+      "label": "spatial_coverage",
       "elements": [
         {
           "type": "Control",
