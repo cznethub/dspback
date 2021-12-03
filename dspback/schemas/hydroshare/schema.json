@@ -14,11 +14,6 @@
       "description": "A string containing a summary of a resource",
       "type": "string"
     },
-    "language": {
-      "title": "Language",
-      "description": "A 3-character string for the language in which the metadata and content of a resource are expressed",
-      "type": "string"
-    },
     "subjects": {
       "title": "Subject keywords",
       "description": "A list of keyword strings expressing the topic of a resource",
@@ -82,24 +77,6 @@
         }
       ]
     },
-    "created": {
-      "title": "Creation date",
-      "description": "A datetime object containing the instant associated with when a resource was created",
-      "type": "string",
-      "format": "date-time"
-    },
-    "modified": {
-      "title": "Modified date",
-      "description": "A datetime object containing the instant associated with when a resource was last modified",
-      "type": "string",
-      "format": "date-time"
-    },
-    "published": {
-      "title": "Published date",
-      "description": "A datetime object containing the instant associated with when a resource was published",
-      "type": "string",
-      "format": "date-time"
-    },
     "awards": {
       "title": "Funding agency information",
       "description": "A list of objects containing information about the funding agencies and awards associated with a resource",
@@ -145,12 +122,6 @@
       "type": "string"
     }
   },
-  "required": [
-    "url",
-    "identifier",
-    "language",
-    "rights"
-  ],
   "definitions": {
     "Creator": {
       "title": "Creator Metadata",
