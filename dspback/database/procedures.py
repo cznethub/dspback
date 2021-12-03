@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from dspback.database.models import AuthorTable, RepositorySubmissionTable, UserTable
-from dspback.schemas import Submission
+from dspback.schemas import Submission, RepositoryToken
 
 
 def create_or_update_submission(db: Session, submission: Submission, user: UserTable) -> RepositorySubmissionTable:
@@ -41,3 +41,10 @@ def delete_submission(db: Session, repository, identifier: str, user: UserTable)
     if submission_row:
         db.delete(submission_row)
     db.commit()
+
+
+def delete_repository_access_token(db: Session, repository, user: UserTable):
+    repository_token: RepositoryToken = user.repository_token(db, repository)
+    if repository_token:
+        db.delete(repository_token)
+        db.commit()

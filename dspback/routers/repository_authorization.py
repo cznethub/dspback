@@ -6,6 +6,7 @@ from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
 
 from dspback.config import oauth, repository_config
 from dspback.database.models import UserTable
+from dspback.database.procedures import delete_repository_access_token
 from dspback.dependencies import create_or_update_repository_token, get_current_user, get_db, url_for
 from dspback.schemas import RepositoryToken, RepositoryType
 
@@ -43,6 +44,13 @@ async def get_access_token(
     if not repository_token:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return repository_token
+
+
+@router.delete("/access_token/{repository}", response_model=RepositoryToken)
+async def delete_access_token(
+    repository: RepositoryType, user: UserTable = Depends(get_current_user), db: Session = Depends(get_db)
+) -> RepositoryToken:
+    delete_repository_access_token(db, repository, user)
 
 
 @router.get("/urls/{repository}")
