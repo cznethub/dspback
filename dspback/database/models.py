@@ -71,7 +71,6 @@ class RepositorySubmissionTable(Base):
     title = Column(String(), nullable=False)
     authors = relationship("AuthorTable", order_by=AuthorTable.id, cascade="all, delete, delete-orphan")
     repo_type = Column(String(length=64), nullable=False)
-    status = Column(String(length=32), nullable=False)
     submitted = Column(DateTime, default=datetime.utcnow)
     user_id = Column(Integer, ForeignKey('user.id'))
 

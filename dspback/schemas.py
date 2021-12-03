@@ -60,16 +60,10 @@ class RepositoryToken(RepositoryTokenBase):
     id: int = None
 
 
-class SubmissionStatus(StringEnum):
-    DRAFT = 'draft'
-    SUBMITTED = 'submitted'
-
-
 class SubmissionBase(BaseModel):
     title: str = None
     authors: List[str] = []
     repo_type: RepositoryType = None
-    status: SubmissionStatus = SubmissionStatus.DRAFT
     identifier: str = None
     submitted: datetime = None
 
@@ -125,7 +119,6 @@ class ZenodoRecord(BaseRecord):
     title: str = None
     creators: List[Creator] = []
     modified: datetime = None
-    status: SubmissionStatus = SubmissionStatus.DRAFT
     record_id: str = None
 
     @root_validator(pre=True)
@@ -139,7 +132,6 @@ class ZenodoRecord(BaseRecord):
             title=self.title,
             authors=[creator.name for creator in self.creators],
             repo_type=RepositoryType.ZENODO,
-            status=self.status,
             submitted=self.modified,
             identifier=self.record_id,
         )
@@ -152,7 +144,6 @@ class HydroShareRecord(BaseRecord):
     title: str = None
     creators: List[Creator] = []
     modified: datetime = None
-    status: SubmissionStatus = SubmissionStatus.DRAFT
     identifier: str = None
 
     @validator("identifier")
@@ -164,7 +155,6 @@ class HydroShareRecord(BaseRecord):
             title=self.title,
             authors=[creator.name for creator in self.creators],
             repo_type=RepositoryType.HYDROSHARE,
-            status=self.status,
             submitted=self.modified,
             identifier=self.identifier,
         )
