@@ -1,10 +1,9 @@
 import json
 
-import httpx
+import requests
 from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends
 from sqlalchemy.orm import Session
-from starlette.requests import Request
 
 from dspback.config import repository_config
 from dspback.database.models import UserTable
@@ -30,18 +29,16 @@ def submit_record(db: Session, repository, identifier, user: UserTable, json_res
 async def submit_repository_record(
     repository: RepositoryType,
     identifier: str,
-    request: Request
+    db=Depends(get_db),
+    user=Depends(get_current_user),
 ):
     read_url = repository_config[repository]["read"]
     read_url = read_url % (identifier,)
-    db = get_db(request)
-    user = await get_current_user(request)
     repo = user.repository_token(db, repository)
     if not repo:
         raise Exception("User has not authorized the repository")
     access_token = repo.access_token
-    async with httpx.AsyncClient() as client:
-        response = await client.get(read_url, params={"access_token": access_token})
+    response = requests.get(read_url, params={"access_token": access_token})
     if response.status_code != 200:
         raise HTTPException(status_code=response.status_code, detail=response.text)
     json_response = json.loads(response.text)

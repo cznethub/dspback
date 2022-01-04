@@ -1,7 +1,7 @@
 import typing
 from datetime import datetime, timedelta
 
-from fastapi import HTTPException, Request
+from fastapi import HTTPException, Request, Depends
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
@@ -199,8 +199,6 @@ async def get_current_user(request: Request) -> UserTable:
     return user
 
 
-async def get_repository(request: Request, repository: RepositoryType) -> RepositoryTokenTable:
-    db: Session = get_db(request)
-    user: UserTable = await get_current_user(request)
+async def get_repository(repository: RepositoryType, db=Depends(get_db), user=Depends(get_current_user)) -> RepositoryTokenTable:
     repository_token: RepositoryTokenTable = user.repository_token(db, repository)
     return repository_token
