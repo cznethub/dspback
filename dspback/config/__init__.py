@@ -39,19 +39,6 @@ oauth.register(
     },
 )
 
-oauth.register(
-    name='gitlab',
-    authorize_url='https://gitlab.com/oauth/authorize',
-    # client_kwargs={'scope': 'deposit:write deposit:actions', 'response_type': "code"},
-    token_endpoint='https://gitlab.com/oauth/token',
-    access_token_params={
-        'grant_type': 'authorization_code',
-        # 'scope': 'deposit:write deposit:actions',
-        'client_id': config.get('GITLAB_CLIENT_ID'),
-        'client_secret': config.get('GITLAB_CLIENT_SECRET'),
-    },
-)
-
 OUTSIDE_HOST = config.get("OUTSIDE_HOST")
 
 JWT_SECRET_KEY = config.get("JWT_SECRET_KEY")
