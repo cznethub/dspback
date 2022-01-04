@@ -25,6 +25,7 @@ oauth.register(
     token_endpoint='https://orcid.org/oauth/token',
     client_kwargs={'scope': 'openid'},
 )
+
 oauth.register(
     name='zenodo',
     authorize_url='https://sandbox.zenodo.org/oauth/authorize',
@@ -35,6 +36,19 @@ oauth.register(
         'scope': 'deposit:write deposit:actions',
         'client_id': config.get('ZENODO_CLIENT_ID'),
         'client_secret': config.get('ZENODO_CLIENT_SECRET'),
+    },
+)
+
+oauth.register(
+    name='gitlab',
+    authorize_url='https://gitlab.com/oauth/authorize',
+    # client_kwargs={'scope': 'deposit:write deposit:actions', 'response_type': "code"},
+    token_endpoint='https://gitlab.com/oauth/token',
+    access_token_params={
+        'grant_type': 'authorization_code',
+        # 'scope': 'deposit:write deposit:actions',
+        'client_id': config.get('GITLAB_CLIENT_ID'),
+        'client_secret': config.get('GITLAB_CLIENT_SECRET'),
     },
 )
 
@@ -83,5 +97,19 @@ repository_config = {
         "schema_defaults": "/api/schema/hydroshare/defaults.json",
         "access_token": "/api/access_token/hydroshare",
         "authorize_url": "/api/authorize/hydroshare",
+    },
+    "gitlab": {
+        "create": "/api/gitlab/metadata",
+        "update": "/api/gitlab/metadata/%s",
+        "read": "/api/gitlab/metadata/%s",
+        "file_create": "https://gitlab.com/api/v4/projects/%s/repository/files/%s?ref=main",
+        "file_delete": "https://gitlab.com/api/v4/projects/%s/repository/files/%s?ref=main",
+        "file_read": "https://gitlab.com/api/v4/projects/%s/repository/files/%s?ref=main",
+        "view_url": "https://beta.hydroshare.org/resource/%s",
+        "schema": "/api/schema/gitlab/schema.json",
+        "uischema": "/api/schema/gitlab/uischema.json",
+        "schema_defaults": "/api/schema/gitlab/defaults.json",
+        "access_token": "/api/access_token/gitlab",
+        "authorize_url": "/api/authorize/gitlab",
     },
 }
