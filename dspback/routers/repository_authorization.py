@@ -32,7 +32,8 @@ async def auth_repository(
     except OAuthError as error:
         return HTMLResponse(f'<h1>{error.error}</h1>')
 
-    create_or_update_repository_token(db, user, repository, token)
+    # TODO sort out await
+    await create_or_update_repository_token(db, user, repository, token)
     return RedirectResponse("/")
 
 

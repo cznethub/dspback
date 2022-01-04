@@ -4,6 +4,7 @@ authlib
 bs4
 httpx
 fastapi
+fastapi-restful
 uvicorn
 requests
 requests-oauthlib

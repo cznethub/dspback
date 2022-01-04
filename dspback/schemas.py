@@ -1,3 +1,5 @@
+import base64
+import json
 from datetime import datetime
 from enum import Enum
 from typing import List, Optional
@@ -30,6 +32,7 @@ class StringEnum(str, Enum):
 class RepositoryType(StringEnum):
     ZENODO = "zenodo"
     HYDROSHARE = "hydroshare"
+    GITLAB = "gitlab"
 
 
 class ORCIDResponse(BaseModel):
@@ -47,7 +50,6 @@ class ORCIDResponse(BaseModel):
 class RepositoryTokenBase(BaseModel):
     type: RepositoryType = None
     access_token: str = None
-    repo_user_id: Optional[str] = None
     refresh_token: Optional[str] = None
     expires_in: str = None
     expires_at: str = None
@@ -108,7 +110,7 @@ class User(UserBase):
 
 
 class BaseRecord(BaseModel):
-    def to_submission(self) -> Submission:
+    def to_submission(self, identifier) -> Submission:
         raise NotImplementedError()
 
 
@@ -127,13 +129,13 @@ class ZenodoRecord(BaseRecord):
         del values['metadata']
         return values
 
-    def to_submission(self) -> Submission:
+    def to_submission(self, identifier) -> Submission:
         return Submission(
             title=self.title,
             authors=[creator.name for creator in self.creators],
             repo_type=RepositoryType.ZENODO,
             submitted=self.modified,
-            identifier=self.record_id,
+            identifier=identifier,
         )
 
 
@@ -150,11 +152,39 @@ class HydroShareRecord(BaseRecord):
     def extract_identifier(cls, value):
         return value.split("/")[-1]
 
-    def to_submission(self) -> Submission:
+    def to_submission(self, identifier) -> Submission:
         return Submission(
             title=self.title,
             authors=[creator.name for creator in self.creators],
             repo_type=RepositoryType.HYDROSHARE,
             submitted=self.modified,
-            identifier=self.identifier,
+            identifier=identifier,
+        )
+
+
+class GitLabRecord(BaseRecord):
+
+    content: str = None
+    file_path: str = None
+    creators: List[str] = []
+    submitted: datetime = datetime.now()
+
+    @validator("content")
+    def base64_decode(cls, value):
+        try:
+            decodedBytes = base64.b64decode(value)
+        except Exception:
+            return value
+        decodedStr = str(decodedBytes, "utf-8")
+        return decodedStr
+
+    def to_submission(self, identifier) -> Submission:
+        content = json.loads(self.content)
+        # TODO content should have creators and moified?  or maybe pull that from the commit?
+        return Submission(
+            title=content['title'],
+            authors=[creator.name for creator in self.creators],
+            repo_type=RepositoryType.GITLAB,
+            submitted=self.submitted,
+            identifier=identifier,
         )

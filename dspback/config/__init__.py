@@ -73,6 +73,7 @@ repository_config = {
         "create": "https://beta.hydroshare.org/hsapi/resource/",
         "update": "https://beta.hydroshare.org/hsapi2/resource/%s/json/",
         "read": "https://beta.hydroshare.org/hsapi2/resource/%s/json/",
+        "delete": "https://beta.hydroshare.org/hsapi/resource/%s/json/",
         "file_create": "https://beta.hydroshare.org/hsapi/resource/%s/files/",
         "file_delete": "https://beta.hydroshare.org/hsapi/resource/%s/files/%s/",
         "file_read": "https://beta.hydroshare.org/hsapi/resource/%s/files/",

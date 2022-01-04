@@ -27,7 +27,7 @@ class UserTable(Base):
     repository_tokens = relationship("RepositoryTokenTable")
     submissions = relationship("RepositorySubmissionTable")
 
-    def repository_token(self, db: Session, repository: RepositoryType):
+    def repository_token(self, db: Session, repository: RepositoryType) -> 'RepositoryTokenTable':
         repo_type = repository.value
         return (
             db.query(RepositoryTokenTable)
@@ -44,7 +44,6 @@ class RepositoryTokenTable(Base):
     id = Column(Integer, primary_key=True)
     type = Column(String(length=64), nullable=False)
     access_token = Column(String(length=128), nullable=False)
-    repo_user_id = Column(String(length=64), nullable=True)
     refresh_token = Column(String(length=128), nullable=True)
     expires_in = Column(BigInteger, nullable=True)
     expires_at = Column(BigInteger, nullable=True)

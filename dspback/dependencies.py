@@ -1,13 +1,13 @@
 import typing
 from datetime import datetime, timedelta
 
-from fastapi import Depends, HTTPException, Request
+from fastapi import HTTPException, Request
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
 from jose import JWTError, jwt
 from pydantic import BaseModel
-from sqlalchemy.orm import Session, subqueryload
+from sqlalchemy.orm import Session
 from starlette import status
 from starlette.status import HTTP_403_FORBIDDEN
 
@@ -120,7 +120,7 @@ def update_user_table(db: Session, db_user: UserTable, orcid_response: ORCIDResp
     return db_user
 
 
-def create_or_update_repository_token(db, user: UserTable, repository, token) -> RepositoryToken:
+async def create_or_update_repository_token(db, user: UserTable, repository, token) -> RepositoryToken:
     repository_token_table: RepositoryTokenTable = get_repository_table(db, user, repository)
     if repository_token_table:
         repository_token_table = update_repository_token(db, repository_token_table, token)
@@ -134,11 +134,10 @@ def create_repository_token(repository: str, db: Session, user: UserTable, repos
     db_repository = RepositoryTokenTable(
         type=repository,
         access_token=repository_response['access_token'],
-        repo_user_id='blah',
         user_id=user.id,
         # refresh_token=repository_response['access_token'],
-        expires_in=repository_response['expires_in'],
-        expires_at=repository_response['expires_at'],
+        expires_in=repository_response.get('expires_in', None),
+        expires_at=repository_response.get('expires_at', None)
     )
     db.add(db_repository)
     db.commit()
@@ -151,8 +150,8 @@ def update_repository_token(
 ) -> RepositoryTokenTable:
     db_repository.access_token = repository_response['access_token']
     # db_repository.refresh_token = repository_response['refresh_token']
-    db_repository.expires_in = repository_response['expires_in']
-    db_repository.expires_at = repository_response['expires_at']
+    db_repository.expires_in = repository_response.get('expires_in', None)
+    db_repository.expires_at = repository_response.get('expires_at', None)
     # db_repository.refresh_token = repository_response['refresh_token']
     db.add(db_repository)
     db.commit()
@@ -178,12 +177,14 @@ def get_db(request: Request) -> Session:
     return request.state.db
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> UserTable:
+async def get_current_user(request: Request) -> UserTable:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    token: str = await oauth2_scheme(request)
+    db: Session = get_db(request)
     try:
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
         orcid: str = payload.get("sub")
@@ -196,3 +197,10 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     if user is None:
         raise credentials_exception
     return user
+
+
+async def get_repository(request: Request, repository: RepositoryType) -> RepositoryTokenTable:
+    db: Session = get_db(request)
+    user: UserTable = await get_current_user(request)
+    repository_token: RepositoryTokenTable = user.repository_token(db, repository)
+    return repository_token
