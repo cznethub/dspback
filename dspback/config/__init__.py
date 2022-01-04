@@ -60,6 +60,20 @@ class Settings(BaseSettings):
     earthchem_view_url: HttpUrl
     earthchem_health_url: HttpUrl
 
+    gitlab_client_id: str
+    gitlab_client_secret: str
+    gitlab_authorize_url: HttpUrl
+    gitlab_token_url: HttpUrl
+    gitlab_create_url: HttpUrl
+    gitlab_update_url: HttpUrl
+    gitlab_read_url: HttpUrl
+    gitlab_delete_url: HttpUrl
+    gitlab_file_create_url: HttpUrl
+    gitlab_file_delete_url: HttpUrl
+    gitlab_file_read_url: HttpUrl
+    gitlab_view_url: HttpUrl
+    gitlab_health_url: HttpUrl
+
     database_username: str
     database_password: str
     database_name: str
@@ -124,6 +138,18 @@ oauth.register(
         'grant_type': 'client_credentials',
         'client_id': settings.earthchem_client_id,
         'client_secret': settings.earthchem_client_secret,
+    },
+)
+oauth.register(
+    name='gitlab',
+    authorize_url=settings.gitlab_authorize_url,
+    # client_kwargs={'scope': 'deposit:write deposit:actions', 'response_type': "code"},
+    token_endpoint=settings.gitlab_token_url,
+    access_token_params={
+        'grant_type': 'authorization_code',
+        # 'scope': 'deposit:write deposit:actions',
+        'client_id': settings.gitlab_client_id,
+        'client_secret': settings.gitlab_client_secret,
     },
 )
 
@@ -192,5 +218,20 @@ repository_config = {
         "schema_defaults": "/api/schema/external/defaults.json",
         "access_token": None,
         "authorize_url": None,
+    },
+    "gitlab": {
+        "create": settings.gitlab_create_url,
+        "update": settings.gitlab_update_url,
+        "read": settings.gitlab_read_url,
+        "delete": settings.gitlab_delete_url,
+        "file_create": settings.gitlab_file_create_url,
+        "file_delete": settings.gitlab_file_delete_url,
+        "file_read": settings.gitlab_file_read_url,
+        "view_url": settings.gitlab_view_url,
+        "schema": "/api/schema/gitlab/schema.json",
+        "uischema": "/api/schema/gitlab/uischema.json",
+        "schema_defaults": "/api/schema/gitlab/defaults.json",
+        "access_token": "/api/access_token/gitlab",
+        "authorize_url": "/api/authorize/gitlab",
     },
 }

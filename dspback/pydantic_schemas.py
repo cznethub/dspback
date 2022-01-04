@@ -37,6 +37,7 @@ class RepositoryType(StringEnum):
     HYDROSHARE = "hydroshare"
     EARTHCHEM = "earthchem"
     EXTERNAL = "external"
+    GITLAB = "gitlab"
 
 
 class ORCIDResponse(BaseModel):
@@ -214,4 +215,31 @@ class ExternalRecord(BaseRecord):
             submitted=datetime.utcnow(),
             identifier=identifier,
             url=self.url,
+        )
+
+
+class GitLabRecord(BaseRecord):
+    class Creator(BaseModel):
+        name: str = None
+
+    title: str = None
+    creators: List[Creator] = []
+    modified: datetime = None
+    identifier: str = None
+
+    @validator("identifier")
+    def extract_identifier(cls, value):
+        return value.split("/")[-1]
+
+    def to_submission(self, identifier) -> Submission:
+        settings = get_settings()
+        view_url = settings.gitlab_view_url
+        view_url = view_url % identifier
+        return Submission(
+            title=self.title,
+            authors=[creator.name for creator in self.creators],
+            repo_type=RepositoryType.GITLAB,
+            submitted=datetime.utcnow(),
+            identifier=identifier,
+            url=view_url,
         )

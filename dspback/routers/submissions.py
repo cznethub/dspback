@@ -9,7 +9,14 @@ from sqlalchemy.orm import Session
 from dspback.database.models import UserTable
 from dspback.database.procedures import create_or_update_submission, delete_submission
 from dspback.dependencies import get_current_user, get_db
-from dspback.pydantic_schemas import EarthChemRecord, ExternalRecord, HydroShareRecord, RepositoryType, ZenodoRecord
+from dspback.pydantic_schemas import (
+    EarthChemRecord,
+    ExternalRecord,
+    GitLabRecord,
+    HydroShareRecord,
+    RepositoryType,
+    ZenodoRecord,
+)
 
 router = APIRouter()
 
@@ -19,6 +26,7 @@ record_type_by_repo_type = {
     RepositoryType.HYDROSHARE: HydroShareRecord,
     RepositoryType.EXTERNAL: ExternalRecord,
     RepositoryType.EARTHCHEM: EarthChemRecord,
+    RepositoryType.GITLAB: GitLabRecord,
 }
 
 

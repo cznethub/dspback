@@ -1,0 +1,70 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    { 
+      "type": "Group",
+      "label": "Basic Information",
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/title"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/abstract",
+          "options": {
+            "multi": true
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/subjects"
+        }
+      ]
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/creators"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/contributors"
+    },
+    {
+      "type": "Control",
+      "label": "Spatial coverage",
+      "scope": "#/properties/spatial_coverage"
+    },
+    {
+      "type": "Control",
+      "label": "Period coverage",
+      "scope": "#/properties/period_coverage"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/additional_metadata"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/relations"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/awards"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/rights"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/citation",
+      "rule": {
+        "effect": "DISABLE",
+        "condition": {
+          "scope": "#/properties/citation"
+        }
+      }
+    }
+  ]
+}
