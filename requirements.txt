@@ -11,6 +11,7 @@ requests-oauthlib
 itsdangerous
 hsclient
 psycopg2-binary
+pydantic[dotenv]
 asyncpg
 SQLAlchemy
 pytest

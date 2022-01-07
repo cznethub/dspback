@@ -11,8 +11,8 @@ from sqlalchemy.orm import Session
 from starlette import status
 from starlette.status import HTTP_403_FORBIDDEN
 
-from dspback.config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, JWT_SECRET_KEY, OUTSIDE_HOST, repository_config
 from dspback.database.models import RepositoryTokenTable, UserTable
+from dspback.config import get_settings
 from dspback.schemas import ORCIDResponse, RepositoryToken, RepositoryType, TokenData
 
 
@@ -70,18 +70,18 @@ class Token(BaseModel):
 oauth2_scheme = OAuth2AuthorizationBearerToken(tokenUrl="/token")
 
 
-def url_for(request: Request, name: str, **path_params: typing.Any) -> str:
+def url_for(request: Request, name: str, outside_host: str, **path_params: typing.Any) -> str:
     url_path = request.app.url_path_for(name, **path_params)
     # TODO - get the parent router path instead of hardcoding /api
-    return "https://{}{}".format(OUTSIDE_HOST, url_path)
+    return "https://{}{}".format(outside_host, url_path)
 
 
-def create_access_token(data: dict) -> str:
+def create_access_token(data: dict, expiration_minutes: str, secret_key: str, algorithm: str) -> str:
     to_encode = data.copy()
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=expiration_minutes)
     expire = datetime.utcnow() + access_token_expires
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=algorithm)
     return encoded_jwt
 
 
@@ -177,7 +177,7 @@ def get_db(request: Request) -> Session:
     return request.state.db
 
 
-async def get_current_user(request: Request) -> UserTable:
+async def get_current_user(request: Request, settings=Depends(get_settings)) -> UserTable:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -186,7 +186,7 @@ async def get_current_user(request: Request) -> UserTable:
     token: str = await oauth2_scheme(request)
     db: Session = get_db(request)
     try:
-        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
         orcid: str = payload.get("sub")
         if orcid is None:
             raise credentials_exception

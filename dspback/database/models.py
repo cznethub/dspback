@@ -3,10 +3,10 @@ from datetime import datetime
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String, UniqueConstraint, create_engine
 from sqlalchemy.orm import DeclarativeMeta, Session, declarative_base, relationship, sessionmaker
 
-from dspback.config import DATABASE_URL
+from dspback.config import get_settings
 from dspback.schemas import RepositoryType
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(get_settings().database_url)
 
 Base: DeclarativeMeta = declarative_base()
 
