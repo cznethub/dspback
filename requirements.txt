@@ -4,12 +4,14 @@ authlib
 bs4
 httpx
 fastapi
+fastapi-restful
 uvicorn
 requests
 requests-oauthlib
 itsdangerous
 hsclient
 psycopg2-binary
+pydantic[dotenv]
 asyncpg
 SQLAlchemy
 pytest

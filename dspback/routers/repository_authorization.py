@@ -4,17 +4,20 @@ from fastapi.params import Depends
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
 
-from dspback.config import oauth, repository_config
+from dspback.config import oauth, repository_config, Settings
 from dspback.database.models import UserTable
+from dspback.database.procedures import delete_repository_access_token
 from dspback.dependencies import create_or_update_repository_token, get_current_user, get_db, url_for
+from dspback.config import get_settings
 from dspback.schemas import RepositoryToken, RepositoryType
 
 router = APIRouter()
 
 
 @router.get('/authorize/{repository}')
-async def authorize_repository(repository: str, request: Request, user: UserTable = Depends(get_current_user)):
-    redirect_uri = url_for(request, 'auth_repository', repository=repository)
+async def authorize_repository(repository: str, request: Request, user: UserTable = Depends(get_current_user),
+                               settings: Settings = Depends(get_settings)):
+    redirect_uri = url_for(request, 'auth_repository', settings.outside_host, repository=repository)
     return await getattr(oauth, repository).authorize_redirect(request, redirect_uri)
 
 
@@ -31,7 +34,8 @@ async def auth_repository(
     except OAuthError as error:
         return HTMLResponse(f'<h1>{error.error}</h1>')
 
-    create_or_update_repository_token(db, user, repository, token)
+    # TODO sort out await
+    await create_or_update_repository_token(db, user, repository, token)
     return RedirectResponse("/")
 
 
@@ -43,6 +47,13 @@ async def get_access_token(
     if not repository_token:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return repository_token
+
+
+@router.delete("/access_token/{repository}", response_model=RepositoryToken)
+async def delete_access_token(
+    repository: RepositoryType, user: UserTable = Depends(get_current_user), db: Session = Depends(get_db)
+) -> RepositoryToken:
+    delete_repository_access_token(db, repository, user)
 
 
 @router.get("/urls/{repository}")
