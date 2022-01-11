@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     hydroshare_create_url: HttpUrl = "https://beta.hydroshare.org/hsapi/resource/"
     hydroshare_update_url: HttpUrl = "https://beta.hydroshare.org/hsapi2/resource/%s/json/"
     hydroshare_read_url: HttpUrl = "https://beta.hydroshare.org/hsapi2/resource/%s/json/"
-    hydroshare_delete_url: HttpUrl = "https://beta.hydroshare.org/hsapi/resource/%s/json/"
+    hydroshare_delete_url: HttpUrl = "https://beta.hydroshare.org/hsapi/resource/%s/"
     hydroshare_file_create_url: HttpUrl = "https://beta.hydroshare.org/hsapi/resource/%s/files/"
     hydroshare_file_delete_url: HttpUrl = "https://beta.hydroshare.org/hsapi/resource/%s/files/%s/"
     hydroshare_file_read_url: HttpUrl = "https://beta.hydroshare.org/hsapi/resource/%s/files/"

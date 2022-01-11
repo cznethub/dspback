@@ -14,6 +14,7 @@ from dspback.database.models import UserTable
 from dspback.database.procedures import delete_submission
 from dspback.dependencies import get_db, get_current_user, get_repository
 from dspback.routers.submissions import submit_record
+from dspback.schemas import RepositoryType
 
 router = InferringRouter()
 
@@ -87,7 +88,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
 
     @router.put('/metadata/{repository}/{identifier}')
     async def update_metadata(self, metadata: request_model, identifier) -> None:
-        response = requests.put(self.update_url % identifier, data=metadata.json(),
+        response = requests.put(self.update_url % identifier, data=metadata.json(skip_defaults=True),
                                 headers={"Content-Type": "application/json"},
                                 params={"access_token": self.repository.access_token})
 
@@ -110,7 +111,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         return json_metadata
 
     @router.delete('/metadata/{repository}/{identifier}')
-    async def delete_metadata_repository(self, repository, identifier) -> response_model:
+    async def delete_metadata_repository(self, repository: RepositoryType, identifier):
         response = requests.delete(self.delete_url % identifier,
                                    params={"access_token": self.repository.access_token})
 
@@ -118,5 +119,3 @@ class HydroShareMetadataRoutes(MetadataRoutes):
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
         delete_submission(self.db, repository, identifier, self.user)
-
-        return json.loads(response.text)
