@@ -188,10 +188,13 @@ async def get_current_user(request: Request, settings=Depends(get_settings), tok
     db: Session = get_db(request)
     try:
         payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
-        orcid: str = payload.get("sub")
-        if orcid is None:
+        token_data = TokenData(**payload)
+        if token_data.orcid is None:
             raise credentials_exception
-        token_data = TokenData(orcid=orcid)
+        if token_data.expiration < datetime.utcnow().timestamp():
+            # TODO register token in db for requested expiration
+            credentials_exception.detail = "Token is expired"
+            raise credentials_exception
     except JWTError:
         raise credentials_exception
     user: UserTable = get_user_table(db, orcid=token_data.orcid)

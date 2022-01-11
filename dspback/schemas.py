@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
-from pydantic import BaseModel, root_validator, validator
+from pydantic import BaseModel, root_validator, validator, Field
 
 
 class ORCIDResponse(BaseModel):
@@ -22,8 +22,8 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    orcid: str
-    expiration: str
+    orcid: Optional[str] = Field(alias="sub")
+    expiration: Optional[int] = Field(alias="exp")
 
 
 class StringEnum(str, Enum):
