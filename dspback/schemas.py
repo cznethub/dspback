@@ -22,7 +22,8 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    orcid: Optional[str] = None
+    orcid: str
+    expiration: str
 
 
 class StringEnum(str, Enum):

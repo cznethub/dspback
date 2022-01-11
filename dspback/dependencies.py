@@ -1,4 +1,4 @@
-import typing
+from typing import Optional, Any
 from datetime import datetime, timedelta
 
 from fastapi import HTTPException, Request, Depends
@@ -34,7 +34,10 @@ class OAuth2AuthorizationBearerToken(OAuth2):
         flows = OAuthFlowsModel(password={"tokenUrl": tokenUrl, "scopes": scopes})
         super().__init__(flows=flows, scheme_name=scheme_name, auto_error=auto_error)
 
-    async def __call__(self, request: Request) -> typing.Optional[str]:
+    async def __call__(self, request: Request, access_token: Optional[str] = None) -> Optional[str]:
+        authorization = False
+        scheme = "bearer"
+
         header_authorization: str = request.headers.get("Authorization")
         cookie_authorization: str = request.cookies.get("Authorization")
 
@@ -43,16 +46,15 @@ class OAuth2AuthorizationBearerToken(OAuth2):
 
         if header_scheme.lower() == "bearer":
             authorization = True
-            scheme = header_scheme
             param = header_param
 
         elif cookie_scheme.lower() == "bearer":
             authorization = True
-            scheme = cookie_scheme
             param = cookie_param
 
-        else:
-            authorization = False
+        elif access_token:
+            authorization = True
+            param = access_token
 
         if not authorization or scheme.lower() != "bearer":
             if self.auto_error:
@@ -70,7 +72,7 @@ class Token(BaseModel):
 oauth2_scheme = OAuth2AuthorizationBearerToken(tokenUrl="/token")
 
 
-def url_for(request: Request, name: str, outside_host: str, **path_params: typing.Any) -> str:
+def url_for(request: Request, name: str, outside_host: str, **path_params: Any) -> str:
     url_path = request.app.url_path_for(name, **path_params)
     # TODO - get the parent router path instead of hardcoding /api
     return "https://{}{}".format(outside_host, url_path)
@@ -177,13 +179,12 @@ def get_db(request: Request) -> Session:
     return request.state.db
 
 
-async def get_current_user(request: Request, settings=Depends(get_settings)) -> UserTable:
+async def get_current_user(request: Request, settings=Depends(get_settings), token: str = Depends(oauth2_scheme)) -> UserTable:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    token: str = await oauth2_scheme(request)
     db: Session = get_db(request)
     try:
         payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
