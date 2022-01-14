@@ -1,14 +1,14 @@
 from sqlalchemy.orm import Session
 
 from dspback.database.models import AuthorTable, RepositorySubmissionTable, UserTable
-from dspback.schemas import Submission, RepositoryToken
+from dspback.schemas import Submission, RepositoryToken, RepositoryType
 
 
 def create_or_update_submission(db: Session, submission: Submission, user: UserTable) -> RepositorySubmissionTable:
-    # TODO filter by user
     submission_row = (
         db.query(RepositorySubmissionTable)
         .filter(RepositorySubmissionTable.identifier == submission.identifier)
+        .filter(RepositorySubmissionTable.user_id == user.id)
         .first()
     )
     if submission_row:
@@ -31,11 +31,12 @@ def create_or_update_submission(db: Session, submission: Submission, user: UserT
     return db_repository_submission
 
 
-def delete_submission(db: Session, repository, identifier: str, user: UserTable):
-    # TODO filter by user and repository
+def delete_submission(db: Session, repository: RepositoryType, identifier: str, user: UserTable):
     submission_row = (
         db.query(RepositorySubmissionTable)
             .filter(RepositorySubmissionTable.identifier == identifier)
+            .filter(RepositorySubmissionTable.user_id == user.id)
+            .filter(RepositorySubmissionTable.repo_type == repository)
             .first()
     )
     if submission_row:

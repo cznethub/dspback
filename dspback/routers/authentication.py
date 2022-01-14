@@ -3,7 +3,7 @@ from fastapi import APIRouter, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.params import Depends
 from sqlalchemy.orm import Session
-from starlette.responses import HTMLResponse, RedirectResponse
+from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse, Response
 
 from dspback.config import oauth, Settings
 from dspback.database.models import UserTable
@@ -49,7 +49,8 @@ async def auth(request: Request, db: Session = Depends(get_db), settings: Settin
 
     token = jsonable_encoder(access_token)
 
-    response = RedirectResponse(url="/")
-    response.set_cookie("Authorization", f"Bearer {token}", domain=settings.outside_host,
-                        expires=orcid_response.expires_in)
+    #response = RedirectResponse(url="/")
+    #response.set_cookie("Authorization", f"Bearer {token}", domain=settings.outside_host,
+    #                    expires=orcid_response.expires_in)
+    response = Response(token)
     return response
