@@ -4,6 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.params import Depends
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse, Response
+import json
 
 from dspback.config import oauth, Settings
 from dspback.database.models import UserTable
@@ -52,5 +53,12 @@ async def auth(request: Request, db: Session = Depends(get_db), settings: Settin
     #response = RedirectResponse(url="/")
     #response.set_cookie("Authorization", f"Bearer {token}", domain=settings.outside_host,
     #                    expires=orcid_response.expires_in)
-    response = Response(token)
-    return response
+    # response = Response(token)
+    responseHTML = '<html><head><title>CzHub Authorization</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
+    responseHTML = responseHTML.replace(
+      "%value%",
+      json.dumps({
+        'token': token
+      })
+    )
+    return HTMLResponse(responseHTML)
