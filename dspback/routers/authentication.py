@@ -1,10 +1,11 @@
+import json
+
 from authlib.integrations.starlette_client import OAuthError
 from fastapi import APIRouter, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.params import Depends
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse, Response
-import json
 
 from dspback.config import oauth, Settings
 from dspback.database.models import UserTable
@@ -54,11 +55,12 @@ async def auth(request: Request, db: Session = Depends(get_db), settings: Settin
     #response.set_cookie("Authorization", f"Bearer {token}", domain=settings.outside_host,
     #                    expires=orcid_response.expires_in)
     # response = Response(token)
-    responseHTML = '<html><head><title>CzHub Authorization</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
+    responseHTML = '<html><head><title>CzHub Sign In</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
     responseHTML = responseHTML.replace(
       "%value%",
       json.dumps({
-        'token': token
+        'token': token,
+        'expiresIn': orcid_response.expires_in
       })
     )
     return HTMLResponse(responseHTML)

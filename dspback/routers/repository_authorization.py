@@ -1,3 +1,5 @@
+import json
+
 from authlib.integrations.starlette_client import OAuthError
 from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.params import Depends
@@ -36,7 +38,14 @@ async def auth_repository(
 
     # TODO sort out await
     await create_or_update_repository_token(db, user, repository, token)
-    return RedirectResponse("/")
+    responseHTML = '<html><head><title>CzHub Sign In</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
+    responseHTML = responseHTML.replace(
+      "%value%",
+      json.dumps({
+        'token': token
+      })
+    )
+    return HTMLResponse(responseHTML)
 
 
 @router.get("/access_token/{repository}", response_model=RepositoryToken)
