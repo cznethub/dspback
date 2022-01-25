@@ -70,7 +70,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
     def submit(self, identifier, json_metadata):
         submit_record(self.db, self.repository.type, identifier, self.user, json_metadata)
 
-    @router.post('/metadata/{repository}')
+    @router.post('/metadata/hydroshare')
     async def create_metadata_repository(self, metadata: request_model) -> response_model:
         response = requests.post(self.create_url, data=metadata.json(),
                                  params={"access_token": self.repository.access_token},
@@ -86,7 +86,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         self.submit(identifier=identifier, json_metadata=json_metadata)
         return JSONResponse(json_metadata, status_code=201)
 
-    @router.put('/metadata/{repository}/{identifier}')
+    @router.put('/metadata/hydroshare/{identifier}')
     async def update_metadata(self, metadata: request_model, identifier) -> None:
         response = requests.put(self.update_url % identifier, data=metadata.json(skip_defaults=True),
                                 headers={"Content-Type": "application/json"},
@@ -97,7 +97,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
 
         await self.submit_with_retrieve(identifier)
 
-    @router.get('/metadata/{repository}/{identifier}')
+    @router.get('/metadata/hydroshare/{identifier}')
     async def get_metadata_repository(self, identifier) -> response_model:
         response = requests.get(self.read_url % identifier,
                                 params={"access_token": self.repository.access_token})
@@ -110,12 +110,12 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         self.submit(identifier=identifier, json_metadata=json_metadata)
         return json_metadata
 
-    @router.delete('/metadata/{repository}/{identifier}')
-    async def delete_metadata_repository(self, repository: RepositoryType, identifier):
+    @router.delete('/metadata/hydroshare/{identifier}')
+    async def delete_metadata_repository(self, identifier):
         response = requests.delete(self.delete_url % identifier,
                                    params={"access_token": self.repository.access_token})
 
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
-        delete_submission(self.db, repository, identifier, self.user)
+        delete_submission(self.db, RepositoryType.HYDROSHARE, identifier, self.user)
