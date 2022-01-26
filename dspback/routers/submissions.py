@@ -9,7 +9,7 @@ from dspback.config import repository_config
 from dspback.database.models import UserTable
 from dspback.database.procedures import create_or_update_submission, delete_submission
 from dspback.dependencies import get_current_user, get_db
-from dspback.schemas import HydroShareRecord, RepositoryType, ZenodoRecord, GitLabRecord
+from dspback.pydantic_schemas import HydroShareRecord, RepositoryType, ZenodoRecord, GitLabRecord
 
 router = APIRouter()
 

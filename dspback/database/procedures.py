@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from dspback.database.models import AuthorTable, RepositorySubmissionTable, UserTable
-from dspback.schemas import Submission, RepositoryToken, RepositoryType
+from dspback.pydantic_schemas import Submission, RepositoryToken, RepositoryType
 
 
 def create_or_update_submission(db: Session, submission: Submission, user: UserTable) -> RepositorySubmissionTable:

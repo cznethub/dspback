@@ -10,7 +10,7 @@ from starlette.status import HTTP_204_NO_CONTENT, HTTP_201_CREATED
 from dspback.database.models import UserTable, RepositoryTokenTable
 from dspback.dependencies import get_current_user, get_db
 from dspback.routers.submissions import get_record
-from dspback.schemas import RepositoryType, GitLabRecord
+from dspback.pydantic_schemas import RepositoryType, GitLabRecord
 
 router = APIRouter()
 

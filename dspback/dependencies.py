@@ -13,7 +13,7 @@ from starlette.status import HTTP_403_FORBIDDEN
 
 from dspback.database.models import RepositoryTokenTable, UserTable
 from dspback.config import get_settings
-from dspback.schemas import ORCIDResponse, RepositoryToken, RepositoryType, TokenData
+from dspback.pydantic_schemas import ORCIDResponse, RepositoryToken, RepositoryType, TokenData
 
 
 class OAuth2AuthorizationBearerToken(OAuth2):
@@ -38,25 +38,26 @@ class OAuth2AuthorizationBearerToken(OAuth2):
         authorization = False
         scheme = "bearer"
 
-        header_authorization: str = request.headers.get("Authorization")
-        cookie_authorization: str = request.cookies.get("Authorization")
-
-        header_scheme, header_param = get_authorization_scheme_param(header_authorization)
-        cookie_scheme, cookie_param = get_authorization_scheme_param(cookie_authorization)
-
-        if header_scheme.lower() == "bearer":
-            authorization = True
-            param = header_param
-
-        elif cookie_scheme.lower() == "bearer":
-            authorization = True
-            param = cookie_param
-
-        elif access_token:
+        if access_token:
             authorization = True
             param = access_token
 
-        if not authorization or scheme.lower() != "bearer":
+        else:
+            header_authorization: str = request.headers.get("Authorization")
+            cookie_authorization: str = request.cookies.get("Authorization")
+
+            header_scheme, header_param = get_authorization_scheme_param(header_authorization)
+            cookie_scheme, cookie_param = get_authorization_scheme_param(cookie_authorization)
+
+            if header_scheme.lower() == scheme:
+                authorization = True
+                param = header_param
+
+            elif cookie_scheme.lower() == scheme:
+                authorization = True
+                param = cookie_param
+
+        if not authorization:
             if self.auto_error:
                 raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Not authenticated")
             else:
@@ -201,8 +202,3 @@ async def get_current_user(request: Request, settings=Depends(get_settings), tok
     if user is None:
         raise credentials_exception
     return user
-
-
-async def get_repository(repository: RepositoryType, db=Depends(get_db), user=Depends(get_current_user)) -> RepositoryTokenTable:
-    repository_token: RepositoryTokenTable = user.repository_token(db, repository)
-    return repository_token

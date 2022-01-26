@@ -11,7 +11,7 @@ from dspback.database.models import UserTable
 from dspback.database.procedures import delete_repository_access_token
 from dspback.dependencies import create_or_update_repository_token, get_current_user, get_db, url_for
 from dspback.config import get_settings
-from dspback.schemas import RepositoryToken, RepositoryType
+from dspback.pydantic_schemas import RepositoryToken, RepositoryType
 
 router = APIRouter()
 

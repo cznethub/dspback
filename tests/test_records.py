@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from dspback.schemas import HydroShareRecord, RepositoryType, ZenodoRecord
+from dspback.pydantic_schemas import HydroShareRecord, RepositoryType, ZenodoRecord
 
 
 @pytest.fixture(scope="function")

@@ -11,7 +11,7 @@ from dspback.config import oauth, Settings
 from dspback.database.models import UserTable
 from dspback.dependencies import create_access_token, create_or_update_user, get_current_user, get_db, url_for
 from dspback.config import get_settings
-from dspback.schemas import ORCIDResponse, User
+from dspback.pydantic_schemas import ORCIDResponse, User
 
 router = APIRouter()
 
@@ -50,7 +50,6 @@ async def auth(request: Request, db: Session = Depends(get_db), settings: Settin
                                        secret_key=settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
 
     token = jsonable_encoder(access_token)
-
     #response = RedirectResponse(url="/")
     #response.set_cookie("Authorization", f"Bearer {token}", domain=settings.outside_host,
     #                    expires=orcid_response.expires_in)

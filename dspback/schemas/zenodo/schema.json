@@ -42,8 +42,8 @@
             "description": "Affiliation for the purpose of this specific record."
           },
           "name": {
-          	"title": "Full name",
-          	"type": "string",
+            "title": "Full name",
+            "type": "string",
             "description": "Full name of person or organisation. Personal name format: family, given."
           },
           "orcid": {
@@ -151,9 +151,9 @@
           }
         },
         "required": [
-            "funding_agency",
-            "grant_name",
-            "grant_number"
+          "funding_agency",
+          "grant_name",
+          "grant_number"
         ]
       }
     },

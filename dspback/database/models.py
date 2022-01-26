@@ -4,7 +4,7 @@ from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeMeta, Session, declarative_base, relationship, sessionmaker
 
 from dspback.config import get_settings
-from dspback.schemas import RepositoryType
+from dspback.pydantic_schemas import RepositoryType
 
 engine = create_engine(get_settings().database_url)
 
