@@ -291,3 +291,100 @@ class ZenodoDatasetsSchemaForCzNetV100(BaseModel):
     upload_type: Optional[UploadType] = Field(
         'dataset', description='Record upload type.'
     )
+
+
+class ZenodoDatasetsSchemaForCzNetV100(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
+    access_conditions: Optional[str] = Field(
+        None,
+        description='Conditions under which access is given if record is restricted.',
+        title='Access conditions',
+    )
+    access_right: Optional[AccessRight] = Field(
+        'open', description='Access right for record.', title='Access right'
+    )
+    communities: Optional[List[str]] = Field(
+        None, description='List of community identifiers.', title='Communities'
+    )
+    contributors: Optional[List[Contributor]] = Field(
+        None, description='Contributors in order of importance.', title='Contributors'
+    )
+    creators: Optional[List[Creator]] = Field(
+        None, description='Creators of record in order of importance.', title='Creators'
+    )
+    description: str = Field(
+        ...,
+        description='Description/abstract for record.',
+        title='Description/Abstract',
+    )
+    embargo_date: Optional[str] = Field(
+        None,
+        description='Embargo date of record (ISO8601 formatted date) - YYYY-MM-DD.',
+        title='Embargo date',
+    )
+    funding: Optional[List[FundingItem]] = Field(
+        None,
+        description='Source of grants/awards which have funded all or part of this particular record.',
+        title='Funding information',
+    )
+    keywords: Optional[List[str]] = Field(
+        None, description='Free text keywords.', min_items=1, title='Keywords'
+    )
+    license: Optional[Dict[str, Any]] = Field(
+        None, description='License for embargoed/open access content.', title='License'
+    )
+    notes: Optional[str] = Field(
+        None, description='Additional notes for record.', title='Additional notes'
+    )
+    references: Optional[List[Reference]] = Field(
+        None,
+        description='Raw textual references for related publications and datasets when identifier is not known.',
+        title='References',
+    )
+    related_identifiers: Optional[List[RelatedIdentifier]] = Field(
+        None,
+        description='Identifiers of related publications and datasets.',
+        title='Related identifiers',
+    )
+    resource_type: Optional[ResourceType1] = Field(
+        None, description='Record resource type.', title='Resource type'
+    )
+    subjects: Optional[List[Subject]] = Field(
+        None,
+        description='Subjects from a taxonomy or controlled vocabulary.',
+        title='Subjects from specific vocabularies',
+    )
+    title: str = Field(
+        ..., description='Descriptive title for the record.', title='Title'
+    )
+    version: Optional[str] = Field(
+        None,
+        description='Record version tag. Mostly relevant for software and dataset uploads. Any string will be accepted, but semantically-versioned tag is recommended.',
+        title='Version',
+    )
+    upload_type: Optional[UploadType] = Field(
+        'dataset', description='Record upload type.'
+    )
+
+
+class ResponseModelZenodo(ZenodoDatasetsSchemaForCzNetV100):
+    class Config:
+        extra = Extra.ignore
+
+    license: Optional[str] = Field(
+        None, description='License for embargoed/open access content.', title='License'
+    )
+
+
+class NotRequiredZenodo(ZenodoDatasetsSchemaForCzNetV100):
+
+    title: Optional[str] = Field(
+        None, description='Descriptive title for the record.', title='Title'
+    )
+    description: Optional[str] = Field(
+        None,
+        description='Description/abstract for record.',
+        title='Description/Abstract',
+    )
