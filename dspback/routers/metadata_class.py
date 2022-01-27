@@ -139,7 +139,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
 
     @router.post('/metadata/zenodo')
     async def create_metadata_repository(self, metadata: request_model) -> response_model:
-        metadata_json = {"metadata": metadata.dict(exclude_none=True)}
+        metadata_json = {"metadata": json.loads(metadata.json(exclude_none=True))}
         response = requests.post(self.create_url, json=metadata_json,
                                  params={"access_token": self.access_token},
                                  headers={"Content-Type": "application/json"},
@@ -156,8 +156,8 @@ class ZenodoMetadataRoutes(MetadataRoutes):
     @router.put('/metadata/zenodo/{identifier}')
     async def update_metadata(self, metadata: request_model_update, identifier) -> response_model:
         existing_metadata = await self.get_metadata_repository(identifier)
-        incoming_metadata = metadata.dict(skip_defaults=True, exclude_unset=True)
-        merged_metadata = {"metadata": {**existing_metadata, **incoming_metadata}}
+        incoming_metadata = metadata.json(skip_defaults=True, exclude_unset=True)
+        merged_metadata = {"metadata": {**existing_metadata, **json.loads(incoming_metadata)}}
         response = requests.put(self.update_url % identifier, json=merged_metadata,
                                 headers={"Content-Type": "application/json"},
                                 params={"access_token": self.access_token})
