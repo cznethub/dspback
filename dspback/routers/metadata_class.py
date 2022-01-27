@@ -111,7 +111,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
 
         json_metadata = json.loads(response.text)
 
-        self.submit(identifier=identifier, json_metadata=json_metadata)
+        await self.submit(identifier=identifier, json_metadata=json_metadata)
         return json_metadata
 
     @router.delete('/metadata/hydroshare/{identifier}')
