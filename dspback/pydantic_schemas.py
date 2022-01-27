@@ -33,7 +33,6 @@ class StringEnum(str, Enum):
 class RepositoryType(StringEnum):
     ZENODO = "zenodo"
     HYDROSHARE = "hydroshare"
-    GITLAB = "gitlab"
 
 
 class ORCIDResponse(BaseModel):

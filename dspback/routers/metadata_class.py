@@ -124,6 +124,10 @@ class HydroShareMetadataRoutes(MetadataRoutes):
 
         delete_submission(self.db, self.repository_type, identifier, self.user)
 
+    @router.put('/submit/hydroshare/{identifier}', name="submit")
+    async def submit_repository_record(self, identifier: str):
+        await self.submit(identifier)
+
 
 @cbv(router)
 class ZenodoMetadataRoutes(MetadataRoutes):
@@ -173,7 +177,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
 
         json_metadata = json.loads(response.text)
 
-        self.submit(identifier=identifier, json_metadata=json_metadata)
+        await self.submit(identifier=identifier, json_metadata=json_metadata)
 
         return json_metadata["metadata"] if unpack else json_metadata
 
@@ -186,3 +190,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
         delete_submission(self.db, self.repository_type, identifier, self.user)
+
+    @router.put('/submit/zenodo/{identifier}', name="submit")
+    async def submit_repository_record(self, identifier: str):
+        await self.submit(identifier)
