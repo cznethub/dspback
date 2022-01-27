@@ -43,7 +43,6 @@
     "access_right": "open",
     "description": "a description",
     "doi": "",
-    "language": "eng",
     "license": "CC0-1.0",
     "prereserve_doi": {
       "doi": "10.5072/zenodo.947940",
