@@ -16,6 +16,7 @@ from dspback.database.procedures import delete_submission
 from dspback.dependencies import get_db, get_current_user
 from dspback.routers.submissions import submit_record
 from dspback.schemas.zenodo.model import ZenodoDatasetsSchemaForCzNetV100, NotRequiredZenodo, ResponseModelZenodo
+from dspback.schemas.eartchem.model import Ecl20
 
 router = InferringRouter()
 
@@ -194,3 +195,32 @@ class ZenodoMetadataRoutes(MetadataRoutes):
     @router.put('/submit/zenodo/{identifier}', name="submit")
     async def submit_repository_record(self, identifier: str):
         await self.submit(identifier)
+
+
+@cbv(router)
+class EarthChemMetadataRoutes(MetadataRoutes):
+
+    request_model = Ecl20
+    request_model_update = Ecl20
+    response_model = Ecl20
+    repository_type = RepositoryType.EARTHCHEM
+
+    @router.post('/metadata/zenodo')
+    async def create_metadata_repository(self, metadata: request_model) -> response_model:
+        raise NotImplementedError("EarthChem metadata endpoints are not implemented yet")
+
+    @router.put('/metadata/zenodo/{identifier}')
+    async def update_metadata(self, metadata: request_model_update, identifier) -> response_model:
+        raise NotImplementedError("EarthChem metadata endpoints are not implemented yet")
+
+    @router.get('/metadata/zenodo/{identifier}')
+    async def get_metadata_repository(self, identifier, unpack=True) -> response_model:
+        raise NotImplementedError("EarthChem metadata endpoints are not implemented yet")
+
+    @router.delete('/metadata/zenodo/{identifier}')
+    async def delete_metadata_repository(self, identifier):
+        raise NotImplementedError("EarthChem metadata endpoints are not implemented yet")
+
+    @router.put('/submit/zenodo/{identifier}', name="submit")
+    async def submit_repository_record(self, identifier: str):
+        raise NotImplementedError("EarthChem metadata endpoints are not implemented yet")
