@@ -36,7 +36,7 @@ class MetadataRoutes:
 
     async def submit(self, identifier, json_metadata=None):
         if json_metadata is None:
-            json_metadata = await self.get_metadata_repository(identifier, unpack=False)
+            json_metadata = await self._retrieve_metadata_from_repository(identifier)
         submit_record(self.db, self.repository_type, identifier, self.user, json_metadata)
         return json_metadata
 
@@ -102,16 +102,19 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         json_metadata = await self.submit(identifier)
         return json_metadata
 
-    @router.get('/metadata/hydroshare/{identifier}')
-    async def get_metadata_repository(self, identifier, **kwargs) -> response_model:
+    async def _retrieve_metadata_from_repository(self, identifier):
         response = requests.get(self.read_url % identifier,
                                 params={"access_token": self.access_token})
-
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
         json_metadata = json.loads(response.text)
+        return json_metadata
 
+
+    @router.get('/metadata/hydroshare/{identifier}')
+    async def get_metadata_repository(self, identifier) -> response_model:
+        json_metadata = await self._retrieve_metadata_from_repository(identifier)
         await self.submit(identifier=identifier, json_metadata=json_metadata)
         return json_metadata
 
@@ -169,18 +172,20 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         await self.submit(identifier)
         return await self.get_metadata_repository(identifier)
 
-    @router.get('/metadata/zenodo/{identifier}')
-    async def get_metadata_repository(self, identifier, unpack=True) -> response_model:
+    async def _retrieve_metadata_from_repository(self, identifier):
         response = requests.get(self.read_url % identifier, params={"access_token": self.access_token})
 
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
         json_metadata = json.loads(response.text)
+        return json_metadata
 
+    @router.get('/metadata/zenodo/{identifier}')
+    async def get_metadata_repository(self, identifier) -> response_model:
+        json_metadata = await self._retrieve_metadata_from_repository(identifier)
         await self.submit(identifier=identifier, json_metadata=json_metadata)
-
-        return json_metadata["metadata"] if unpack else json_metadata
+        return json_metadata["metadata"]
 
     @router.delete('/metadata/zenodo/{identifier}')
     async def delete_metadata_repository(self, identifier):
@@ -205,22 +210,25 @@ class EarthChemMetadataRoutes(MetadataRoutes):
     response_model = Ecl20
     repository_type = RepositoryType.EARTHCHEM
 
-    @router.post('/metadata/zenodo')
+    @router.post('/metadata/earthchem')
     async def create_metadata_repository(self, metadata: request_model) -> response_model:
         raise NotImplementedError("EarthChem metadata endpoints are not implemented yet")
 
-    @router.put('/metadata/zenodo/{identifier}')
+    @router.put('/metadata/earthchem/{identifier}')
     async def update_metadata(self, metadata: request_model_update, identifier) -> response_model:
         raise NotImplementedError("EarthChem metadata endpoints are not implemented yet")
 
-    @router.get('/metadata/zenodo/{identifier}')
-    async def get_metadata_repository(self, identifier, unpack=True) -> response_model:
+    async def _retrieve_metadata_from_repository(self, identifier):
         raise NotImplementedError("EarthChem metadata endpoints are not implemented yet")
 
-    @router.delete('/metadata/zenodo/{identifier}')
+    @router.get('/metadata/earthchem/{identifier}')
+    async def get_metadata_repository(self, identifier) -> response_model:
+        raise NotImplementedError("EarthChem metadata endpoints are not implemented yet")
+
+    @router.delete('/metadata/earthchem/{identifier}')
     async def delete_metadata_repository(self, identifier):
         raise NotImplementedError("EarthChem metadata endpoints are not implemented yet")
 
-    @router.put('/submit/zenodo/{identifier}', name="submit")
+    @router.put('/submit/earthchem/{identifier}', name="submit")
     async def submit_repository_record(self, identifier: str):
         raise NotImplementedError("EarthChem metadata endpoints are not implemented yet")
