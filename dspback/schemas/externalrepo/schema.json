@@ -76,7 +76,7 @@
         "description"
       ]
     },
-    "funder": {
+    "funders": {
       "title": "Funding agency information",
       "type": "array",
       "description": "Source of grants/awards that funded creation of all or part of the resource.",
@@ -471,8 +471,8 @@
     "name",
     "description",
     "keywords",
-    "creator",
-    "funder",
+    "creators",
+    "funders",
     "url",
     "provider",
     "datePublished"
