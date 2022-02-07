@@ -52,38 +52,9 @@
       "scope": "#/properties/awards"
     },
     {
-      "type": "Group",
-      "label": "spatial_coverage",
-      "elements": [
-        {
-          "type": "Control",
-          "scope": "#/definitions/BoxCoverage/properties/name"
-        },
-        {
-          "type": "Control",
-          "scope": "#/definitions/BoxCoverage/properties/northlimit"
-        },
-        {
-          "type": "Control",
-          "scope": "#/definitions/BoxCoverage/properties/eastlimit"
-        },
-        {
-          "type": "Control",
-          "scope": "#/definitions/BoxCoverage/properties/southlimit"
-        },
-        {
-          "type": "Control",
-          "scope": "#/definitions/BoxCoverage/properties/westlimit"
-        },
-        {
-          "type": "Control",
-          "scope": "#/definitions/BoxCoverage/properties/units"
-        },
-        {
-          "type": "Control",
-          "scope": "#/definitions/BoxCoverage/properties/projection"
-        }
-      ]
+      "type": "Control",
+      "label": "Spatial coverage",
+      "scope": "#/properties/spatial_coverage"
     },
     {
       "type": "Group",
