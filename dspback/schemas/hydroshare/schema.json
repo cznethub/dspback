@@ -66,6 +66,9 @@
       "type": "object",
       "additionalProperties": {
         "type": "string"
+      },
+      "properties": {
+
       }
     },
     "rights": {

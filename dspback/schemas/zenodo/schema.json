@@ -181,6 +181,12 @@
       "type": "string",
       "description": "Additional notes for record."
     },
+    "publication_date": {
+      "title": "Publication date",
+      "type": "string",
+      "description": "",
+      "format": "date"
+    },
     "references": {
       "title": "References",
       "type": "array",
