@@ -19,7 +19,7 @@ router = APIRouter()
 @router.get('/authorize/{repository}')
 async def authorize_repository(repository: str, request: Request, user: UserTable = Depends(get_current_user),
                                settings: Settings = Depends(get_settings)):
-    redirect_uri = url_for(request, 'auth_repository', settings.outside_host, repository=repository)
+    redirect_uri = url_for(request, 'auth_repository', repository=repository)
     return await getattr(oauth, repository).authorize_redirect(request, redirect_uri)
 
 

@@ -23,7 +23,7 @@ def home(user: UserTable = Depends(get_current_user)):
 
 @router.get('/login')
 async def login(request: Request, settings: Settings = Depends(get_settings)):
-    redirect_uri = url_for(request, 'auth', settings.outside_host)
+    redirect_uri = url_for(request, 'auth')
     if 'X-Forwarded-Proto' in request.headers:
         redirect_uri = redirect_uri.replace('http:', request.headers['X-Forwarded-Proto'] + ':')
     return await oauth.orcid.authorize_redirect(request, redirect_uri)
@@ -37,7 +37,7 @@ async def logout(settings: Settings = Depends(get_settings)):
 
 
 @router.get('/auth')
-async def auth(request: Request, db: Session = Depends(get_db), settings: Settings = Depends(get_settings)):
+async def auth(request: Request, window_close: bool = False, db: Session = Depends(get_db), settings: Settings = Depends(get_settings)):
     try:
         orcid_response = await oauth.orcid.authorize_access_token(request)
         orcid_response = ORCIDResponse(**orcid_response)
@@ -50,16 +50,15 @@ async def auth(request: Request, db: Session = Depends(get_db), settings: Settin
                                        secret_key=settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
 
     token = jsonable_encoder(access_token)
-    #response = RedirectResponse(url="/")
-    #response.set_cookie("Authorization", f"Bearer {token}", domain=settings.outside_host,
-    #                    expires=orcid_response.expires_in)
-    # response = Response(token)
-    responseHTML = '<html><head><title>CzHub Sign In</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
-    responseHTML = responseHTML.replace(
-      "%value%",
-      json.dumps({
-        'token': token,
-        'expiresIn': orcid_response.expires_in
-      })
-    )
-    return HTMLResponse(responseHTML)
+    if window_close:
+        responseHTML = '<html><head><title>CzHub Sign In</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
+        responseHTML = responseHTML.replace(
+          "%value%",
+          json.dumps({
+            'token': token,
+            'expiresIn': orcid_response.expires_in
+          })
+        )
+        return HTMLResponse(responseHTML)
+
+    return Response(token)

@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 
 from dspback.dependencies import url_for
 from dspback.main import app
-from tests.routers import prefix
+from tests.routers import prefix, authorize_response
 
 client = TestClient(app)
 
@@ -29,18 +29,16 @@ def test_auth(authorize_response):
     # tests create user path
     with patch.object(StarletteRemoteApp, 'authorize_access_token', side_effect=[authorize_response]):
         response = client.get(prefix + "/auth", allow_redirects=False)
-        assert response.status_code == 307
-        assert 'Authorization="Bearer' in response.headers["set-cookie"]
+        assert response.status_code == 200
 
     # tests update user path
     with patch.object(StarletteRemoteApp, 'authorize_access_token', side_effect=[authorize_response]):
         response = client.get(prefix + "/auth", allow_redirects=False)
-        assert response.status_code == 307
-        assert 'Authorization="Bearer' in response.headers["set-cookie"]
+        assert response.status_code == 200
 
 
 def test_logout():
     logout_response = client.get(prefix + "/logout", allow_redirects=False)
     assert 'Authorization=""' in logout_response.headers["set-cookie"]
     assert logout_response.is_redirect
-    assert logout_response.headers['location'] == url_for(client, 'home')
+    assert logout_response.headers['location'] == "/"

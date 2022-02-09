@@ -73,10 +73,10 @@ class Token(BaseModel):
 oauth2_scheme = OAuth2AuthorizationBearerToken(tokenUrl="/token")
 
 
-def url_for(request: Request, name: str, outside_host: str, **path_params: Any) -> str:
+def url_for(request: Request, name: str, **path_params: Any) -> str:
     url_path = request.app.url_path_for(name, **path_params)
     # TODO - get the parent router path instead of hardcoding /api
-    return "https://{}{}".format(outside_host, url_path)
+    return "https://{}{}".format(get_settings().outside_host, url_path)
 
 
 def create_access_token(data: dict, expiration_minutes: str, secret_key: str, algorithm: str) -> str:

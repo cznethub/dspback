@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 
 from dspback.dependencies import url_for
 from dspback.main import app
-from tests.routers import prefix
+from tests.routers import prefix, authorize_response
 
 client = TestClient(app)
 
@@ -16,13 +16,12 @@ client = TestClient(app)
 def user_cookie(authorize_response):
     with patch.object(StarletteRemoteApp, 'authorize_access_token', return_value=authorize_response):
         response = client.get(prefix + "/auth", allow_redirects=False)
-        assert response.status_code == 307
-        assert 'Authorization="Bearer' in response.headers["set-cookie"]
-        return response.headers["set-cookie"]
+        assert response.status_code == 200
+        return response.text
 
 
 def test_authorize_repository(user_cookie):
-    response = client.get(prefix + "/authorize/zenodo", allow_redirects=False)
+    response = client.get(prefix + "/authorize/zenodo?access_token=" + user_cookie, allow_redirects=False)
     assert response.status_code == 302
     assert "response_type=code" in response.headers['location']
     assert "client_id=" in response.headers['location']
@@ -34,24 +33,24 @@ def test_authorize_repository(user_cookie):
 def test_auth_repository(user_cookie, authorize_response):
     # test create_repository path
     with patch.object(StarletteRemoteApp, 'authorize_access_token', return_value=authorize_response):
-        response = client.get(prefix + "/auth/zenodo", allow_redirects=False)
-        assert response.status_code == 307
+        response = client.get(prefix + "/auth/zenodo?access_token=" + user_cookie, allow_redirects=False)
+        assert response.status_code == 200
 
     # test update_repository path
     with patch.object(StarletteRemoteApp, 'authorize_access_token', return_value=authorize_response):
-        response = client.get(prefix + "/auth/zenodo", allow_redirects=False)
-        assert response.status_code == 307
+        response = client.get(prefix + "/auth/zenodo?access_token=" + user_cookie, allow_redirects=False)
+        assert response.status_code == 200
 
 
 def test_get_access_token_not_found(user_cookie):
-    response = client.get(prefix + "/access_token/zenodo", allow_redirects=False)
+    response = client.get(prefix + "/access_token/zenodo?access_token=" + user_cookie, allow_redirects=False)
     assert response.status_code == 404
 
 
 def test_get_access_token(user_cookie, authorize_response):
     with patch.object(StarletteRemoteApp, 'authorize_access_token', return_value=authorize_response):
-        response = client.get(prefix + "/auth/zenodo", allow_redirects=False)
+        response = client.get(prefix + "/auth/zenodo?access_token=" + user_cookie, allow_redirects=False)
 
-    response = client.get(prefix + "/access_token/zenodo", allow_redirects=False)
+    response = client.get(prefix + "/access_token/zenodo?access_token=" + user_cookie, allow_redirects=False)
     assert response.status_code == 200
-    assert response.json()["token"] == "e6c2b3c2-c204-4199-a1c1-9b29e964b74b"
+    assert response.json()["access_token"] == "e6c2b3c2-c204-4199-a1c1-9b29e964b74b"
