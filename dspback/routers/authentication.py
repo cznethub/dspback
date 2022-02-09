@@ -26,7 +26,7 @@ async def login(request: Request, window_close: bool = False, settings: Settings
     redirect_uri = url_for(request, 'auth')
     if 'X-Forwarded-Proto' in request.headers:
         redirect_uri = redirect_uri.replace('http:', request.headers['X-Forwarded-Proto'] + ':')
-    return await oauth.orcid.authorize_redirect(request, redirect_uri + "?window_close=" + window_close)
+    return await oauth.orcid.authorize_redirect(request, redirect_uri + f"?window_close={window_close}")
 
 
 @router.get('/logout')
