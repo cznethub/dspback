@@ -77,7 +77,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
 
     @router.post('/metadata/hydroshare')
     async def create_metadata_repository(self, metadata: request_model) -> response_model:
-        response = requests.post(self.create_url, data=metadata.json(),
+        response = requests.post(self.create_url,
                                  params={"access_token": self.access_token},
                                  headers={"Content-Type": "application/json"},
                                  timeout=15.0)
@@ -86,7 +86,8 @@ class HydroShareMetadataRoutes(MetadataRoutes):
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
         identifier = response.json()["resource_id"]
-        json_metadata = await self.get_metadata_repository(identifier)
+        # hydroshare doesn't accept all of the metadata on create
+        json_metadata = await self.update_metadata(metadata, identifier)
 
         return JSONResponse(json_metadata, status_code=201)
 
@@ -113,9 +114,13 @@ class HydroShareMetadataRoutes(MetadataRoutes):
 
 
     @router.get('/metadata/hydroshare/{identifier}')
-    async def get_metadata_repository(self, identifier) -> response_model:
+    async def get_metadata_repository(self, identifier):
         json_metadata = await self._retrieve_metadata_from_repository(identifier)
         await self.submit(identifier=identifier, json_metadata=json_metadata)
+        # workaround for rendering dict with key/value forms
+        if "additional_metadata" in json_metadata:
+            as_dict = json_metadata["additional_metadata"]
+            json_metadata["additional_metadata"] = [{"key": key, "value": value} for key, value in as_dict.items()]
         return json_metadata
 
     @router.delete('/metadata/hydroshare/{identifier}')

@@ -62,13 +62,20 @@
     "additional_metadata": {
       "title": "Additional metadata",
       "description": "A dictionary containing key-value pair metadata associated with a resource",
-      "default": {},
-      "type": "object",
-      "additionalProperties": {
-        "type": "string"
-      },
-      "properties": {
-
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "title": "Key-Value",
+        "description": "A key-value pair",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
       }
     },
     "rights": {
