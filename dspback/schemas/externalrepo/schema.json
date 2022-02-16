@@ -1,0 +1,480 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "http://czhub.org/schemas/cz_generic_dataset_v1.0.0.json",
+  "title": "Generic Dataset Schema for CZ Net Data Submission Portal v1.0.0",
+  "description": "Metadata for a dataset object submitted to a repository that is not supported by the CZ Hub Data Submission Portal",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "title": "Name or title",
+      "type": "string",
+      "maxLength": 300,
+      "description": "Descriptive name or title for the resource."
+    },
+    "description": {
+      "title": "Description or abstract",
+      "type": "string",
+      "description": "A string containing a description/abstract for the resource."
+    },
+    "keywords": {
+      "title": "Subject Keywords",
+      "type": "array",
+      "description": "A list of free text keywords related to the resource.",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      },
+      "contains": {
+        "const": "CZNet"
+      }
+    },
+    "creators": {
+      "title": "Creators",
+      "type": "array",
+      "description": "Creators of the resource in order of importance.",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/Creator"
+      }
+    },
+    "contributors": {
+      "title": "Contributors",
+      "type": "array",
+      "description": "Contributors to the resource in order of importance.",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/Contributor"
+      }
+    },
+    "license": {
+      "title": "License",
+      "type": "object",
+      "description": "License under which the resource is released for access and reuse.",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "License Name",
+          "type": "string",
+          "description": "Name of the license under which the resource is released."
+        },
+        "description": {
+          "title": "License Description",
+          "type": "string",
+          "description": "Text of the license or description of the license for the resource."
+        },
+        "url": {
+          "title": "License URL",
+          "type": "string",
+          "description": "URL for a page that describes the license for the resource.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "description"
+      ]
+    },
+    "funders": {
+      "title": "Funding agency information",
+      "type": "array",
+      "description": "Source of grants/awards that funded creation of all or part of the resource.",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/Award"
+      }
+    },
+    "relations": {
+      "title": "Related resources",
+      "type": "array",
+      "description": "Raw textual references (e.g., a bibligraphic citation) for publications and datasets related to this resource.",
+      "items": {
+        "$ref": "#/definitions/Relation"
+      }
+    },
+    "notes": {
+      "title": "Additional notes",
+      "type": "string",
+      "description": "Additional notes related to the resource."
+    },
+    "version": {
+      "title": "Version",
+      "type": "string",
+      "description": "A version tag string for the resource - e.g., v1.0.0. Mostly relevant for software and dataset uploads. Any string will be accepted, but semantically-versioned tag is recommended."
+    },
+    "url": {
+      "title": "URL",
+      "type": "string",
+      "format": "uri",
+      "description": "URL for the landing page that describes the resource and where the content of the resource can be accessed."
+    },
+    "identifier": {
+      "title": "Identifier",
+      "type": "string",
+      "description": "A globally unique and persistent identifier for the resource - e.g., a DOI or other identifier."
+    },
+    "temporalCoverage": {
+      "title": "Temporal coverage",
+      "description": "The temporal coverage of the resource. The time period that it describes or applies to.",
+      "allOf": [
+        {
+          "$ref": "#/definitions/PeriodCoverage"
+        }
+      ]
+    },
+    "spatialCoverage": {
+      "title": "Spatial coverage",
+      "description": "The place(s) that are the focus of the resource. The geospatial area that the resource describes, the spatial topic of a resource, the spatial applicability of a resource, or jurisdiction under with a resource is relevant.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/PointCoverage"
+        },
+        {
+          "$ref": "#/definitions/BoxCoverage"
+        }
+      ]
+    },
+    "provider": {
+      "title": "Provider",
+      "type": "object",
+      "description": "The repository or organization that provides access to the resource.",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Provider Name",
+          "type": "string",
+          "description": "The name of the repository or organization that provides access to the resource."
+        },
+        "url": {
+          "title": "Provider URL",
+          "type": "string",
+          "description": "A URL for the repository or organization that provides access to the resource.",
+          "format": "uri"
+        },
+      },
+      "required": [
+          "name",
+          "url"
+      ]
+    },
+    "dateCreated": {
+      "title": "Date created",
+      "type": "string",
+      "format": "date-time",
+      "description": "The date on which the resource was originally created (ISO8601 formatted date) - YYYY-MM-DD."
+    },
+    "dateModified": {
+      "title": "Date modified",
+      "type": "string",
+      "format": "date-time",
+      "description": "The date on which the resource was last modified (ISO8601 formatted date) - YYYY-MM-DD."
+    },
+    "datePublished": {
+      "title": "Date published",
+      "type": "string",
+      "format": "date-time",
+      "description": "The date on which the resource was permanently published (ISO8601 formatted date) - YYYY-MM-DD."
+    }
+  },
+  "definitions": {
+    "Creator": {
+      "title": "Creator Metadata",
+      "description": "A class used to represent the metadata associated with a creator of a resource",
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "description": "Full name of person or organization. Personal name format: family, given.",
+          "maxLength": 100,
+          "type": "string"
+        },
+        "organization": {
+          "title": "Organization",
+          "description": "A string containing the name of the organization with which the creator is affiliated",
+          "maxLength": 200,
+          "type": "string"
+        },
+        "email": {
+          "title": "Email",
+          "description": "A string containing an email address for the creator",
+          "type": "string",
+          "format": "email"
+        },
+        "orcid": {
+            "title": "ORCID",
+            "type": "string",
+            "description": "ORCID identifier for creator."
+          }
+      },
+      "required": [
+        "name",
+        "organization"
+      ]
+    },
+    "Contributor": {
+      "title": "Contributor Metadata",
+      "description": "A class used to represent the metadata associated with a contributor to a resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "description": "Full name of person or organization. Personal name format: family, given.",
+          "maxLength": 100,
+          "type": "string"
+        },
+        "organization": {
+          "title": "Organization",
+          "description": "A string containing the name of the organization with which the contributor is affiliated.",
+          "maxLength": 200,
+          "type": "string"
+        },
+        "email": {
+          "title": "Email",
+          "description": "A string containing an email address for the contributor.",
+          "type": "string",
+          "format": "email"
+        },
+        "orcid": {
+            "title": "ORCID",
+            "type": "string",
+            "description": "ORCID identifier for creator."
+          }
+      },
+      "required": [
+        "name",
+        "organization"
+      ]
+    },
+    "Award": {
+      "title": "Funding award metadata",
+      "type": "object",
+      "description": "Metadata associated with a funding award under which the resource was produced/created.",
+      "additionalProperties": false,
+      "properties": {
+        "fundingAgency": {
+          "title": "Funding agency name",
+          "type": "string",
+          "description": "Name of the agency or organization that funded the creation of the resource."
+        },
+        "awardNumber": {
+          "title": "Award number or identifier",
+          "type": "string",
+          "description": "A unique numeric or string identifer for the grant or project."
+        },
+        "awardName": {
+          "title": "Award name",
+          "type": "string",
+          "description": "The name or title of the grant or project."
+        },
+        "awardURL": {
+          "title": "Award URL",
+          "description": "A string containing a URL pointing to a website describing the award or funding agency.",
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "fundingAgency",
+        "awardName",
+		"awardNumber"
+      ]
+    },
+    "RelationType": {
+      "title": "Relation Type",
+      "description": "The type of relationship that exists between the describe resource and a related resource.",
+      "enum": [
+        "The content of this resource can be executed by",
+        "The content of this resource was created by a related App or software program",
+        "This resource is described by",
+        "This resource conforms to established standard described by",
+        "This resource has another resource in another format",
+        "This resource is a different format of",
+        "This resource is required by",
+        "This resource requires",
+        "This resource is referenced by",
+        "The content of this resource references",
+        "The content of this resource is derived from"        
+      ],
+      "type": "string"
+    },
+    "Relation": {
+      "title": "Related Resource Metadata",
+      "description": "Metadata associated with a resource related to the resource being described.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "title": "Relation type",
+          "description": "The type of relationship with the related resource",
+          "allOf": [
+            {
+              "$ref": "#/definitions/RelationType"
+            }
+          ]
+        },
+        "value": {
+          "title": "Value",
+          "description": "String expressing the Full text citation, URL link for, or description of the related resource",
+          "maxLength": 500,
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "PeriodCoverage": {
+      "title": "Period Coverage Metadata",
+      "description": "Temporal coverage metadata for a resource. The time period that it describes or applies to.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "description": "A string containing a name for the time interval.",
+          "type": "string"
+        },
+        "start": {
+          "title": "Start",
+          "description": "A datetime object containing the instant corresponding to the commencement of the time interval (ISO8601 formatted date) - YYYY-MM-DD.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "end": {
+          "title": "End",
+          "description": "A datetime object containing the instant corresponding to the termination of the time interval (ISO8601 formatted date) - YYYY-MM-DD.",
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ]
+    },
+    "PointCoverage": {
+      "title": "Point Coverage Metadata",
+      "description": "Geographic coverage metadata for a resource or aggregation expressed as a point location",
+      "type": "object",
+      "properties": {
+        "type": {
+          "title": "Geographic coverage type",
+          "description": "A string containing the type of geographic coverage.",
+          "const": "point",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "description": "A string containing a name for the place associated with the geographic coverage.",
+          "type": "string"
+        },
+        "east": {
+          "title": "East",
+          "description": "The coordinate of the point location measured in the east direction.",
+          "exclusiveMinimum": -180,
+          "exclusiveMaximum": 180,
+          "type": "number"
+        },
+        "north": {
+          "title": "North",
+          "description": "The coordinate of the point location measured in the north direction.",
+          "exclusiveMinimum": -90,
+          "exclusiveMaximum": 90,
+          "type": "number"
+        },
+        "units": {
+          "title": "Units",
+          "description": "The units applying to the unlabelled numeric values of north and east.",
+          "type": "string"
+        },
+        "projection": {
+          "title": "Projection",
+          "description": "The name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "east",
+        "north",
+        "units",
+        "projection"
+      ]
+    },
+    "BoxCoverage": {
+      "title": "Box Coverage Metadata",
+      "description": "Geographic coverage metadata for a resource expressed as a latitude-longitude bounding box.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "title": "Geographic coverage type",
+          "description": "A string containing the type of geographic coverage.",
+          "const": "box",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "description": "A string containing a name for the place associated with the geographic coverage.",
+          "type": "string"
+        },
+        "northlimit": {
+          "title": "North limit",
+          "description": "A floating point value containing the constant coordinate for the northernmost face or edge of the bounding box.",
+          "exclusiveMinimum": -90,
+          "exclusiveMaximum": 90,
+          "type": "number"
+        },
+        "eastlimit": {
+          "title": "East limit",
+          "description": "A floating point value containing the constant coordinate for the easternmost face or edge of the bounding box.",
+          "exclusiveMinimum": -180,
+          "exclusiveMaximum": 180,
+          "type": "number"
+        },
+        "southlimit": {
+          "title": "South limit",
+          "description": "A floating point value containing the constant coordinate for the southernmost face or edge of the bounding box.",
+          "exclusiveMinimum": -90,
+          "exclusiveMaximum": 90,
+          "type": "number"
+        },
+        "westlimit": {
+          "title": "West limit",
+          "description": "A floating point value containing the constant coordinate for the westernmost face or edge of the bounding box.",
+          "exclusiveMinimum": -180,
+          "exclusiveMaximum": 180,
+          "type": "number"
+        },
+        "units": {
+          "title": "Units",
+          "description": "A string containing the units applying to the unlabelled numeric values of northlimit, eastlimit, southlimit, and westlimit.",
+          "type": "string"
+        },
+        "projection": {
+          "title": "Projection",
+          "description": "A string containing the name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "northlimit",
+        "eastlimit",
+        "southlimit",
+        "westlimit",
+        "units",
+        "projection"
+      ]
+    }, 
+  },
+  "required": [
+    "name",
+    "description",
+    "keywords",
+    "creators",
+    "funders",
+    "url",
+    "provider",
+    "datePublished"
+  ]
+}
