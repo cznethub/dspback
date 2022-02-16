@@ -35,6 +35,13 @@ class UserTable(Base):
             .first()
         )
 
+    def submission(self, db: Session, identifier) -> 'RepositorySubmissionTable':
+        return (
+            db.query(RepositorySubmissionTable)
+            .filter(RepositorySubmissionTable.user_id == self.id, RepositorySubmissionTable.identifier == identifier)
+            .first()
+        )
+
 
 class RepositoryTokenTable(Base):
     """Base SQLAlchemy repository token table definition."""
@@ -72,6 +79,7 @@ class RepositorySubmissionTable(Base):
     repo_type = Column(String(length=64), nullable=False)
     submitted = Column(DateTime, default=datetime.utcnow)
     user_id = Column(Integer, ForeignKey('user.id'))
+    metadata_json = Column(String(), nullable=True)
 
     UniqueConstraint('identifier')
 

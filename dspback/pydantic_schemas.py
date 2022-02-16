@@ -34,6 +34,7 @@ class RepositoryType(StringEnum):
     ZENODO = "zenodo"
     HYDROSHARE = "hydroshare"
     EARTHCHEM = "earthchem"
+    EXTERNAL = "external"
 
 
 class ORCIDResponse(BaseModel):
@@ -159,6 +160,24 @@ class HydroShareRecord(BaseRecord):
             authors=[creator.name for creator in self.creators],
             repo_type=RepositoryType.HYDROSHARE,
             submitted=self.modified,
+            identifier=identifier,
+        )
+
+
+class ExternalRecord(BaseRecord):
+    class Creator(BaseModel):
+        name: str = None
+
+    name: str = None
+    creators: List[Creator] = []
+    identifier: str = None
+
+    def to_submission(self, identifier) -> Submission:
+        return Submission(
+            title=self.name,
+            authors=[creator.name for creator in self.creators],
+            repo_type=RepositoryType.EXTERNAL,
+            submitted=datetime.now(),
             identifier=identifier,
         )
 

@@ -15,8 +15,9 @@ from dspback.database.models import UserTable
 from dspback.database.procedures import delete_submission
 from dspback.dependencies import get_db, get_current_user
 from dspback.routers.submissions import submit_record
+from dspback.schemas.external.model import GenericDatasetSchemaForCzNetDataSubmissionPortalV100
 from dspback.schemas.zenodo.model import ZenodoDatasetsSchemaForCzNetV100, NotRequiredZenodo, ResponseModelZenodo
-from dspback.schemas.eartchem.model import Ecl20
+from dspback.schemas.earthchem.model import Ecl20
 
 router = InferringRouter()
 
@@ -174,7 +175,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
-        await self.submit(identifier)
+        # await self.submit(identifier)
         return await self.get_metadata_repository(identifier)
 
     async def _retrieve_metadata_from_repository(self, identifier):
@@ -237,3 +238,29 @@ class EarthChemMetadataRoutes(MetadataRoutes):
     @router.put('/submit/earthchem/{identifier}', name="submit")
     async def submit_repository_record(self, identifier: str):
         raise NotImplementedError("EarthChem metadata endpoints are not implemented yet")
+
+
+@cbv(router)
+class ExternalMetadataRoutes(MetadataRoutes):
+
+    request_model = GenericDatasetSchemaForCzNetDataSubmissionPortalV100
+    response_model = GenericDatasetSchemaForCzNetDataSubmissionPortalV100
+    repository_type = RepositoryType.EXTERNAL
+
+    @router.post('/metadata/external/{identifier}')
+    async def create_metadata_repository(self, metadata: request_model, identifier) -> response_model:
+        return await self.submit(identifier, metadata.dict())
+
+    @router.put('/metadata/external/{identifier}')
+    async def update_metadata(self, metadata: request_model, identifier) -> response_model:
+        return await self.submit(identifier, metadata.dict())
+
+    @router.get('/metadata/external/{identifier}')
+    async def get_metadata_repository(self, identifier) -> response_model:
+        submission = self.user.submission(self.db, identifier)
+        metadata_json_str = submission.metadata_json
+        return json.loads(metadata_json_str)
+
+    @router.delete('/metadata/external/{identifier}')
+    async def delete_metadata_repository(self, identifier):
+        delete_submission(self.db, self.repository_type, identifier, self.user)

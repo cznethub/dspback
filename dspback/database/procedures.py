@@ -4,7 +4,7 @@ from dspback.database.models import AuthorTable, RepositorySubmissionTable, User
 from dspback.pydantic_schemas import Submission, RepositoryToken, RepositoryType
 
 
-def create_or_update_submission(db: Session, submission: Submission, user: UserTable) -> RepositorySubmissionTable:
+def create_or_update_submission(db: Session, submission: Submission, user: UserTable, metadata_json) -> RepositorySubmissionTable:
     submission_row = (
         db.query(RepositorySubmissionTable)
         .filter(RepositorySubmissionTable.identifier == submission.identifier)
@@ -19,6 +19,7 @@ def create_or_update_submission(db: Session, submission: Submission, user: UserT
         repo_type=submission.repo_type,
         identifier=submission.identifier,
         user_id=user.id,
+        metadata_json=metadata_json
     )
     db.add(db_repository_submission)
     db.flush()

@@ -278,7 +278,7 @@
       "required": [
         "fundingAgency",
         "awardName",
-		"awardNumber"
+        "awardNumber"
       ]
     },
     "RelationType": {
