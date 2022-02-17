@@ -1,10 +1,12 @@
 from sqlalchemy.orm import Session
 
 from dspback.database.models import AuthorTable, RepositorySubmissionTable, UserTable
-from dspback.pydantic_schemas import Submission, RepositoryToken, RepositoryType
+from dspback.pydantic_schemas import RepositoryToken, RepositoryType, Submission
 
 
-def create_or_update_submission(db: Session, submission: Submission, user: UserTable, metadata_json) -> RepositorySubmissionTable:
+def create_or_update_submission(
+    db: Session, submission: Submission, user: UserTable, metadata_json
+) -> RepositorySubmissionTable:
     submission_row = (
         db.query(RepositorySubmissionTable)
         .filter(RepositorySubmissionTable.identifier == submission.identifier)
@@ -19,7 +21,7 @@ def create_or_update_submission(db: Session, submission: Submission, user: UserT
         repo_type=submission.repo_type,
         identifier=submission.identifier,
         user_id=user.id,
-        metadata_json=metadata_json
+        metadata_json=metadata_json,
     )
     db.add(db_repository_submission)
     db.flush()
@@ -35,10 +37,10 @@ def create_or_update_submission(db: Session, submission: Submission, user: UserT
 def delete_submission(db: Session, repository: RepositoryType, identifier: str, user: UserTable):
     submission_row = (
         db.query(RepositorySubmissionTable)
-            .filter(RepositorySubmissionTable.identifier == identifier)
-            .filter(RepositorySubmissionTable.user_id == user.id)
-            .filter(RepositorySubmissionTable.repo_type == repository)
-            .first()
+        .filter(RepositorySubmissionTable.identifier == identifier)
+        .filter(RepositorySubmissionTable.user_id == user.id)
+        .filter(RepositorySubmissionTable.repo_type == repository)
+        .first()
     )
     if submission_row:
         db.delete(submission_row)

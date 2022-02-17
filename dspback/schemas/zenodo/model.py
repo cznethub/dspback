@@ -53,9 +53,7 @@ class Contributor(BaseModel):
         description='Full name of person or organisation. Personal name format: family, given.',
         title='Full name',
     )
-    orcid: Optional[str] = Field(
-        None, description='ORCID identifier for creator.', title='ORCID'
-    )
+    orcid: Optional[str] = Field(None, description='ORCID identifier for creator.', title='ORCID')
     type: Type = Field(..., title='Contribution type')
 
 
@@ -73,9 +71,7 @@ class Creator(BaseModel):
         description='Full name of person or organisation. Personal name format: family, given.',
         title='Full name',
     )
-    orcid: Optional[str] = Field(
-        None, description='ORCID identifier for creator.', title='ORCID'
-    )
+    orcid: Optional[str] = Field(None, description='ORCID identifier for creator.', title='ORCID')
 
 
 class FundingItem(BaseModel):
@@ -149,9 +145,7 @@ class ResourceType(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    subtype: Optional[str] = Field(
-        None, description='Specific resource type.', title='Subtype'
-    )
+    subtype: Optional[str] = Field(None, description='Specific resource type.', title='Subtype')
     type: Optional[str] = Field(
         'publication',
         description='General resource type.',
@@ -182,12 +176,8 @@ class ResourceType1(BaseModel):
     openaire_subtype: Optional[str] = Field(
         None, description='OpenAIRE-specific resource type.', title='OpenAIRE subtype'
     )
-    subtype: Optional[str] = Field(
-        None, description='Specific resource type.', title='Subtype'
-    )
-    type: str = Field(
-        ..., description='General resource type.', title='General resource type'
-    )
+    subtype: Optional[str] = Field(None, description='Specific resource type.', title='Subtype')
+    type: str = Field(..., description='General resource type.', title='General resource type')
 
 
 class Subject(BaseModel):
@@ -199,9 +189,7 @@ class Subject(BaseModel):
         description='Subjects term identifier (e.g., a URL).',
         title='Term identifier',
     )
-    term: Optional[str] = Field(
-        None, description='Subject term value.', title='Subject term'
-    )
+    term: Optional[str] = Field(None, description='Subject term value.', title='Subject term')
 
 
 class UploadType(Enum):
@@ -226,12 +214,8 @@ class ZenodoDatasetsSchemaForCzNetV100(BaseModel):
         description='Conditions under which access is given if record is restricted.',
         title='Access conditions',
     )
-    access_right: Optional[AccessRight] = Field(
-        'open', description='Access right for record.', title='Access right'
-    )
-    communities: Optional[List[str]] = Field(
-        None, description='List of community identifiers.', title='Communities'
-    )
+    access_right: Optional[AccessRight] = Field('open', description='Access right for record.', title='Access right')
+    communities: Optional[List[str]] = Field(None, description='List of community identifiers.', title='Communities')
     contributors: Optional[List[Contributor]] = Field(
         None, description='Contributors in order of importance.', title='Contributors'
     )
@@ -253,15 +237,11 @@ class ZenodoDatasetsSchemaForCzNetV100(BaseModel):
         description='Source of grants/awards which have funded all or part of this particular record.',
         title='Funding information',
     )
-    keywords: Optional[List[str]] = Field(
-        None, description='Free text keywords.', min_items=1, title='Keywords'
-    )
+    keywords: Optional[List[str]] = Field(None, description='Free text keywords.', min_items=1, title='Keywords')
     license: Optional[Dict[str, Any]] = Field(
         None, description='License for embargoed/open access content.', title='License'
     )
-    notes: Optional[str] = Field(
-        None, description='Additional notes for record.', title='Additional notes'
-    )
+    notes: Optional[str] = Field(None, description='Additional notes for record.', title='Additional notes')
     references: Optional[List[Reference]] = Field(
         None,
         description='Raw textual references for related publications and datasets when identifier is not known.',
@@ -272,25 +252,19 @@ class ZenodoDatasetsSchemaForCzNetV100(BaseModel):
         description='Identifiers of related publications and datasets.',
         title='Related identifiers',
     )
-    resource_type: Optional[ResourceType1] = Field(
-        None, description='Record resource type.', title='Resource type'
-    )
+    resource_type: Optional[ResourceType1] = Field(None, description='Record resource type.', title='Resource type')
     subjects: Optional[List[Subject]] = Field(
         None,
         description='Subjects from a taxonomy or controlled vocabulary.',
         title='Subjects from specific vocabularies',
     )
-    title: str = Field(
-        ..., description='Descriptive title for the record.', title='Title'
-    )
+    title: str = Field(..., description='Descriptive title for the record.', title='Title')
     version: Optional[str] = Field(
         None,
         description='Record version tag. Mostly relevant for software and dataset uploads. Any string will be accepted, but semantically-versioned tag is recommended.',
         title='Version',
     )
-    upload_type: Optional[UploadType] = Field(
-        'dataset', description='Record upload type.'
-    )
+    upload_type: Optional[UploadType] = Field('dataset', description='Record upload type.')
 
 
 class ZenodoDatasetsSchemaForCzNetV100(BaseModel):
@@ -302,12 +276,8 @@ class ZenodoDatasetsSchemaForCzNetV100(BaseModel):
         description='Conditions under which access is given if record is restricted.',
         title='Access conditions',
     )
-    access_right: Optional[AccessRight] = Field(
-        'open', description='Access right for record.', title='Access right'
-    )
-    communities: Optional[List[str]] = Field(
-        None, description='List of community identifiers.', title='Communities'
-    )
+    access_right: Optional[AccessRight] = Field('open', description='Access right for record.', title='Access right')
+    communities: Optional[List[str]] = Field(None, description='List of community identifiers.', title='Communities')
     contributors: Optional[List[Contributor]] = Field(
         None, description='Contributors in order of importance.', title='Contributors'
     )
@@ -329,15 +299,11 @@ class ZenodoDatasetsSchemaForCzNetV100(BaseModel):
         description='Source of grants/awards which have funded all or part of this particular record.',
         title='Funding information',
     )
-    keywords: Optional[List[str]] = Field(
-        None, description='Free text keywords.', min_items=1, title='Keywords'
-    )
+    keywords: Optional[List[str]] = Field(None, description='Free text keywords.', min_items=1, title='Keywords')
     license: Optional[Dict[str, Any]] = Field(
         None, description='License for embargoed/open access content.', title='License'
     )
-    notes: Optional[str] = Field(
-        None, description='Additional notes for record.', title='Additional notes'
-    )
+    notes: Optional[str] = Field(None, description='Additional notes for record.', title='Additional notes')
     references: Optional[List[Reference]] = Field(
         None,
         description='Raw textual references for related publications and datasets when identifier is not known.',
@@ -348,41 +314,31 @@ class ZenodoDatasetsSchemaForCzNetV100(BaseModel):
         description='Identifiers of related publications and datasets.',
         title='Related identifiers',
     )
-    resource_type: Optional[ResourceType1] = Field(
-        None, description='Record resource type.', title='Resource type'
-    )
+    resource_type: Optional[ResourceType1] = Field(None, description='Record resource type.', title='Resource type')
     subjects: Optional[List[Subject]] = Field(
         None,
         description='Subjects from a taxonomy or controlled vocabulary.',
         title='Subjects from specific vocabularies',
     )
-    title: str = Field(
-        ..., description='Descriptive title for the record.', title='Title'
-    )
+    title: str = Field(..., description='Descriptive title for the record.', title='Title')
     version: Optional[str] = Field(
         None,
         description='Record version tag. Mostly relevant for software and dataset uploads. Any string will be accepted, but semantically-versioned tag is recommended.',
         title='Version',
     )
-    upload_type: Optional[UploadType] = Field(
-        'dataset', description='Record upload type.'
-    )
+    upload_type: Optional[UploadType] = Field('dataset', description='Record upload type.')
 
 
 class ResponseModelZenodo(ZenodoDatasetsSchemaForCzNetV100):
     class Config:
         extra = Extra.ignore
 
-    license: Optional[str] = Field(
-        None, description='License for embargoed/open access content.', title='License'
-    )
+    license: Optional[str] = Field(None, description='License for embargoed/open access content.', title='License')
 
 
 class NotRequiredZenodo(ZenodoDatasetsSchemaForCzNetV100):
 
-    title: Optional[str] = Field(
-        None, description='Descriptive title for the record.', title='Title'
-    )
+    title: Optional[str] = Field(None, description='Descriptive title for the record.', title='Title')
     description: Optional[str] = Field(
         None,
         description='Description/abstract for record.',

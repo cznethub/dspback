@@ -64,9 +64,7 @@ class Creator(BaseModel):
         description='A string containing an email address for the creator',
         title='Email',
     )
-    orcid: Optional[str] = Field(
-        None, description='ORCID identifier for creator.', title='ORCID'
-    )
+    orcid: Optional[str] = Field(None, description='ORCID identifier for creator.', title='ORCID')
 
 
 class Contributor(BaseModel):
@@ -85,9 +83,7 @@ class Contributor(BaseModel):
         description='A string containing an email address for the contributor.',
         title='Email',
     )
-    orcid: Optional[str] = Field(
-        None, description='ORCID identifier for creator.', title='ORCID'
-    )
+    orcid: Optional[str] = Field(None, description='ORCID identifier for creator.', title='ORCID')
 
 
 class Award(BaseModel):
@@ -117,9 +113,7 @@ class Award(BaseModel):
 
 
 class RelationType(Enum):
-    The_content_of_this_resource_can_be_executed_by = (
-        'The content of this resource can be executed by'
-    )
+    The_content_of_this_resource_can_be_executed_by = 'The content of this resource can be executed by'
     The_content_of_this_resource_was_created_by_a_related_App_or_software_program = (
         'The content of this resource was created by a related App or software program'
     )
@@ -127,17 +121,13 @@ class RelationType(Enum):
     This_resource_conforms_to_established_standard_described_by = (
         'This resource conforms to established standard described by'
     )
-    This_resource_has_another_resource_in_another_format = (
-        'This resource has another resource in another format'
-    )
+    This_resource_has_another_resource_in_another_format = 'This resource has another resource in another format'
     This_resource_is_a_different_format_of = 'This resource is a different format of'
     This_resource_is_required_by = 'This resource is required by'
     This_resource_requires = 'This resource requires'
     This_resource_is_referenced_by = 'This resource is referenced by'
     The_content_of_this_resource_references = 'The content of this resource references'
-    The_content_of_this_resource_is_derived_from = (
-        'The content of this resource is derived from'
-    )
+    The_content_of_this_resource_is_derived_from = 'The content of this resource is derived from'
 
 
 class Relation(BaseModel):

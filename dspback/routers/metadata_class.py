@@ -1,23 +1,23 @@
 import json
-import requests
 
+import requests
 from database.models import RepositoryTokenTable
 from fastapi import Depends, HTTPException
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
-from hsmodels.schemas.resource import ResourceMetadataIn, ResourceMetadata
+from hsmodels.schemas.resource import ResourceMetadata, ResourceMetadataIn
 from requests import Session
-from dspback.pydantic_schemas import RepositoryType
 from starlette.responses import JSONResponse
 
 from dspback.config import repository_config
 from dspback.database.models import UserTable
 from dspback.database.procedures import delete_submission
-from dspback.dependencies import get_db, get_current_user
+from dspback.dependencies import get_current_user, get_db
+from dspback.pydantic_schemas import RepositoryType
 from dspback.routers.submissions import submit_record
-from dspback.schemas.external.model import GenericDatasetSchemaForCzNetDataSubmissionPortalV100
-from dspback.schemas.zenodo.model import ZenodoDatasetsSchemaForCzNetV100, NotRequiredZenodo, ResponseModelZenodo
 from dspback.schemas.earthchem.model import Ecl20
+from dspback.schemas.external.model import GenericDatasetSchemaForCzNetDataSubmissionPortalV100
+from dspback.schemas.zenodo.model import NotRequiredZenodo, ResponseModelZenodo, ZenodoDatasetsSchemaForCzNetV100
 
 router = InferringRouter()
 
@@ -78,10 +78,12 @@ class HydroShareMetadataRoutes(MetadataRoutes):
 
     @router.post('/metadata/hydroshare')
     async def create_metadata_repository(self, metadata: request_model) -> response_model:
-        response = requests.post(self.create_url,
-                                 params={"access_token": self.access_token},
-                                 headers={"Content-Type": "application/json"},
-                                 timeout=15.0)
+        response = requests.post(
+            self.create_url,
+            params={"access_token": self.access_token},
+            headers={"Content-Type": "application/json"},
+            timeout=15.0,
+        )
 
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
@@ -94,9 +96,12 @@ class HydroShareMetadataRoutes(MetadataRoutes):
 
     @router.put('/metadata/hydroshare/{identifier}')
     async def update_metadata(self, metadata: request_model, identifier) -> response_model:
-        response = requests.put(self.update_url % identifier, data=metadata.json(skip_defaults=True),
-                                headers={"Content-Type": "application/json"},
-                                params={"access_token": self.access_token})
+        response = requests.put(
+            self.update_url % identifier,
+            data=metadata.json(skip_defaults=True),
+            headers={"Content-Type": "application/json"},
+            params={"access_token": self.access_token},
+        )
 
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
@@ -105,14 +110,12 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         return json_metadata
 
     async def _retrieve_metadata_from_repository(self, identifier):
-        response = requests.get(self.read_url % identifier,
-                                params={"access_token": self.access_token})
+        response = requests.get(self.read_url % identifier, params={"access_token": self.access_token})
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
         json_metadata = json.loads(response.text)
         return json_metadata
-
 
     @router.get('/metadata/hydroshare/{identifier}')
     async def get_metadata_repository(self, identifier):
@@ -126,8 +129,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
 
     @router.delete('/metadata/hydroshare/{identifier}')
     async def delete_metadata_repository(self, identifier):
-        response = requests.delete(self.delete_url % identifier,
-                                   params={"access_token": self.access_token})
+        response = requests.delete(self.delete_url % identifier, params={"access_token": self.access_token})
 
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
@@ -150,10 +152,13 @@ class ZenodoMetadataRoutes(MetadataRoutes):
     @router.post('/metadata/zenodo')
     async def create_metadata_repository(self, metadata: request_model) -> response_model:
         metadata_json = {"metadata": json.loads(metadata.json(exclude_none=True))}
-        response = requests.post(self.create_url, json=metadata_json,
-                                 params={"access_token": self.access_token},
-                                 headers={"Content-Type": "application/json"},
-                                 timeout=15.0)
+        response = requests.post(
+            self.create_url,
+            json=metadata_json,
+            params={"access_token": self.access_token},
+            headers={"Content-Type": "application/json"},
+            timeout=15.0,
+        )
 
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
@@ -168,9 +173,12 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         existing_metadata = await self.get_metadata_repository(identifier)
         incoming_metadata = metadata.json(skip_defaults=True, exclude_unset=True)
         merged_metadata = {"metadata": {**existing_metadata, **json.loads(incoming_metadata)}}
-        response = requests.put(self.update_url % identifier, json=merged_metadata,
-                                headers={"Content-Type": "application/json"},
-                                params={"access_token": self.access_token})
+        response = requests.put(
+            self.update_url % identifier,
+            json=merged_metadata,
+            headers={"Content-Type": "application/json"},
+            params={"access_token": self.access_token},
+        )
 
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
@@ -195,8 +203,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
 
     @router.delete('/metadata/zenodo/{identifier}')
     async def delete_metadata_repository(self, identifier):
-        response = requests.delete(self.delete_url % identifier,
-                                   params={"access_token": self.access_token})
+        response = requests.delete(self.delete_url % identifier, params={"access_token": self.access_token})
 
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)

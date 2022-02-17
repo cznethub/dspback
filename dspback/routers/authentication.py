@@ -5,12 +5,11 @@ from fastapi import APIRouter, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.params import Depends
 from sqlalchemy.orm import Session
-from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse, Response
+from starlette.responses import HTMLResponse, RedirectResponse, Response
 
-from dspback.config import oauth, Settings
+from dspback.config import Settings, get_settings, oauth
 from dspback.database.models import UserTable
 from dspback.dependencies import create_access_token, create_or_update_user, get_current_user, get_db, url_for
-from dspback.config import get_settings
 from dspback.pydantic_schemas import ORCIDResponse, User
 
 router = APIRouter()
@@ -37,7 +36,12 @@ async def logout(settings: Settings = Depends(get_settings)):
 
 
 @router.get('/auth')
-async def auth(request: Request, window_close: bool = False, db: Session = Depends(get_db), settings: Settings = Depends(get_settings)):
+async def auth(
+    request: Request,
+    window_close: bool = False,
+    db: Session = Depends(get_db),
+    settings: Settings = Depends(get_settings),
+):
     try:
         orcid_response = await oauth.orcid.authorize_access_token(request)
         orcid_response = ORCIDResponse(**orcid_response)
@@ -45,19 +49,18 @@ async def auth(request: Request, window_close: bool = False, db: Session = Depen
         return HTMLResponse(f'<h1>{error.error}</h1>')
     user: UserTable = create_or_update_user(db, orcid_response)
 
-    access_token = create_access_token(data={"sub": user.orcid},
-                                       expiration_minutes=settings.access_token_expire_minutes,
-                                       secret_key=settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
+    access_token = create_access_token(
+        data={"sub": user.orcid},
+        expiration_minutes=settings.access_token_expire_minutes,
+        secret_key=settings.jwt_secret_key,
+        algorithm=settings.jwt_algorithm,
+    )
 
     token = jsonable_encoder(access_token)
     if window_close:
         responseHTML = '<html><head><title>CzHub Sign In</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
         responseHTML = responseHTML.replace(
-          "%value%",
-          json.dumps({
-            'token': token,
-            'expiresIn': orcid_response.expires_in
-          })
+            "%value%", json.dumps({'token': token, 'expiresIn': orcid_response.expires_in})
         )
         return HTMLResponse(responseHTML)
 
