@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     hydroshare_file_read_url: HttpUrl
     hydroshare_file_view_url: HttpUrl
     hydroshare_folder_create_url: HttpUrl
+    hydroshare_folder_read_url: HttpUrl
 
     zenodo_client_id: str
     zenodo_client_secret: str
@@ -121,6 +122,7 @@ repository_config = {
         "file_delete": settings.hydroshare_file_delete_url,
         "file_read": settings.hydroshare_file_read_url,
         "folder_create": settings.hydroshare_folder_create_url,
+        "folder_read": settings.hydroshare_folder_read_url,
         "view_url": settings.hydroshare_file_view_url,
         "schema": "/api/schema/hydroshare/schema.json",
         "uischema": "/api/schema/hydroshare/uischema.json",
