@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
-from pydantic import BaseModel, root_validator, validator, Field
+from pydantic import BaseModel, Field, root_validator, validator
 
 
 class ORCIDResponse(BaseModel):

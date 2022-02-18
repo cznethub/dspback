@@ -1,7 +1,7 @@
-from typing import Optional, Any
 from datetime import datetime, timedelta
+from typing import Any, Optional
 
-from fastapi import HTTPException, Request, Depends
+from fastapi import Depends, HTTPException, Request
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
@@ -11,8 +11,8 @@ from sqlalchemy.orm import Session
 from starlette import status
 from starlette.status import HTTP_403_FORBIDDEN
 
-from dspback.database.models import RepositoryTokenTable, UserTable
 from dspback.config import get_settings
+from dspback.database.models import RepositoryTokenTable, UserTable
 from dspback.pydantic_schemas import ORCIDResponse, RepositoryToken, RepositoryType, TokenData
 
 
@@ -140,7 +140,7 @@ def create_repository_token(repository: str, db: Session, user: UserTable, repos
         user_id=user.id,
         # refresh_token=repository_response['access_token'],
         expires_in=repository_response.get('expires_in', None),
-        expires_at=repository_response.get('expires_at', None)
+        expires_at=repository_response.get('expires_at', None),
     )
     db.add(db_repository)
     db.commit()
@@ -180,7 +180,9 @@ def get_db(request: Request) -> Session:
     return request.state.db
 
 
-async def get_current_user(request: Request, settings=Depends(get_settings), token: str = Depends(oauth2_scheme)) -> UserTable:
+async def get_current_user(
+    request: Request, settings=Depends(get_settings), token: str = Depends(oauth2_scheme)
+) -> UserTable:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

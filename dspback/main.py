@@ -5,8 +5,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from dspback.config import get_settings
 from dspback.database.models import SessionLocal
-from dspback.routers import authentication, repository_authorization, submissions, metadata_class
-
+from dspback.routers import authentication, metadata_class, repository_authorization, submissions
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=get_settings().session_secret_key)

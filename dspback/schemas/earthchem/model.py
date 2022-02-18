@@ -50,9 +50,7 @@ class Identifier(BaseModel):
 
     scheme: str = Field(..., description='Persistent identifier scheme.')
     schemeURI: str = Field(..., description='URL of the scheme.')
-    identifier: str = Field(
-        ..., description='Identifier for the resource in the scheme.'
-    )
+    identifier: str = Field(..., description='Identifier for the resource in the scheme.')
     url: str = Field(..., description='URL of the resource.')
 
 
@@ -106,18 +104,14 @@ class Feature(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    geometry: Geometry = Field(
-        ..., description='An explanation about the purpose of this instance.'
-    )
+    geometry: Geometry = Field(..., description='An explanation about the purpose of this instance.')
 
 
 class SpatialCoverage(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    coverage: Coverage = Field(
-        ..., description='An explanation about the purpose of this instance.'
-    )
+    coverage: Coverage = Field(..., description='An explanation about the purpose of this instance.')
     keywords: List[str]
     features: List[Feature]
 
@@ -155,13 +149,9 @@ class Identifier1(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    scheme: str = Field(
-        ..., description='Persistent identifier scheme for the contributor.'
-    )
+    scheme: str = Field(..., description='Persistent identifier scheme for the contributor.')
     schemeURI: str = Field(..., description='URL of the scheme.')
-    identifier: str = Field(
-        ..., description='Identifier for the creator under specific scheme.'
-    )
+    identifier: str = Field(..., description='Identifier for the creator under specific scheme.')
     url: str = Field(..., description='URL for the creator under specific scheme.')
 
 
@@ -173,13 +163,9 @@ class Identifier2(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    scheme: Scheme = Field(
-        ..., description='Persistent identifier scheme for affiliation.'
-    )
+    scheme: Scheme = Field(..., description='Persistent identifier scheme for affiliation.')
     schemeURI: str = Field(..., description='URL of the scheme.')
-    identifier: str = Field(
-        ..., description='Identifier for the affiliation under specific scheme.'
-    )
+    identifier: str = Field(..., description='Identifier for the affiliation under specific scheme.')
     url: str = Field(..., description='URL for the affiliation under specific scheme.')
 
 
@@ -188,9 +174,7 @@ class Affiliation(BaseModel):
         extra = Extra.forbid
 
     name: str
-    identifiers: List[Identifier2] = Field(
-        ..., description='Identifiers for the affiliation.'
-    )
+    identifiers: List[Identifier2] = Field(..., description='Identifiers for the affiliation.')
 
 
 class Creator(BaseModel):
@@ -198,15 +182,11 @@ class Creator(BaseModel):
         extra = Extra.forbid
 
     familyName: str
-    additionalName: Optional[str] = Field(
-        None, description='Used for a middle initial.'
-    )
+    additionalName: Optional[str] = Field(None, description='Used for a middle initial.')
     givenName: str
     email: str
     type: Type2 = Field(..., description='The type of creator, controlled vocabulary')
-    identifiers: List[Identifier1] = Field(
-        ..., description='Identifiers for the creator.'
-    )
+    identifiers: List[Identifier1] = Field(..., description='Identifiers for the creator.')
     affiliation: Affiliation = Field(..., description='Affiliation of the creator.')
 
 
@@ -223,13 +203,9 @@ class Identifier3(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    scheme: Scheme1 = Field(
-        ..., description='Persistent identifier scheme for the contributor.'
-    )
+    scheme: Scheme1 = Field(..., description='Persistent identifier scheme for the contributor.')
     schemeURI: str = Field(..., description='URL of the scheme.')
-    identifier: str = Field(
-        ..., description='Identifier for the contributor under specific scheme.'
-    )
+    identifier: str = Field(..., description='Identifier for the contributor under specific scheme.')
     url: str = Field(..., description='URL for the contributor under specific scheme.')
 
 
@@ -241,13 +217,9 @@ class Identifier4(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    scheme: Scheme2 = Field(
-        ..., description='Persistent identifier scheme for affiliation.'
-    )
+    scheme: Scheme2 = Field(..., description='Persistent identifier scheme for affiliation.')
     schemeURI: str = Field(..., description='URL of the scheme.')
-    identifier: str = Field(
-        ..., description='Identifier for the affiliation under specific scheme.'
-    )
+    identifier: str = Field(..., description='Identifier for the affiliation under specific scheme.')
     url: str = Field(..., description='URL for the affiliation under specific scheme.')
 
 
@@ -256,9 +228,7 @@ class Affiliation1(BaseModel):
         extra = Extra.forbid
 
     name: str
-    identifiers: List[Identifier4] = Field(
-        ..., description='Identifiers for the affiliation.'
-    )
+    identifiers: List[Identifier4] = Field(..., description='Identifiers for the affiliation.')
 
 
 class Contributor(BaseModel):
@@ -267,21 +237,15 @@ class Contributor(BaseModel):
 
     type: Type3 = Field(..., description='Role of the contributor.')
     familyName: str
-    additionalName: Optional[str] = Field(
-        None, description='Used for a middle initial.'
-    )
+    additionalName: Optional[str] = Field(None, description='Used for a middle initial.')
     givenName: str
     email: str
     position: Optional[int] = Field(
         None,
         description="The position of a person in a sequence of contributors, apply only to 'coAuthor'.",
     )
-    identifiers: List[Identifier3] = Field(
-        ..., description='Identifier for the contributor.'
-    )
-    affiliation: Optional[Affiliation1] = Field(
-        None, description='Affiliation of the creator.'
-    )
+    identifiers: List[Identifier3] = Field(..., description='Identifier for the contributor.')
+    affiliation: Optional[Affiliation1] = Field(None, description='Affiliation of the creator.')
 
 
 class Scheme3(Enum):
@@ -295,16 +259,10 @@ class Identifier5(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    scheme: Scheme3 = Field(
-        ..., description='Persistent identifier scheme for related resources.'
-    )
+    scheme: Scheme3 = Field(..., description='Persistent identifier scheme for related resources.')
     schemeURI: str = Field(..., description='URL of the scheme.')
-    identifier: str = Field(
-        ..., description='Identifier for the related resource under specific scheme.'
-    )
-    url: str = Field(
-        ..., description='URL for the related resource under specific scheme.'
-    )
+    identifier: str = Field(..., description='Identifier for the related resource under specific scheme.')
+    url: str = Field(..., description='URL for the related resource under specific scheme.')
 
 
 class Relation(Enum):
@@ -352,12 +310,8 @@ class RelatedResource(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    bibliographicCitation: str = Field(
-        ..., description='A bibliographic reference for the related resource.'
-    )
-    identifiers: List[Identifier5] = Field(
-        ..., description='Identifiers for the related resources.'
-    )
+    bibliographicCitation: str = Field(..., description='A bibliographic reference for the related resource.')
+    identifiers: List[Identifier5] = Field(..., description='Identifiers for the related resources.')
     relation: Relation = Field(
         ...,
         description='The relationship of the resource being registered (A) and the related resource (B). Value comes from DataCite RelationType vocabulary.',
@@ -371,9 +325,7 @@ class Identifier6(BaseModel):
 
     scheme: str = Field(..., description='Persistant identifier scheme.')
     schemeURI: str = Field(..., description='URL of the scheme.')
-    identifier: str = Field(
-        ..., description='Identifier for the funder under specific scheme.'
-    )
+    identifier: str = Field(..., description='Identifier for the funder under specific scheme.')
     url: str = Field(..., description='URL for the funder under specific scheme.')
 
 
@@ -382,12 +334,8 @@ class Funder(BaseModel):
         extra = Extra.forbid
 
     name: str = Field(..., description='Name given to the funder.')
-    alternateName: str = Field(
-        ..., description='Abbreviation for the given funder name.'
-    )
-    identifiers: List[Identifier6] = Field(
-        ..., description='Identifiers for the funder.'
-    )
+    alternateName: str = Field(..., description='Abbreviation for the given funder name.')
+    identifiers: List[Identifier6] = Field(..., description='Identifiers for the funder.')
 
 
 class Funding(BaseModel):
@@ -449,27 +397,19 @@ class File(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    name: constr(max_length=512) = Field(
-        ..., description='Name given to the file in the resource.'
-    )
-    fileID: int = Field(
-        ..., description='ECL internal identifier for the file in the resource.'
-    )
-    description: constr(max_length=256) = Field(
-        ..., description='Description of the file in the resource.'
-    )
+    name: constr(max_length=512) = Field(..., description='Name given to the file in the resource.')
+    fileID: int = Field(..., description='ECL internal identifier for the file in the resource.')
+    description: constr(max_length=256) = Field(..., description='Description of the file in the resource.')
     format: Format = Field(..., description='Format of the file in the resource.')
-    position: int = Field(
-        ..., description='The position of a file in a sequence of all uploading files.'
-    )
+    position: int = Field(..., description='The position of a file in a sequence of all uploading files.')
     size: int = Field(..., description='The size of the file in the resource in bytes.')
     checksum: str = Field(
         ...,
         description='A Checksum is value that allows the contents of a file to be authenticated.',
     )
-    uploadDate: constr(
-        regex=r'((?:19|20)[0-9][0-9])-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])'
-    ) = Field(..., description='Date when the file was uploaded.')
+    uploadDate: constr(regex=r'((?:19|20)[0-9][0-9])-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])') = Field(
+        ..., description='Date when the file was uploaded.'
+    )
 
 
 class AlternateName(Enum):
@@ -485,9 +425,7 @@ class Identifier7(BaseModel):
 
     scheme: str = Field(..., description='Persistent identifier scheme.')
     schemeURI: str = Field(..., description='URL of the scheme.')
-    identifier: str = Field(
-        ..., description='Identifier for the license under the specific scheme.'
-    )
+    identifier: str = Field(..., description='Identifier for the license under the specific scheme.')
     url: str = Field(..., description='URL for the license under the specific scheme.')
 
 
@@ -496,12 +434,8 @@ class Licence(BaseModel):
         extra = Extra.forbid
 
     name: str = Field(..., description='Name given to the license.')
-    alternateName: AlternateName = Field(
-        ..., description='Short identifier given to the license.'
-    )
-    identifiers: List[Identifier7] = Field(
-        ..., description='Identifiers for the license.'
-    )
+    alternateName: AlternateName = Field(..., description='Short identifier given to the license.')
+    identifiers: List[Identifier7] = Field(..., description='Identifiers for the license.')
 
 
 class Ecl20(BaseModel):
@@ -522,28 +456,18 @@ class Ecl20(BaseModel):
         ...,
         description='Indication of the progress status of the resource. Value comes from ECL controlled vocabulary.',
     )
-    identifiers: List[Identifier] = Field(
-        ..., description='Identifiers for the resource.', max_items=1
+    identifiers: List[Identifier] = Field(..., description='Identifiers for the resource.', max_items=1)
+    dateCreated: constr(regex=r'((?:19|20)[0-9][0-9])-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])') = Field(
+        ..., description='The date on which the resource was created.'
     )
-    dateCreated: constr(
-        regex=r'((?:19|20)[0-9][0-9])-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])'
-    ) = Field(..., description='The date on which the resource was created.')
-    dateIssued: Optional[
-        constr(
-            regex=r'((?:19|20)[0-9][0-9])-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])'
-        )
-    ] = Field(
+    dateIssued: Optional[constr(regex=r'((?:19|20)[0-9][0-9])-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])')] = Field(
         None, description='The date on which The DOI was assigned to the resource.'
     )
-    datePublished: constr(
-        regex=r'((?:19|20)[0-9][0-9])-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])'
-    ) = Field(
+    datePublished: constr(regex=r'((?:19|20)[0-9][0-9])-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])') = Field(
         ...,
         description='The date of the files contained in the resource to be allowed for downloading.',
     )
-    dateModified: constr(
-        regex=r'((?:19|20)[0-9][0-9])-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])'
-    ) = Field(
+    dateModified: constr(regex=r'((?:19|20)[0-9][0-9])-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])') = Field(
         ..., description='The date on which the resource was most recently modified.'
     )
     additionalTypes: List[AdditionalType] = Field(
@@ -551,26 +475,14 @@ class Ecl20(BaseModel):
         description='The science domain of the content(analysis data, image, etc.) included in the resource. Values come from ECL controlled vocabulary.',
     )
     keywords: List[str] = Field(..., description='Free form keywords for the resource.')
-    spatialCoverage: SpatialCoverage = Field(
-        ..., description='An explanation about the purpose of this instance.'
-    )
-    language: Language = Field(
-        ..., description='The language used for the content of the resource.'
-    )
-    creators: List[Creator] = Field(
-        ..., description='The people who create and maintain resource metadata.'
-    )
-    contributors: List[Contributor] = Field(
-        ..., description='Contributors for the resource.'
-    )
+    spatialCoverage: SpatialCoverage = Field(..., description='An explanation about the purpose of this instance.')
+    language: Language = Field(..., description='The language used for the content of the resource.')
+    creators: List[Creator] = Field(..., description='The people who create and maintain resource metadata.')
+    contributors: List[Contributor] = Field(..., description='Contributors for the resource.')
     relatedResources: List[RelatedResource] = Field(
         ...,
         description='A related resource(publication,physical sample, volcano that is referenced, cited, or otherwise pointed to by the described resource..',
     )
-    fundings: List[Funding] = Field(
-        ..., description='Source of grants/awards which have funded the resource.'
-    )
+    fundings: List[Funding] = Field(..., description='Source of grants/awards which have funded the resource.')
     files: List[File] = Field(..., description='Files attached to the resource.')
-    licence: Licence = Field(
-        ..., description='The license for all files contained in the resource.'
-    )
+    licence: Licence = Field(..., description='The license for all files contained in the resource.')

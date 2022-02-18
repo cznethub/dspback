@@ -1,8 +1,8 @@
 from functools import lru_cache
 
 from authlib.integrations.starlette_client import OAuth
-from starlette.config import Config
 from pydantic import BaseSettings, HttpUrl
+from starlette.config import Config
 
 dotenv_file = ".env"
 
