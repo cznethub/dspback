@@ -42,6 +42,7 @@ class Settings(BaseSettings):
     zenodo_file_delete_url: HttpUrl
     zenodo_file_read_url: HttpUrl
     zenodo_file_view_url: HttpUrl
+    zenodo_move_or_rename_url: HttpUrl
 
     database_username: str
     database_password: str
@@ -108,6 +109,7 @@ repository_config = {
         "file_create": settings.zenodo_file_create_url,
         "file_delete": settings.zenodo_file_delete_url,
         "file_read": settings.zenodo_file_read_url,
+        "move_or_rename_url": settings.zenodo_move_or_rename_url,
         "view_url": settings.zenodo_file_view_url,
         "schema": "/api/schema/zenodo/schema.json",
         "uischema": "/api/schema/zenodo/uischema.json",
