@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     orcid_client_secret: str
     orcid_authorize_url: HttpUrl
     orcid_token_url: HttpUrl
+    orcid_health_url: HttpUrl
 
     hydroshare_client_id: str
     hydroshare_client_secret: str
@@ -29,6 +30,7 @@ class Settings(BaseSettings):
     hydroshare_folder_read_url: HttpUrl
     hydroshare_folder_delete_url: HttpUrl
     hydroshare_move_or_rename_url: HttpUrl
+    hydroshare_health_url: HttpUrl
 
     zenodo_client_id: str
     zenodo_client_secret: str
@@ -43,6 +45,7 @@ class Settings(BaseSettings):
     zenodo_file_read_url: HttpUrl
     zenodo_file_view_url: HttpUrl
     zenodo_move_or_rename_url: HttpUrl
+    zenodo_health_url: HttpUrl
 
     database_username: str
     database_password: str

@@ -1,5 +1,6 @@
 import json
 
+import requests
 from authlib.integrations.starlette_client import OAuthError
 from fastapi import APIRouter, Request
 from fastapi.params import Depends
@@ -42,11 +43,28 @@ async def logout(
 
 
 @router.get('/health', status_code=status.HTTP_200_OK)
-async def perform_health_check(db: Session = Depends(get_db)):
-    output = 'database is ok'
+async def perform_health_check(db: Session = Depends(get_db), settings: Settings = Depends(get_settings)):
+    db_health = False
+    orcid_health = False
+    hydroshare_health = False
+    zenodo_health = False
+
     try:
         db.execute('SELECT 1')
+        db_health = True
     except Exception as e:
         output = str(e)
 
-    return {"db": output}
+    resp = requests.get(settings.orcid_health_url)
+    if resp.status_code == 200:
+        orcid_health = True
+
+    resp = requests.get(settings.hydroshare_health_url)
+    if resp.status_code == 200 and resp.text == "all good in the hood":
+        hydroshare_health = True
+
+    resp = requests.get(settings.zenodo_health_url)
+    if resp.status_code == 200:
+        zenodo_health = True
+
+    return {"database": db_health, "orcid": orcid_health, "hydroshare": hydroshare_health, "zenodo": zenodo_health}
