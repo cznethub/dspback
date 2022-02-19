@@ -4,6 +4,7 @@ from authlib.integrations.starlette_client import OAuthError
 from fastapi import APIRouter, Request
 from fastapi.params import Depends
 from sqlalchemy.orm import Session
+from starlette import status
 from starlette.responses import HTMLResponse, RedirectResponse, Response
 
 from dspback.config import Settings, get_settings, oauth
@@ -40,20 +41,12 @@ async def logout(
     return response
 
 
-@router.get('/auth')
-async def auth(request: Request, window_close: bool = False, db: Session = Depends(get_db)):
+@router.get('/health', status_code=status.HTTP_200_OK)
+async def perform_health_check(db: Session = Depends(get_db)):
+    output = 'database is ok'
     try:
-        orcid_response = await oauth.orcid.authorize_access_token(request)
-        orcid_response = ORCIDResponse(**orcid_response)
-    except OAuthError as error:
-        return HTMLResponse(f'<h1>{error.error}</h1>')
-    user: UserTable = create_or_update_user(db, orcid_response)
-    token = user.access_token
-    if window_close:
-        responseHTML = '<html><head><title>CzHub Sign In</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
-        responseHTML = responseHTML.replace(
-            "%value%", json.dumps({'token': token, 'expiresIn': orcid_response.expires_in})
-        )
-        return HTMLResponse(responseHTML)
+        db.execute('SELECT 1')
+    except Exception as e:
+        output = str(e)
 
-    return Response(token)
+    return {"db": output}
