@@ -79,12 +79,14 @@ def url_for(request: Request, name: str, **path_params: Any) -> str:
     return "https://{}{}".format(get_settings().outside_host, url_path)
 
 
-def create_access_token(data: dict, expiration_minutes: str, secret_key: str, algorithm: str) -> str:
+def encode_access_token(orcid: str) -> str:
+    data = {"sub": orcid}
+    settings = get_settings()
     to_encode = data.copy()
-    access_token_expires = timedelta(minutes=expiration_minutes)
+    access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
     expire = datetime.utcnow() + access_token_expires
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=algorithm)
+    encoded_jwt = jwt.encode(to_encode, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
     return encoded_jwt
 
 
@@ -98,10 +100,13 @@ def create_or_update_user(db: Session, orcid_response: ORCIDResponse) -> UserTab
 
 
 def create_user_table(db: Session, orcid_response: ORCIDResponse) -> UserTable:
+    access_token = encode_access_token(orcid_response.orcid)
+
     db_user = UserTable(
         name=orcid_response.name,
         orcid=orcid_response.orcid,
-        access_token=orcid_response.access_token,
+        access_token=access_token,
+        orcid_access_token=orcid_response.access_token,
         refresh_token=orcid_response.refresh_token,
         expires_in=orcid_response.expires_in,
         expires_at=orcid_response.expires_at,
@@ -113,7 +118,9 @@ def create_user_table(db: Session, orcid_response: ORCIDResponse) -> UserTable:
 
 
 def update_user_table(db: Session, db_user: UserTable, orcid_response: ORCIDResponse) -> UserTable:
-    db_user.access_token = orcid_response.access_token
+    access_token = encode_access_token(orcid_response.orcid)
+    db_user.access_token = access_token
+    db_user.orcid_access_token = orcid_response.access_token
     db_user.refresh_token = orcid_response.refresh_token
     db_user.expires_in = orcid_response.expires_in
     db_user.expires_at = orcid_response.expires_at
@@ -202,5 +209,7 @@ async def get_current_user(
         raise credentials_exception
     user: UserTable = get_user_table(db, orcid=token_data.orcid)
     if user is None:
+        raise credentials_exception
+    if not user.access_token or user.access_token != token:
         raise credentials_exception
     return user

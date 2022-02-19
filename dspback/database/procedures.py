@@ -52,3 +52,9 @@ def delete_repository_access_token(db: Session, repository, user: UserTable):
     if repository_token:
         db.delete(repository_token)
         db.commit()
+
+
+def delete_access_token(db: Session, user: UserTable):
+    user.access_token = None
+    db.add(user)
+    db.commit()

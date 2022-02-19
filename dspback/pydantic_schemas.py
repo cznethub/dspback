@@ -94,6 +94,7 @@ class UserBase(BaseModel):
     # email: EmailStr = None
     orcid: str = None
     access_token: str = None
+    orcid_access_token: str = None
     refresh_token: str = None
     expires_in: int = None
     expires_at: int = None
