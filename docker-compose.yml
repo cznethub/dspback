@@ -2,6 +2,15 @@ version: '3'
 
 services:
 
+  dspfront:
+    image: dspfront
+    container_name: dsp_dev_dspfront
+    depends_on:
+      - dspback
+    ports:
+      - 5001:5001
+    restart: unless-stopped
+
   nginx:
     image: nginx:1.17.10
     container_name: dsp_dev_nginx
