@@ -1,7 +1,6 @@
 import json
 
 import requests
-from database.models import RepositoryTokenTable
 from fastapi import Depends, HTTPException
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
@@ -10,7 +9,7 @@ from requests import Session
 from starlette.responses import JSONResponse
 
 from dspback.config import repository_config
-from dspback.database.models import UserTable
+from dspback.database.models import RepositoryTokenTable, UserTable
 from dspback.database.procedures import delete_submission
 from dspback.dependencies import get_current_user, get_db
 from dspback.pydantic_schemas import RepositoryType
