@@ -37,13 +37,16 @@ def test_auth(authorize_response):
         assert response.status_code == 200
 
 
-def test_logout():
-    # ensure use has an access token
+def test_logout(authorize_response):
+    # ensure user has an access token
     with patch.object(StarletteRemoteApp, 'authorize_access_token', side_effect=[authorize_response]):
-        response = client.get(url_for(client, 'auth'), allow_redirects=False)
-        assert response.status_code == 200
+        login_response = client.get(url_for(client, 'auth'), allow_redirects=False)
+
+    logged_in_response = client.get(url_for(client, 'home'), allow_redirects=False)
+    assert len(logged_in_response.text) is 30
 
     logout_response = client.get(url_for(client, 'logout'), allow_redirects=False)
     assert 'Authorization=""' not in logout_response.headers["set-cookie"]
-    assert logout_response.is_redirect
-    assert logout_response.headers['location'] == "/"
+
+    logged_out_response = client.get(url_for(client, 'home'), allow_redirects=False)
+    assert logged_out_response.status_code == 403
