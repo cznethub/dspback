@@ -42,6 +42,25 @@ async def logout(
     return response
 
 
+@router.get('/auth')
+async def auth(request: Request, window_close: bool = False, db: Session = Depends(get_db)):
+    try:
+        orcid_response = await oauth.orcid.authorize_access_token(request)
+        orcid_response = ORCIDResponse(**orcid_response)
+    except OAuthError as error:
+        return HTMLResponse(f'<h1>{error.error}</h1>')
+    user: UserTable = create_or_update_user(db, orcid_response)
+    token = user.access_token
+    if window_close:
+        responseHTML = '<html><head><title>CzHub Sign In</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
+        responseHTML = responseHTML.replace(
+            "%value%", json.dumps({'token': token, 'expiresIn': orcid_response.expires_in})
+        )
+        return HTMLResponse(responseHTML)
+
+    return Response(token)
+
+
 @router.get('/health', status_code=status.HTTP_200_OK)
 async def perform_health_check(db: Session = Depends(get_db), settings: Settings = Depends(get_settings)):
     db_health = False

@@ -18,7 +18,7 @@ def test_home_not_logged_in():
 
 
 def test_login():
-    response = client.get(prefix + "/login", allow_redirects=False)
+    response = client.get(url_for(client, 'login'), allow_redirects=False)
     assert response.status_code == 302
     assert "response_type=code" in response.headers['location']
     assert "client_id=" in response.headers['location']
@@ -28,17 +28,22 @@ def test_login():
 def test_auth(authorize_response):
     # tests create user path
     with patch.object(StarletteRemoteApp, 'authorize_access_token', side_effect=[authorize_response]):
-        response = client.get(prefix + "/auth", allow_redirects=False)
+        response = client.get(url_for(client, 'auth'), allow_redirects=False)
         assert response.status_code == 200
 
     # tests update user path
     with patch.object(StarletteRemoteApp, 'authorize_access_token', side_effect=[authorize_response]):
-        response = client.get(prefix + "/auth", allow_redirects=False)
+        response = client.get(url_for(client, 'auth'), allow_redirects=False)
         assert response.status_code == 200
 
 
 def test_logout():
-    logout_response = client.get(prefix + "/logout", allow_redirects=False)
-    assert 'Authorization=""' in logout_response.headers["set-cookie"]
+    # ensure use has an access token
+    with patch.object(StarletteRemoteApp, 'authorize_access_token', side_effect=[authorize_response]):
+        response = client.get(url_for(client, 'auth'), allow_redirects=False)
+        assert response.status_code == 200
+
+    logout_response = client.get(url_for(client, 'logout'), allow_redirects=False)
+    assert 'Authorization=""' not in logout_response.headers["set-cookie"]
     assert logout_response.is_redirect
     assert logout_response.headers['location'] == "/"
