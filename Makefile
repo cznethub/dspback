@@ -24,6 +24,10 @@ test-cov:
 up:
 	docker-compose --env-file .env up
 
+.PHONY: up-d
+up:
+	docker-compose --env-file .env up -d
+
 .PHONY: build
 build:
 	docker-compose --env-file .env build --force-rm

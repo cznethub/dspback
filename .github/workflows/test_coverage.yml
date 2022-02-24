@@ -19,7 +19,7 @@ jobs:
       run: make build
 
     - name: Startup containers
-      run: make up
+      run: make up-d
       
     - name: Install dependencies
       run: make install
