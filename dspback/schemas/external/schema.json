@@ -152,11 +152,11 @@
           "type": "string",
           "description": "A URL for the repository or organization that provides access to the resource.",
           "format": "uri"
-        },
+        }
       },
       "required": [
-          "name",
-          "url"
+        "name",
+        "url"
       ]
     },
     "dateCreated": {
@@ -176,7 +176,11 @@
       "type": "string",
       "format": "date-time",
       "description": "The date on which the resource was permanently published (ISO8601 formatted date) - YYYY-MM-DD."
-    }
+    },
+    "required": [
+      "identifier",
+      "title"
+    ]
   },
   "definitions": {
     "Creator": {
@@ -203,10 +207,10 @@
           "format": "email"
         },
         "orcid": {
-            "title": "ORCID",
-            "type": "string",
-            "description": "ORCID identifier for creator."
-          }
+          "title": "ORCID",
+          "type": "string",
+          "description": "ORCID identifier for creator."
+        }
       },
       "required": [
         "name",
@@ -237,10 +241,10 @@
           "format": "email"
         },
         "orcid": {
-            "title": "ORCID",
-            "type": "string",
-            "description": "ORCID identifier for creator."
-          }
+          "title": "ORCID",
+          "type": "string",
+          "description": "ORCID identifier for creator."
+        }
       },
       "required": [
         "name",
@@ -295,7 +299,7 @@
         "This resource requires",
         "This resource is referenced by",
         "The content of this resource references",
-        "The content of this resource is derived from"        
+        "The content of this resource is derived from"
       ],
       "type": "string"
     },
@@ -465,7 +469,7 @@
         "units",
         "projection"
       ]
-    }, 
+    }
   },
   "required": [
     "name",

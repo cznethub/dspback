@@ -253,9 +253,9 @@ class ExternalMetadataRoutes(MetadataRoutes):
     response_model = GenericDatasetSchemaForCzNetDataSubmissionPortalV100
     repository_type = RepositoryType.EXTERNAL
 
-    @router.post('/metadata/external/{identifier}')
-    async def create_metadata_repository(self, metadata: request_model, identifier) -> response_model:
-        return await self.submit(identifier, metadata.dict())
+    @router.post('/metadata/external')
+    async def create_metadata_repository(self, metadata: request_model) -> response_model:
+        return await self.submit(metadata.identifier, metadata.dict())
 
     @router.put('/metadata/external/{identifier}')
     async def update_metadata(self, metadata: request_model, identifier) -> response_model:
