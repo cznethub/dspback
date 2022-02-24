@@ -25,7 +25,7 @@ up:
 	docker-compose --env-file .env up
 
 .PHONY: up-d
-up:
+up-d:
 	docker-compose --env-file .env up -d
 
 .PHONY: build
