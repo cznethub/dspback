@@ -18,7 +18,7 @@ test:
 
 .PHONY: test-cov
 test-cov:
-	docker exec dsp_dev_dspback pytest --cov=dspback --cov-report html
+	docker exec dsp_dev_dspback pytest tests --cov=dspback --cov-report html
 
 .PHONY: up
 up:
