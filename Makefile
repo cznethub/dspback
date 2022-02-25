@@ -18,11 +18,19 @@ test:
 
 .PHONY: test-cov
 test-cov:
-	docker exec dsp_dev_dspback pytest --cov=dspback --cov-report html
+	docker exec dsp_dev_dspback pytest tests --cov=dspback --cov-report html
 
 .PHONY: up
 up:
 	docker-compose --env-file .env up
+
+.PHONY: up-d
+up-d:
+	docker-compose --env-file .env up -d
+
+.PHONY: down
+down:
+	docker-compose --env-file .env down
 
 .PHONY: build
 build:

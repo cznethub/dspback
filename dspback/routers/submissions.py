@@ -3,6 +3,7 @@ import json
 
 from fastapi import APIRouter
 from fastapi.params import Depends
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from dspback.database.models import UserTable
@@ -28,7 +29,8 @@ def convert_timestamp(item_date_object):
 def submit_record(db: Session, repository, identifier, user: UserTable, metadata_json):
     record = record_type_by_repo_type[repository](**metadata_json)
     submission = record.to_submission(identifier)
-    create_or_update_submission(db, submission, user, json.dumps(metadata_json, default=convert_timestamp))
+    metadata_json_str = json.dumps(metadata_json, default=BaseModel.__json_encoder__)
+    create_or_update_submission(db, submission, user, metadata_json_str)
     return submission
 
 
