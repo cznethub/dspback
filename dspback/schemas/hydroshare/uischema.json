@@ -7,7 +7,10 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/abstract"
+      "scope": "#/properties/abstract",
+      "options": {
+        "multi": true
+      }
     },
     {
       "type": "Control",
@@ -20,10 +23,6 @@
     {
       "type": "Control",
       "scope": "#/properties/contributors"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/sources"
     },
     {
       "type": "Control",
@@ -76,7 +75,13 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/citation"
+      "scope": "#/properties/citation",
+      "rule": {
+        "effect": "DISABLE",
+        "condition": {
+          "scope": "#/properties/citation"
+        }
+      }
     }
   ]
 }

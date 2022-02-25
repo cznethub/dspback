@@ -124,6 +124,7 @@
     "embargo_date": {
       "title": "Embargo date",
       "type": "string",
+      "format": "date",
       "description": "Embargo date of record (ISO8601 formatted date) - YYYY-MM-DD."
     },
     "funding": {
@@ -167,9 +168,7 @@
         "title": "Keyword",
         "type": "string"
       },
-      "contains": {
-        "const": "CZNet"
-      }
+      "default": ["CZNet"]
     },
     "license": {
       "title": "License",

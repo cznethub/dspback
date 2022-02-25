@@ -7,15 +7,37 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/description"
+      "scope": "#/properties/description",
+      "options": {
+        "multi": true
+      }
     },
     {
-      "type": "Control",
-      "scope": "#/properties/access_conditions"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/access_right"
+      "type": "Group",
+      "label": "License",
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/access_right",
+          "options": {
+            "format": "radio"
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/embargo_date",
+          "rule": {
+            "effect": "HIDE",
+            "condition": {
+              "scope": "#/properties/access_right"
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/license"
+        }
+      ]
     },
     {
       "type": "Control",
@@ -31,10 +53,6 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/embargo_date"
-    },
-    {
-      "type": "Control",
       "scope": "#/properties/funding"
     },
     {
@@ -43,15 +61,20 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/license"
+      "scope": "#/properties/notes",
+      "options": {
+        "multi": true
+      }
     },
     {
       "type": "Control",
-      "scope": "#/properties/notes"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/publication_date"
+      "scope": "#/properties/publication_date",
+      "rule": {
+        "effect": "DISABLE",
+        "condition": {
+          "scope": "#/properties/publication_date"
+        }
+      }
     },
     {
       "type": "Control",
@@ -60,10 +83,6 @@
     {
       "type": "Control",
       "scope": "#/properties/related_identifiers"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/resource_type"
     },
     {
       "type": "Control",

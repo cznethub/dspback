@@ -41,15 +41,6 @@
         "$ref": "#/definitions/Contributor"
       }
     },
-    "sources": {
-      "title": "Sources",
-      "description": "A list of strings containing references to related resources from which a described resource was derived",
-      "default": [],
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
     "relations": {
       "title": "Related resources",
       "description": "A list of Relation objects representing resources related to a described resource",
@@ -177,7 +168,7 @@
           "type": "string"
         },
         "description": {
-          "title": "Description",
+          "title": "HydroShare Profile",
           "description": "A string containing the path to the hydroshare profile",
           "maxLength": 50,
           "type": "string"
@@ -300,7 +291,7 @@
     },
     "rights": {
       "title": "Rights Metadata",
-      "description": "A class used to represent the rights statement metadata associated with a resource",
+      "description": "",
       "type": "object",
       "properties": {
         "statement": {

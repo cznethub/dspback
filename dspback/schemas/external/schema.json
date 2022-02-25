@@ -1,4 +1,5 @@
 {
+  "$id": "http://czhub.org/schemas/cz_generic_dataset_v1.0.0.json",
   "title": "Generic Dataset Schema for CZ Net Data Submission Portal v1.0.0",
   "description": "Metadata for a dataset object submitted to a repository that is not supported by the CZ Hub Data Submission Portal",
   "type": "object",
