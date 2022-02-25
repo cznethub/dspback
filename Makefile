@@ -28,6 +28,10 @@ up:
 up-d:
 	docker-compose --env-file .env up -d
 
+.PHONY: down
+down:
+	docker-compose --env-file .env down
+
 .PHONY: build
 build:
 	docker-compose --env-file .env build --force-rm
