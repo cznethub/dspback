@@ -1,4 +1,5 @@
 import json
+import uuid
 
 import requests
 from fastapi import Depends, HTTPException
@@ -255,6 +256,7 @@ class ExternalMetadataRoutes(MetadataRoutes):
 
     @router.post('/metadata/external')
     async def create_metadata_repository(self, metadata: request_model) -> response_model:
+        metadata.identifier = str(uuid.uuid4())
         return await self.submit(metadata.identifier, metadata.dict())
 
     @router.put('/metadata/external/{identifier}')
@@ -265,7 +267,8 @@ class ExternalMetadataRoutes(MetadataRoutes):
     async def get_metadata_repository(self, identifier) -> response_model:
         submission = self.user.submission(self.db, identifier)
         metadata_json_str = submission.metadata_json
-        return json.loads(metadata_json_str)
+        metadata_json = json.loads(metadata_json_str)
+        return metadata_json
 
     @router.delete('/metadata/external/{identifier}')
     async def delete_metadata_repository(self, identifier):

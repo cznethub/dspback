@@ -113,7 +113,7 @@
     "identifier": {
       "title": "Identifier",
       "type": "string",
-      "description": "A globally unique and persistent identifier for the resource - e.g., a DOI or other identifier."
+      "description": "A globally unique and persistent identifier for the submission."
     },
     "temporalCoverage": {
       "title": "Temporal coverage",
@@ -176,11 +176,7 @@
       "type": "string",
       "format": "date-time",
       "description": "The date on which the resource was permanently published (ISO8601 formatted date) - YYYY-MM-DD."
-    },
-    "required": [
-      "identifier",
-      "title"
-    ]
+    }
   },
   "definitions": {
     "Creator": {
