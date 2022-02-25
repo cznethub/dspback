@@ -23,13 +23,13 @@ jobs:
 
     - name: Startup containers
       run: make up-d
-      
-    - name: Install dependencies
-      run: make install
 
     - name: Sleep for 10 seconds
       run: sleep 10s
       shell: bash
+      
+    - name: Install dependencies
+      run: make install
       
     - name: Run check
       run: make test-cov
