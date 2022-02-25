@@ -25,9 +25,7 @@
       "items": {
         "type": "string"
       },
-      "contains": {
-        "const": "CZNet"
-      }
+      "default": ["CZNet"]
     },
     "creators": {
       "title": "Creators",
