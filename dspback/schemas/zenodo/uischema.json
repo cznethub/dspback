@@ -2,15 +2,40 @@
   "type": "VerticalLayout",
   "elements": [
     {
-      "type": "Control",
-      "scope": "#/properties/title"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/description",
-      "options": {
-        "multi": true
-      }
+      "type": "Group",
+      "label": "Basic Information",
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/title"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/creators"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/description",
+          "options": {
+            "multi": true
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/version"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/keywords"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/notes",
+          "options": {
+            "multi": true
+          }
+        }
+      ]
     },
     {
       "type": "Group",
@@ -49,32 +74,7 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/creators"
-    },
-    {
-      "type": "Control",
       "scope": "#/properties/funding"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/keywords"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/notes",
-      "options": {
-        "multi": true
-      }
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/publication_date",
-      "rule": {
-        "effect": "DISABLE",
-        "condition": {
-          "scope": "#/properties/publication_date"
-        }
-      }
     },
     {
       "type": "Control",
@@ -87,10 +87,6 @@
     {
       "type": "Control",
       "scope": "#/properties/subjects"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/version"
     },
     {
       "type": "Control",
