@@ -69,7 +69,7 @@ class SubmissionBase(BaseModel):
     authors: List[str] = []
     repo_type: RepositoryType = None
     identifier: str = None
-    submitted: datetime = None
+    submitted: datetime = datetime.utcnow()
 
     @validator('authors', pre=True)
     def extract_author_names(cls, values):
@@ -137,7 +137,7 @@ class ZenodoRecord(BaseRecord):
             title=self.title,
             authors=[creator.name for creator in self.creators],
             repo_type=RepositoryType.ZENODO,
-            submitted=self.modified,
+            submitted=datetime.utcnow(),
             identifier=identifier,
         )
 
@@ -160,7 +160,7 @@ class HydroShareRecord(BaseRecord):
             title=self.title,
             authors=[creator.name for creator in self.creators],
             repo_type=RepositoryType.HYDROSHARE,
-            submitted=self.modified,
+            submitted=datetime.utcnow(),
             identifier=identifier,
         )
 
@@ -178,7 +178,7 @@ class ExternalRecord(BaseRecord):
             title=self.name,
             authors=[creator.name for creator in self.creators],
             repo_type=RepositoryType.EXTERNAL,
-            submitted=datetime.now(),
+            submitted=datetime.utcnow(),
             identifier=identifier,
         )
 
@@ -188,7 +188,7 @@ class GitLabRecord(BaseRecord):
     content: str = None
     file_path: str = None
     creators: List[str] = []
-    submitted: datetime = datetime.now()
+    submitted: datetime = datetime.utcnow()
 
     @validator("content")
     def base64_decode(cls, value):
