@@ -34,7 +34,7 @@
     },
     {
       "type": "Group",
-      "label": "Rigths",
+      "label": "Rights",
       "elements": [
         {
           "type": "Control",
