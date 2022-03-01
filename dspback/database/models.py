@@ -80,6 +80,7 @@ class RepositorySubmissionTable(Base):
     repo_type = Column(String(length=64), nullable=False)
     submitted = Column(DateTime, default=datetime.utcnow)
     user_id = Column(Integer, ForeignKey('user.id'))
+    url = Column(String())
     metadata_json = Column(String(), nullable=True)
 
     UniqueConstraint('identifier')
