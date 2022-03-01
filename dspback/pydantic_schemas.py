@@ -4,7 +4,9 @@ from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, root_validator, validator
+from pydantic import BaseModel, Field, HttpUrl, root_validator, validator
+
+from dspback.config import get_settings
 
 
 class ORCIDResponse(BaseModel):
@@ -70,6 +72,7 @@ class SubmissionBase(BaseModel):
     repo_type: RepositoryType = None
     identifier: str = None
     submitted: datetime = datetime.utcnow()
+    url: HttpUrl = None
 
     @validator('authors', pre=True)
     def extract_author_names(cls, values):
@@ -139,6 +142,7 @@ class ZenodoRecord(BaseRecord):
             repo_type=RepositoryType.ZENODO,
             submitted=datetime.utcnow(),
             identifier=identifier,
+            url=get_settings().zenodo_view_url.format(identifier),
         )
 
 
@@ -162,6 +166,7 @@ class HydroShareRecord(BaseRecord):
             repo_type=RepositoryType.HYDROSHARE,
             submitted=datetime.utcnow(),
             identifier=identifier,
+            url=get_settings().hydroshare_view_url.format(identifier),
         )
 
 

@@ -4,6 +4,7 @@ from datetime import datetime
 
 import pytest
 
+from dspback.config import get_settings
 from dspback.pydantic_schemas import HydroShareRecord, RepositoryType, ZenodoRecord
 
 
@@ -35,6 +36,7 @@ def test_hydroshare_to_submission(hydroshare):
     assert hs_submission.repo_type == RepositoryType.HYDROSHARE
     assert hs_submission.submitted <= datetime.utcnow()
     assert hs_submission.identifier == '470e2ef676e947e5ab2628556c309122'
+    assert str(hs_submission.url) == get_settings().hydroshare_view_url.format(hs_record.identifier)
 
 
 def test_zenodo_to_submission(zenodo):
@@ -46,3 +48,4 @@ def test_zenodo_to_submission(zenodo):
     assert zenodo_submission.repo_type == RepositoryType.ZENODO
     assert zenodo_submission.submitted <= datetime.utcnow()
     assert zenodo_submission.identifier == zenodo_record.record_id
+    assert str(zenodo_submission.url) == get_settings().zenodo_view_url.format(zenodo_record.record_id)
