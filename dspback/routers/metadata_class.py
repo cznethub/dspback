@@ -138,7 +138,8 @@ class HydroShareMetadataRoutes(MetadataRoutes):
 
     @router.put('/submit/hydroshare/{identifier}', name="submit")
     async def submit_repository_record(self, identifier: str):
-        await self.submit(identifier)
+        json_metadata = await self.submit(identifier)
+        return json_metadata
 
 
 @cbv(router)
@@ -212,7 +213,8 @@ class ZenodoMetadataRoutes(MetadataRoutes):
 
     @router.put('/submit/zenodo/{identifier}', name="submit")
     async def submit_repository_record(self, identifier: str):
-        await self.submit(identifier)
+        json_metadata = await self.submit(identifier)
+        return json_metadata["metadata"]
 
 
 @cbv(router)
