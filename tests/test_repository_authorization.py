@@ -7,17 +7,7 @@ from fastapi.testclient import TestClient
 
 from dspback.dependencies import url_for
 from dspback.main import app
-from tests.routers import authorize_response, prefix
-
-client = TestClient(app)
-
-
-@pytest.fixture
-def user_cookie(authorize_response):
-    with patch.object(StarletteRemoteApp, 'authorize_access_token', return_value=authorize_response):
-        response = client.get(prefix + "/auth", allow_redirects=False)
-        assert response.status_code == 200
-        return response.text
+from tests import authorize_response, change_test_dir, client, prefix, user_cookie
 
 
 def test_authorize_repository(user_cookie):

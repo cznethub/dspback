@@ -22,6 +22,7 @@ def create_or_update_submission(
         identifier=submission.identifier,
         user_id=user.id,
         metadata_json=metadata_json,
+        url=submission.url,
     )
     db.add(db_repository_submission)
     db.flush()

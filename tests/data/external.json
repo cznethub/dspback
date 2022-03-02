@@ -1,0 +1,66 @@
+{
+  "name": "string",
+  "description": "string",
+  "keywords": [
+    "string"
+  ],
+  "creators": [
+    {
+      "name": "string",
+      "organization": "string",
+      "email": "user@example.com",
+      "orcid": "string"
+    }
+  ],
+  "contributors": [
+    {
+      "name": "string",
+      "organization": "string",
+      "email": "user@example.com",
+      "orcid": "string"
+    }
+  ],
+  "license": {
+    "name": "string",
+    "description": "string",
+    "url": "http://hydroshare.org"
+  },
+  "funders": [
+    {
+      "fundingAgency": "string",
+      "awardNumber": "string",
+      "awardName": "string",
+      "awardURL": "http://hydroshare.org"
+    }
+  ],
+  "relations": [
+    {
+      "type": "The content of this resource can be executed by",
+      "value": "string"
+    }
+  ],
+  "notes": "string",
+  "version": "string",
+  "url": "http://hydroshare.org",
+  "identifier": "string",
+  "temporalCoverage": {
+    "name": "string",
+    "start": "2022-03-02T04:12:19.432Z",
+    "end": "2022-03-02T04:12:19.432Z"
+  },
+  "spatialCoverage": {
+    "type": "string",
+    "name": "string",
+    "east": 0,
+    "north": 0,
+    "units": "string",
+    "projection": "string"
+  },
+  "provider": {
+    "name": "string",
+    "url": "http://hydroshare.org"
+  },
+  "dateCreated": "2022-03-02T04:12:19.432Z",
+  "dateModified": "2022-03-02T04:12:19.432Z",
+  "datePublished": "2022-03-02T04:12:19.432Z"
+}

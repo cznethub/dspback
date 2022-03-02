@@ -6,25 +6,7 @@ import pytest
 
 from dspback.config import get_settings
 from dspback.pydantic_schemas import HydroShareRecord, RepositoryType, ZenodoRecord
-
-
-@pytest.fixture(scope="function")
-def change_test_dir(request):
-    os.chdir(request.fspath.dirname)
-    yield
-    os.chdir(request.config.invocation_dir)
-
-
-@pytest.fixture
-def hydroshare(change_test_dir):
-    with open("data/hydroshare.json", "r") as f:
-        return json.loads(f.read())
-
-
-@pytest.fixture
-def zenodo(change_test_dir):
-    with open("data/zenodo.json", "r") as f:
-        return json.loads(f.read())
+from tests import change_test_dir, hydroshare, zenodo
 
 
 def test_hydroshare_to_submission(hydroshare):
