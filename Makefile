@@ -21,6 +21,10 @@ test-cov:
 	docker exec dsp_dev_dspback pytest tests --cov=dspback --cov-report html
 	docker cp dsp_dev_dspback:htmlcov .
 
+.PHONY: test-cov-gh-action
+test-cov-gh-action:
+	docker exec dsp_dev_dspback pytest --cache-clear --cov=app test/ > pytest-coverage.txt
+
 .PHONY: up
 up:
 	docker-compose --env-file .env up
