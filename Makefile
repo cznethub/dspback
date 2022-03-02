@@ -23,7 +23,7 @@ test-cov:
 
 .PHONY: test-cov-gh-action
 test-cov-gh-action:
-	docker exec dsp_dev_dspback pytest --cache-clear --cov=app test/ > pytest-coverage.txt
+	docker exec dsp_dev_dspback pytest tests --cov=dspback --cache-clear > pytest-coverage.txt
 
 .PHONY: up
 up:
