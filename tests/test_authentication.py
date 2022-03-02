@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 
 from dspback.dependencies import url_for
 from dspback.main import app
-from tests.routers import authorize_response, prefix
+from tests import authorize_response, prefix
 
 client = TestClient(app)
 

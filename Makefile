@@ -14,11 +14,12 @@ install:
 
 .PHONY: test
 test:
-	docker exec dsp_dev_dspback pytest tests
+	docker exec dsp_dev_dspback pytest tests -vv
 
 .PHONY: test-cov
 test-cov:
 	docker exec dsp_dev_dspback pytest tests --cov=dspback --cov-report html
+	docker cp dsp_dev_dspback:htmlcov .
 
 .PHONY: up
 up:
