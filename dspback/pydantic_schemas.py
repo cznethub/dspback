@@ -136,13 +136,15 @@ class ZenodoRecord(BaseRecord):
         return values
 
     def to_submission(self, identifier) -> Submission:
+        settings = get_settings()
+        view_url = settings.zenodo_view_url % identifier
         return Submission(
             title=self.title,
             authors=[creator.name for creator in self.creators],
             repo_type=RepositoryType.ZENODO,
             submitted=datetime.utcnow(),
             identifier=identifier,
-            url=get_settings().zenodo_view_url.format(identifier),
+            url=view_url,
         )
 
 
@@ -160,13 +162,16 @@ class HydroShareRecord(BaseRecord):
         return value.split("/")[-1]
 
     def to_submission(self, identifier) -> Submission:
+        settings = get_settings()
+        view_url = settings.hydroshare_view_url
+        view_url = view_url % identifier
         return Submission(
             title=self.title,
             authors=[creator.name for creator in self.creators],
             repo_type=RepositoryType.HYDROSHARE,
             submitted=datetime.utcnow(),
             identifier=identifier,
-            url=get_settings().hydroshare_view_url.format(identifier),
+            url=view_url,
         )
 
 
@@ -177,6 +182,7 @@ class ExternalRecord(BaseRecord):
     name: str = None
     creators: List[Creator] = []
     identifier: str = None
+    url: HttpUrl = None
 
     def to_submission(self, identifier) -> Submission:
         return Submission(
@@ -185,32 +191,5 @@ class ExternalRecord(BaseRecord):
             repo_type=RepositoryType.EXTERNAL,
             submitted=datetime.utcnow(),
             identifier=identifier,
-        )
-
-
-class GitLabRecord(BaseRecord):
-
-    content: str = None
-    file_path: str = None
-    creators: List[str] = []
-    submitted: datetime = datetime.utcnow()
-
-    @validator("content")
-    def base64_decode(cls, value):
-        try:
-            decodedBytes = base64.b64decode(value)
-        except Exception:
-            return value
-        decodedStr = str(decodedBytes, "utf-8")
-        return decodedStr
-
-    def to_submission(self, identifier) -> Submission:
-        content = json.loads(self.content)
-        # TODO content should have creators and moified?  or maybe pull that from the commit?
-        return Submission(
-            title=content['title'],
-            authors=[creator.name for creator in self.creators],
-            repo_type=RepositoryType.GITLAB,
-            submitted=self.submitted,
-            identifier=identifier,
+            url=self.url,
         )

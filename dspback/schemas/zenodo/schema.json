@@ -359,7 +359,6 @@
   "required": [
     "title",
     "description",
-    "keywords",
-    "creators"
+    "keywords"
   ]
 }
