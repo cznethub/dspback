@@ -37,6 +37,18 @@ def authorize_response():
 
 
 @pytest.fixture
+def authorize_response_hydroshare():
+    return {
+        'access_token': 'ASbna3fKiyb2wZWZBKnIipircDPVwa',
+        'expires_in': 2592000,
+        'token_type': 'Bearer',
+        'scope': 'read write',
+        'refresh_token': 'lJtWoBkGwdfjRpg7PCu4R9XpPbYTG3',
+        'expires_at': 1648834993,
+    }
+
+
+@pytest.fixture
 def user_cookie(authorize_response):
     with patch.object(StarletteRemoteApp, 'authorize_access_token', return_value=authorize_response):
         response = client.get(prefix + "/auth", allow_redirects=False)
