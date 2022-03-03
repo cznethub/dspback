@@ -5,8 +5,8 @@ from datetime import datetime
 import pytest
 
 from dspback.config import get_settings
-from dspback.pydantic_schemas import HydroShareRecord, RepositoryType, ZenodoRecord
-from tests import change_test_dir, hydroshare, zenodo
+from dspback.pydantic_schemas import ExternalRecord, HydroShareRecord, RepositoryType, ZenodoRecord
+from tests import change_test_dir, external, hydroshare, zenodo
 
 
 def test_hydroshare_to_submission(hydroshare):
@@ -18,7 +18,8 @@ def test_hydroshare_to_submission(hydroshare):
     assert hs_submission.repo_type == RepositoryType.HYDROSHARE
     assert hs_submission.submitted <= datetime.utcnow()
     assert hs_submission.identifier == '470e2ef676e947e5ab2628556c309122'
-    assert str(hs_submission.url) == get_settings().hydroshare_view_url.format(hs_record.identifier)
+    assert hs_submission.identifier == hs_record.identifier
+    assert hs_submission.url == get_settings().hydroshare_view_url % hs_record.identifier
 
 
 def test_zenodo_to_submission(zenodo):
@@ -30,4 +31,16 @@ def test_zenodo_to_submission(zenodo):
     assert zenodo_submission.repo_type == RepositoryType.ZENODO
     assert zenodo_submission.submitted <= datetime.utcnow()
     assert zenodo_submission.identifier == zenodo_record.record_id
-    assert str(zenodo_submission.url) == get_settings().zenodo_view_url.format(zenodo_record.record_id)
+    assert zenodo_submission.url == get_settings().zenodo_view_url % zenodo_record.record_id
+
+
+def test_external_to_submission(external):
+    external_record = ExternalRecord(**external)
+    external_submission = external_record.to_submission("947940")
+
+    assert external_submission.title == external_record.name
+    assert external_submission.authors == [creator.name for creator in external_record.creators]
+    assert external_submission.repo_type == RepositoryType.EXTERNAL
+    assert external_submission.submitted <= datetime.utcnow()
+    assert external_submission.identifier == "947940"
+    assert external_submission.url == external_record.url
