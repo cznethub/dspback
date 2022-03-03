@@ -1,11 +1,21 @@
+from unittest.mock import patch
 from urllib.parse import unquote
 
 import pytest
+from authlib.integrations.starlette_client import StarletteRemoteApp
 from fastapi.testclient import TestClient
 
 from dspback.dependencies import url_for
 from dspback.main import app
-from tests import authorize_response, change_test_dir, external, prefix, user_cookie
+from tests import (
+    authorize_response,
+    authorize_response_hydroshare,
+    change_test_dir,
+    external,
+    hydroshare,
+    prefix,
+    user_cookie,
+)
 
 client = TestClient(app)
 
@@ -16,7 +26,7 @@ def submission_check(access_token):
     return len(response_json)
 
 
-def new_record(user_cookie, external):
+def new_external_record(user_cookie, external):
     response = client.post(prefix + "/metadata/external?access_token=" + user_cookie, json=external)
     response_json = response.json()
     return response_json["identifier"]
@@ -25,13 +35,13 @@ def new_record(user_cookie, external):
 def test_create_external_record(user_cookie, external):
     assert submission_check(str(user_cookie)) == 0
 
-    assert len(new_record(user_cookie, external)) == 36
+    assert len(new_external_record(user_cookie, external)) == 36
 
     assert submission_check(str(user_cookie)) == 1
 
 
 def test_update_external_record(user_cookie, external):
-    identifier = new_record(user_cookie, external)
+    identifier = new_external_record(user_cookie, external)
 
     external["name"] = "updated title"
     response = client.put(prefix + "/metadata/external/" + identifier + "?access_token=" + user_cookie, json=external)
@@ -40,7 +50,7 @@ def test_update_external_record(user_cookie, external):
 
 
 def test_get_external_record(user_cookie, external):
-    identifier = new_record(user_cookie, external)
+    identifier = new_external_record(user_cookie, external)
 
     response = client.get(prefix + "/metadata/external/" + identifier + "?access_token=" + user_cookie)
 
@@ -48,10 +58,41 @@ def test_get_external_record(user_cookie, external):
 
 
 def test_delete_external_record(user_cookie, external):
-    identifier = new_record(user_cookie, external)
+    identifier = new_external_record(user_cookie, external)
 
     assert submission_check(str(user_cookie)) == 1
 
-    response = client.delete(prefix + "/metadata/external/" + identifier + "?access_token=" + user_cookie)
+    client.delete(prefix + "/metadata/external/" + identifier + "?access_token=" + user_cookie)
 
     assert submission_check(str(user_cookie)) == 0
+
+
+def new_hydroshare_record(user_cookie, hydroshare, authorize_response_hydroshare):
+    # patch the access token for the repository
+    with patch.object(StarletteRemoteApp, 'authorize_access_token', return_value=authorize_response_hydroshare):
+        response = client.get(prefix + "/auth/hydroshare?access_token=" + user_cookie, allow_redirects=False)
+    response = client.get(prefix + "/access_token/hydroshare?access_token=" + user_cookie, allow_redirects=False)
+
+    # patch the call to HydroShre
+    with patch.object(StarletteRemoteApp, 'authorize_access_token', return_value=authorize_response_hydroshare):
+        response = client.get(prefix + "/auth/hydroshare?access_token=" + user_cookie, allow_redirects=False)
+    response = client.get(prefix + "/access_token/hydroshare?access_token=" + user_cookie, allow_redirects=False)
+
+    # create the record
+    response = client.post(prefix + "/metadata/hydroshare?access_token=" + user_cookie, json=hydroshare)
+    response_json = response.json()
+    return response_json["identifier"]
+
+
+def test_unauthorized_hydroshare(user_cookie, hydroshare):
+    response = client.post(prefix + "/metadata/hydroshare?access_token=" + user_cookie, json=hydroshare)
+    assert response.status_code == 403
+    assert response.text == '{"detail":"User has not authorized permissions with hydroshare"}'
+
+
+def test_create_hydroshare_record(user_cookie, hydroshare, authorize_response_hydroshare):
+    assert submission_check(str(user_cookie)) == 0
+
+    assert len(new_hydroshare_record(user_cookie, hydroshare, authorize_response_hydroshare)) == 68
+
+    assert submission_check(str(user_cookie)) == 1

@@ -13,7 +13,7 @@ from dspback.config import repository_config
 from dspback.database.models import RepositoryTokenTable, UserTable
 from dspback.database.procedures import delete_submission
 from dspback.dependencies import get_current_user, get_db
-from dspback.pydantic_schemas import RepositoryType
+from dspback.pydantic_schemas import RepositoryType, SubmissionBase
 from dspback.routers.submissions import submit_record
 from dspback.schemas.earthchem.model import Ecl20
 from dspback.schemas.external.model import GenericDatasetSchemaForCzNetDataSubmissionPortalV100
@@ -33,6 +33,10 @@ class MetadataRoutes:
     @property
     def access_token(self):
         repository_token: RepositoryTokenTable = self.user.repository_token(self.db, self.repository_type)
+        if not repository_token:
+            raise HTTPException(
+                status_code=403, detail=f"User has not authorized permissions with {self.repository_type}"
+            )
         return repository_token.access_token
 
     async def submit(self, identifier, json_metadata=None):
@@ -77,7 +81,9 @@ class HydroShareMetadataRoutes(MetadataRoutes):
     repository_type = RepositoryType.HYDROSHARE
 
     @router.post('/metadata/hydroshare')
-    async def create_metadata_repository(self, metadata: request_model) -> response_model:
+    async def create_metadata_repository(
+        self, metadata: request_model, response_model_exclude_unset=True, response_model=response_model
+    ):
         response = requests.post(
             self.create_url,
             params={"access_token": self.access_token},
@@ -95,7 +101,9 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         return JSONResponse(json_metadata, status_code=201)
 
     @router.put('/metadata/hydroshare/{identifier}')
-    async def update_metadata(self, metadata: request_model, identifier) -> response_model:
+    async def update_metadata(
+        self, metadata: request_model, identifier, response_model_exclude_unset=True, response_model=response_model
+    ):
         response = requests.put(
             self.update_url % identifier,
             data=metadata.json(skip_defaults=True),
@@ -118,7 +126,9 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         return json_metadata
 
     @router.get('/metadata/hydroshare/{identifier}')
-    async def get_metadata_repository(self, identifier):
+    async def get_metadata_repository(
+        self, identifier, response_model_exclude_unset=True, response_model=response_model
+    ):
         json_metadata = await self._retrieve_metadata_from_repository(identifier)
         await self.submit(identifier=identifier, json_metadata=json_metadata)
         # workaround for rendering dict with key/value forms
@@ -137,7 +147,9 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         delete_submission(self.db, self.repository_type, identifier, self.user)
 
     @router.put('/submit/hydroshare/{identifier}', name="submit")
-    async def submit_repository_record(self, identifier: str):
+    async def submit_repository_record(
+        self, identifier: str, response_model_exclude_unset=True, response_model=response_model
+    ):
         json_metadata = await self.submit(identifier)
         return json_metadata
 
@@ -151,7 +163,9 @@ class ZenodoMetadataRoutes(MetadataRoutes):
     repository_type = RepositoryType.ZENODO
 
     @router.post('/metadata/zenodo')
-    async def create_metadata_repository(self, metadata: request_model) -> response_model:
+    async def create_metadata_repository(
+        self, metadata: request_model, response_model_exclude_unset=True
+    ) -> response_model:
         metadata_json = {"metadata": json.loads(metadata.json(exclude_none=True))}
         response = requests.post(
             self.create_url,
@@ -170,7 +184,13 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         return JSONResponse(json_metadata, status_code=201)
 
     @router.put('/metadata/zenodo/{identifier}')
-    async def update_metadata(self, metadata: request_model_update, identifier) -> response_model:
+    async def update_metadata(
+        self,
+        metadata: request_model_update,
+        identifier,
+        response_model_exclude_unset=True,
+        response_model=response_model,
+    ):
         existing_metadata = await self.get_metadata_repository(identifier)
         incoming_metadata = metadata.json(skip_defaults=True, exclude_unset=True)
         merged_metadata = {"metadata": {**existing_metadata, **json.loads(incoming_metadata)}}
@@ -197,7 +217,9 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         return json_metadata
 
     @router.get('/metadata/zenodo/{identifier}')
-    async def get_metadata_repository(self, identifier) -> response_model:
+    async def get_metadata_repository(
+        self, identifier, response_model_exclude_unset=True, response_model=response_model
+    ):
         json_metadata = await self._retrieve_metadata_from_repository(identifier)
         await self.submit(identifier=identifier, json_metadata=json_metadata)
         return json_metadata["metadata"]
@@ -212,7 +234,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         delete_submission(self.db, self.repository_type, identifier, self.user)
 
     @router.put('/submit/zenodo/{identifier}', name="submit")
-    async def submit_repository_record(self, identifier: str):
+    async def submit_repository_record(self, identifier: str, response_model=SubmissionBase):
         json_metadata = await self.submit(identifier)
         return json_metadata["metadata"]
 
@@ -257,16 +279,22 @@ class ExternalMetadataRoutes(MetadataRoutes):
     repository_type = RepositoryType.EXTERNAL
 
     @router.post('/metadata/external')
-    async def create_metadata_repository(self, metadata: request_model) -> response_model:
+    async def create_metadata_repository(
+        self, metadata: request_model, response_model_exclude_unset=True, response_model=response_model
+    ):
         metadata.identifier = str(uuid.uuid4())
         return await self.submit(metadata.identifier, metadata.dict())
 
     @router.put('/metadata/external/{identifier}')
-    async def update_metadata(self, metadata: request_model, identifier) -> response_model:
+    async def update_metadata(
+        self, metadata: request_model, identifier, response_model_exclude_unset=True, response_model=response_model
+    ):
         return await self.submit(identifier, metadata.dict())
 
     @router.get('/metadata/external/{identifier}')
-    async def get_metadata_repository(self, identifier) -> response_model:
+    async def get_metadata_repository(
+        self, identifier, response_model_exclude_unset=True, response_model=response_model
+    ):
         submission = self.user.submission(self.db, identifier)
         metadata_json_str = submission.metadata_json
         metadata_json = json.loads(metadata_json_str)
