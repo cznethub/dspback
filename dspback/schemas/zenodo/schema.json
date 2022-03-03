@@ -172,7 +172,7 @@
     },
     "license": {
       "title": "License",
-      "type": "object",
+      "type": "string",
       "description": "License for embargoed/open access content."
     },
     "notes": {
@@ -359,6 +359,8 @@
   },
   "required": [
     "title",
-    "description"
+    "description",
+    "keywords",
+    "creators"
   ]
 }
