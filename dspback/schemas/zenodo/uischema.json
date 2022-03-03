@@ -52,9 +52,12 @@
           "type": "Control",
           "scope": "#/properties/embargo_date",
           "rule": {
-            "effect": "HIDE",
+            "effect": "DISABLE",
             "condition": {
-              "scope": "#/properties/access_right"
+              "scope": "#/properties/access_right",
+              "schema": {
+                "enum": ["open"]
+              }
             }
           }
         },

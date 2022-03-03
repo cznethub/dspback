@@ -1,6 +1,5 @@
 {
   "title": "Zenodo Datasets Schema for CZ Net v1.0.0",
-  "description": "A dataset object submitted to the Zenodo repository",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -172,7 +171,7 @@
     },
     "license": {
       "title": "License",
-      "type": "object",
+      "type": "string",
       "description": "License for embargoed/open access content."
     },
     "notes": {
@@ -359,6 +358,8 @@
   },
   "required": [
     "title",
-    "description"
+    "description",
+    "keywords",
+    "creators"
   ]
 }

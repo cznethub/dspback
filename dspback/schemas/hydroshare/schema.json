@@ -123,6 +123,12 @@
       "type": "string"
     }
   },
+  "required": [
+    "title",
+    "abstract",
+    "subjects",
+    "creators"
+  ],
   "definitions": {
     "Creator": {
       "title": "Creator Metadata",
