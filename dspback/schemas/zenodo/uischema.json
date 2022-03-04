@@ -6,34 +6,58 @@
       "label": "Basic Information",
       "elements": [
         {
-          "type": "Control",
-          "scope": "#/properties/title"
-        },
+          "type": "HorizontalLayout",
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/title"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/keywords"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/version"
+                }
+              ]
+            },
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/description",
+                  "options": {
+                    "multi": true
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/notes",
+                  "options": {
+                    "multi": true
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "HorizontalLayout",
+      "elements": [
         {
           "type": "Control",
           "scope": "#/properties/creators"
         },
         {
           "type": "Control",
-          "scope": "#/properties/description",
-          "options": {
-            "multi": true
-          }
-        },
-        {
-          "type": "Control",
-          "scope": "#/properties/version"
-        },
-        {
-          "type": "Control",
-          "scope": "#/properties/keywords"
-        },
-        {
-          "type": "Control",
-          "scope": "#/properties/notes",
-          "options": {
-            "multi": true
-          }
+          "scope": "#/properties/contributors"
         }
       ]
     },
@@ -42,38 +66,50 @@
       "label": "License",
       "elements": [
         {
-          "type": "Control",
-          "scope": "#/properties/access_right",
-          "options": {
-            "format": "radio"
-          }
-        },
-        {
-          "type": "Control",
-          "scope": "#/properties/embargo_date",
-          "rule": {
-            "effect": "DISABLE",
-            "condition": {
-              "scope": "#/properties/access_right",
-              "schema": {
-                "enum": ["open"]
-              }
+          "type": "HorizontalLayout",
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/access_right",
+                  "options": {
+                    "format": "radio"
+                  }
+                },
+                
+                {
+                  "type": "Control",
+                  "scope": "#/properties/embargo_date",
+                  "rule": {
+                    "effect": "DISABLE",
+                    "condition": {
+                      "scope": "#/properties/access_right",
+                      "schema": {
+                        "enum": ["open"]
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/license"
+                }
+              ]
             }
-          }
-        },
-        {
-          "type": "Control",
-          "scope": "#/properties/license"
+          ]
         }
       ]
     },
     {
       "type": "Control",
       "scope": "#/properties/communities"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/contributors"
     },
     {
       "type": "Control",

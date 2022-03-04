@@ -167,7 +167,10 @@
         "title": "Keyword",
         "type": "string"
       },
-      "default": ["CZNet"]
+      "default": ["CZNet"],
+      "contains": {
+        "const": "CZNet"
+      }
     },
     "license": {
       "title": "License",

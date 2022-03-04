@@ -17,7 +17,10 @@
     "subjects": {
       "title": "Subject keywords",
       "description": "A list of keyword strings expressing the topic of a resource",
-      "default": [],
+      "default": ["CZNet"],
+      "contains": {
+        "const": "CZNet"
+      },
       "type": "array",
       "items": {
         "type": "string"

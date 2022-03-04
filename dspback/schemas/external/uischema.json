@@ -1,25 +1,51 @@
 {
   "type": "VerticalLayout",
   "elements": [
-    {
-      "type": "Control",
-      "scope": "#/properties/name"
+    { 
+      "type": "Group",
+      "label": "Basic Information",
+      "elements": [
+        {
+          "type": "HorizontalLayout",
+          "elements": [
+            {
+              "type": "VerticallLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/name"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/keywords"
+                }
+              ]
+            },
+            {
+              "type": "VerticallLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/description"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
-      "type": "Control",
-      "scope": "#/properties/description"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/keywords"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/creators"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/contributors"
+      "type": "HorizontalLayout",
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/creators"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/contributors"
+        }
+      ]
     },
     {
       "type": "Control",
