@@ -255,25 +255,6 @@
               "obsoletes",
               "isPublishedIn"
             ]
-          },
-          "resource_type": {
-            "title": "Resource type",
-            "type": "object",
-            "description": "Resource type of the related item.",
-            "additionalProperties": false,
-            "properties": {
-              "subtype": {
-                "title": "Subtype",
-                "type": "string",
-                "description": "Specific resource type."
-              },
-              "type": {
-                "title": "General resource type",
-                "type": "string",
-                "description": "General resource type.",
-                "default": "publication"
-              }
-            }
           }
         },
         "required": [
