@@ -176,8 +176,8 @@
           "type": "string"
         },
         "description": {
-          "title": "HydroShare Profile URL",
-          "description": "A string containing the URL to the hydroshare profile",
+          "title": "HydroShare Profile",
+          "description": "A string containing the path to the hydroshare profile",
           "maxLength": 50,
           "type": "string"
         },
