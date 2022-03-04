@@ -129,8 +129,7 @@
   "required": [
     "title",
     "abstract",
-    "subjects",
-    "creators"
+    "subjects"
   ],
   "definitions": {
     "Creator": {
@@ -259,16 +258,22 @@
       "title": "RelationType",
       "description": "An enumeration.",
       "enum": [
-        "The content of this resource was copied from",
         "The content of this resource is part of",
-        "Has Part",
-        "The content of this resource can be executed by",
+        "This resource includes",
+        "The content of this resource was created by a related App or software program",
         "The content of this resource was created by",
-        "Version Of",
-        "Replaced By",
-        "The content of this resource serves as the data for",
-        "This resource cites",
-        "This resource is described by"
+        "This resource updates and replaces a previous version",
+        "This resource has been replaced by a newer version",
+        "This resource is described by",
+        "This resource conforms to established standard described by",
+        "This resource has a related resource in another format",
+        "This resource is a different format of",
+        "This resource is required by",
+        "This resource requires",
+        "This resource is referenced by",
+        "The content of this resource references",
+        "This resource replaces",
+        "The content of this resource is derived from"
       ],
       "type": "string"
     },
