@@ -43,4 +43,4 @@ build:
 
 .PHONY: bash
 bash:
-	docker exec dsp_dev_dspback -it /bin/bash
+	docker exec -it dsp_dev_dspback /bin/bash

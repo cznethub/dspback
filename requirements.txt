@@ -9,7 +9,7 @@ uvicorn
 requests
 requests-oauthlib
 itsdangerous
-hsclient
+hsmodels
 psycopg2-binary
 pydantic[dotenv]
 asyncpg
