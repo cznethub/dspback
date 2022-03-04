@@ -17,7 +17,10 @@
     "subjects": {
       "title": "Subject keywords",
       "description": "A list of keyword strings expressing the topic of a resource",
-      "default": [],
+      "default": ["CZNet"],
+      "contains": {
+        "const": "CZNet"
+      },
       "type": "array",
       "items": {
         "type": "string"
@@ -174,8 +177,8 @@
           "type": "string"
         },
         "description": {
-          "title": "HydroShare Profile",
-          "description": "A string containing the path to the hydroshare profile",
+          "title": "HydroShare Profile URL",
+          "description": "A string containing the URL to the hydroshare profile",
           "maxLength": 50,
           "type": "string"
         },
