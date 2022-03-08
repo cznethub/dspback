@@ -180,18 +180,6 @@
           "description": "A string containing the path to the hydroshare profile",
           "maxLength": 50,
           "type": "string"
-        },
-        "identifiers": {
-          "title": "Creator identifiers",
-          "description": "A dictionary containing identifier types and URL links to alternative identifiers for the creator",
-          "default": {},
-          "type": "object",
-          "additionalProperties": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 65536,
-            "format": "uri"
-          }
         }
       }
     },
@@ -239,18 +227,6 @@
           "description": "A string containing the path to the hydroshare profile",
           "maxLength": 50,
           "type": "string"
-        },
-        "identifiers": {
-          "title": "Contributor identifiers",
-          "description": "A dictionary containing identifier types and URL links to alternative identiers for the contributor",
-          "default": {},
-          "type": "object",
-          "additionalProperties": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 65536,
-            "format": "uri"
-          }
         }
       }
     },
