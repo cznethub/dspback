@@ -25,6 +25,10 @@
       "items": {
         "title": "Community identifier",
         "type": "string"
+      },
+      "default": ["czdata"],
+      "contains": {
+        "const": "czdata"
       }
     },
     "contributors": {
