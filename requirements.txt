@@ -9,9 +9,9 @@ uvicorn
 requests
 requests-oauthlib
 itsdangerous
-hsmodels
 psycopg2-binary
 pydantic[dotenv]
+pydantic[email]
 asyncpg
 SQLAlchemy
 pytest
