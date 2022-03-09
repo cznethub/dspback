@@ -67,11 +67,11 @@
           "elements": [
             {
               "type": "Control",
-              "scope": "#/definitions/rights/properties/statement"
+              "scope": "#/definitions/Rights/properties/statement"
             },
             {
               "type": "Control",
-              "scope": "#/definitions/rights/properties/url"
+              "scope": "#/definitions/Rights/properties/url"
             }
           ]
         }

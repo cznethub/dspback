@@ -5,7 +5,6 @@ import requests
 from fastapi import Depends, HTTPException
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
-from hsmodels.schemas.resource import ResourceMetadata, ResourceMetadataIn
 from requests import Session
 from starlette.responses import JSONResponse
 
@@ -17,6 +16,7 @@ from dspback.pydantic_schemas import RepositoryType, SubmissionBase
 from dspback.routers.submissions import submit_record
 from dspback.schemas.earthchem.model import Ecl20
 from dspback.schemas.external.model import GenericDatasetSchemaForCzNetDataSubmissionPortalV100
+from dspback.schemas.hydroshare.model import ResourceMetadata
 from dspback.schemas.zenodo.model import NotRequiredZenodo, ResponseModelZenodo, ZenodoDatasetsSchemaForCzNetV100
 
 router = InferringRouter()
@@ -76,11 +76,11 @@ class MetadataRoutes:
 @cbv(router)
 class HydroShareMetadataRoutes(MetadataRoutes):
 
-    request_model = ResourceMetadataIn
+    request_model = ResourceMetadata
     response_model = ResourceMetadata
     repository_type = RepositoryType.HYDROSHARE
 
-    @router.post('/metadata/hydroshare', response_model_exclude_unset=True)
+    @router.post('/metadata/hydroshare', response_model_exclude_unset=True, response_model=response_model)
     async def create_metadata_repository(self, metadata: request_model):
         response = requests.post(
             self.create_url,
@@ -98,7 +98,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
 
         return JSONResponse(json_metadata, status_code=201)
 
-    @router.put('/metadata/hydroshare/{identifier}', response_model_exclude_unset=True)
+    @router.put('/metadata/hydroshare/{identifier}', response_model_exclude_unset=True, response_model=response_model)
     async def update_metadata(self, metadata: request_model, identifier):
         response = requests.put(
             self.update_url % identifier,
@@ -126,7 +126,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
             json_metadata["additional_metadata"] = [{"key": key, "value": value} for key, value in as_dict.items()]
         return json_metadata
 
-    @router.get('/metadata/hydroshare/{identifier}', response_model_exclude_unset=True)
+    @router.get('/metadata/hydroshare/{identifier}', response_model_exclude_unset=True, response_model=response_model)
     async def get_metadata_repository(self, identifier):
         json_metadata = await self._retrieve_metadata_from_repository(identifier)
         # workaround for rendering dict with key/value forms
