@@ -6,60 +6,70 @@
       "label": "Basic Information",
       "elements": [
         {
+          "type": "Control",
+          "scope": "#/properties/title"
+        },
+        {
           "type": "HorizontalLayout",
           "elements": [
             {
-              "type": "VerticalLayout",
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/title"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/keywords"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/version"
-                }
-              ]
+              "type": "Control",
+              "scope": "#/properties/version"
             },
             {
-              "type": "VerticalLayout",
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/description",
-                  "options": {
-                    "multi": true
-                  }
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/notes",
-                  "options": {
-                    "multi": true
-                  }
+              "type": "Control",
+              "scope": "#/properties/upload_type",
+              "rule": {
+                "effect": "DISABLE",
+                "condition": {
+                  "scope": "#/properties/upload_type"
                 }
-              ]
+              }
             }
           ]
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/description",
+          "options": {
+            "multi": true
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/keywords"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/communities"
         }
       ]
     },
     {
-      "type": "HorizontalLayout",
-      "elements": [
+      "type": "Control",
+      "scope": "#/properties/creators"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/contributors"
+    },
+    {
+      "type": "Group",
+      "label": "Related Resource Information",
+      "elements":[
         {
           "type": "Control",
-          "scope": "#/properties/creators"
+          "scope": "#/properties/references"
         },
         {
           "type": "Control",
-          "scope": "#/properties/contributors"
+          "scope": "#/properties/related_identifiers"
         }
       ]
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/funding"
     },
     {
       "type": "Group",
@@ -109,32 +119,13 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/communities"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/funding"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/references"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/related_identifiers"
-    },
-    {
-      "type": "Control",
       "scope": "#/properties/subjects"
     },
     {
       "type": "Control",
-      "scope": "#/properties/upload_type",
-      "rule": {
-        "effect": "DISABLE",
-        "condition": {
-          "scope": "#/properties/upload_type"
-        }
+      "scope": "#/properties/notes",
+      "options": {
+        "multi": true
       }
     }
   ]

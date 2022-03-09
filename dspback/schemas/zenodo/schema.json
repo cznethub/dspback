@@ -25,6 +25,10 @@
       "items": {
         "title": "Community identifier",
         "type": "string"
+      },
+      "default": ["czdata"],
+      "contains": {
+        "enum": ["czdata"]
       }
     },
     "contributors": {
@@ -169,7 +173,7 @@
       },
       "default": ["CZNet"],
       "contains": {
-        "const": "CZNet"
+        "enum": ["CZNet"]
       }
     },
     "license": {

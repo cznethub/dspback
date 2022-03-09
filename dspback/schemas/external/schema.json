@@ -25,7 +25,10 @@
       "items": {
         "type": "string"
       },
-      "default": ["CZNet"]
+      "default": ["CZNet"],
+      "contains": {
+        "enum": ["CZNet"]
+      }
     },
     "creators": {
       "title": "Creators",

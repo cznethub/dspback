@@ -19,7 +19,7 @@
       "description": "A list of keyword strings expressing the topic of a resource",
       "default": ["CZNet"],
       "contains": {
-        "const": "CZNet"
+        "enum": ["CZNet"]
       },
       "type": "array",
       "items": {
