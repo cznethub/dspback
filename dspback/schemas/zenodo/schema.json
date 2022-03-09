@@ -28,7 +28,7 @@
       },
       "default": ["czdata"],
       "contains": {
-        "const": "czdata"
+        "enum": ["czdata"]
       }
     },
     "contributors": {
@@ -173,7 +173,7 @@
       },
       "default": ["CZNet"],
       "contains": {
-        "const": "CZNet"
+        "enum": ["CZNet"]
       }
     },
     "license": {
