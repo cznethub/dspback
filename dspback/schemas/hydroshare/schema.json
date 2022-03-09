@@ -56,20 +56,10 @@
     "additional_metadata": {
       "title": "Additional metadata",
       "description": "A dictionary containing key-value pair metadata associated with a resource",
-      "type": "array",
       "default": [],
+      "type": "array",
       "items": {
-        "type": "object",
-        "title": "Key-Value",
-        "description": "A key-value pair",
-        "properties": {
-          "key": {
-            "type": "string"
-          },
-          "value": {
-            "type": "string"
-          }
-        }
+        "$ref": "#/definitions/AdditionalMetadata"
       }
     },
     "rights": {
@@ -77,7 +67,7 @@
       "description": "An object containing information about rights held in an over a resource",
       "allOf": [
         {
-          "$ref": "#/definitions/rights"
+          "$ref": "#/definitions/Rights"
         }
       ]
     },
@@ -180,18 +170,6 @@
           "description": "A string containing the path to the hydroshare profile",
           "maxLength": 50,
           "type": "string"
-        },
-        "identifiers": {
-          "title": "Creator identifiers",
-          "description": "A dictionary containing identifier types and URL links to alternative identifiers for the creator",
-          "default": {},
-          "type": "object",
-          "additionalProperties": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 65536,
-            "format": "uri"
-          }
         }
       }
     },
@@ -239,18 +217,6 @@
           "description": "A string containing the path to the hydroshare profile",
           "maxLength": 50,
           "type": "string"
-        },
-        "identifiers": {
-          "title": "Contributor identifiers",
-          "description": "A dictionary containing identifier types and URL links to alternative identiers for the contributor",
-          "default": {},
-          "type": "object",
-          "additionalProperties": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 65536,
-            "format": "uri"
-          }
         }
       }
     },
@@ -303,9 +269,28 @@
         "value"
       ]
     },
-    "rights": {
+    "AdditionalMetadata": {
+      "title": "Key-Value",
+      "description": "A key-value pair",
+      "type": "object",
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "value"
+      ]
+    },
+    "Rights": {
       "title": "Rights Metadata",
-      "description": "",
+      "description": "A class used to represent the rights statement metadata associated with a resource",
       "type": "object",
       "properties": {
         "statement": {

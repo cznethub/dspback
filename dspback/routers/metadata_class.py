@@ -5,7 +5,6 @@ import requests
 from fastapi import Depends, HTTPException
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
-from hsmodels.schemas.resource import ResourceMetadata, ResourceMetadataIn
 from requests import Session
 from starlette.responses import JSONResponse
 
@@ -17,6 +16,7 @@ from dspback.pydantic_schemas import RepositoryType, SubmissionBase
 from dspback.routers.submissions import submit_record
 from dspback.schemas.earthchem.model import Ecl20
 from dspback.schemas.external.model import GenericDatasetSchemaForCzNetDataSubmissionPortalV100
+from dspback.schemas.hydroshare.model import ResourceMetadata
 from dspback.schemas.zenodo.model import NotRequiredZenodo, ResponseModelZenodo, ZenodoDatasetsSchemaForCzNetV100
 
 router = InferringRouter()
@@ -76,7 +76,7 @@ class MetadataRoutes:
 @cbv(router)
 class HydroShareMetadataRoutes(MetadataRoutes):
 
-    request_model = ResourceMetadataIn
+    request_model = ResourceMetadata
     response_model = ResourceMetadata
     repository_type = RepositoryType.HYDROSHARE
 
@@ -119,16 +119,18 @@ class HydroShareMetadataRoutes(MetadataRoutes):
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
         json_metadata = json.loads(response.text)
+        if "additional_metadata" in json_metadata:
+            # TODO add the key/value list to the hsmodels schema.
+            # add the response models back to the routes once hsmodels is updated.
+            as_dict = json_metadata["additional_metadata"]
+            json_metadata["additional_metadata"] = [{"key": key, "value": value} for key, value in as_dict.items()]
         return json_metadata
 
     @router.get('/metadata/hydroshare/{identifier}', response_model_exclude_unset=True, response_model=response_model)
     async def get_metadata_repository(self, identifier):
         json_metadata = await self._retrieve_metadata_from_repository(identifier)
-        await self.submit(identifier=identifier, json_metadata=json_metadata)
         # workaround for rendering dict with key/value forms
-        if "additional_metadata" in json_metadata:
-            as_dict = json_metadata["additional_metadata"]
-            json_metadata["additional_metadata"] = [{"key": key, "value": value} for key, value in as_dict.items()]
+        await self.submit(identifier=identifier, json_metadata=json_metadata)
         return json_metadata
 
     @router.delete('/metadata/hydroshare/{identifier}')
