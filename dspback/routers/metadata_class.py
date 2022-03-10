@@ -273,7 +273,9 @@ class ExternalMetadataRoutes(MetadataRoutes):
     @router.post('/metadata/external', response_model_exclude_unset=True, response_model=response_model)
     async def create_metadata_repository(self, metadata: request_model):
         metadata.identifier = str(uuid.uuid4())
-        return await self.submit(metadata.identifier, metadata.dict(), status_code=201)
+        metadata_json = json.loads(metadata.json())
+        metadata_json = await self.submit(metadata.identifier, metadata_json)
+        return JSONResponse(metadata_json, status_code=201)
 
     @router.put('/metadata/external/{identifier}', response_model_exclude_unset=True, response_model=response_model)
     async def update_metadata(self, metadata: request_model, identifier):
