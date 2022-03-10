@@ -91,31 +91,21 @@ class RelationType(Enum):
     The_content_of_this_resource_was_created_by_a_related_App_or_software_program = (
         'The content of this resource was created by a related App or software program'
     )
-    The_content_of_this_resource_was_created_by = (
-        'The content of this resource was created by'
-    )
-    This_resource_updates_and_replaces_a_previous_version = (
-        'This resource updates and replaces a previous version'
-    )
-    This_resource_has_been_replaced_by_a_newer_version = (
-        'This resource has been replaced by a newer version'
-    )
+    The_content_of_this_resource_was_created_by = 'The content of this resource was created by'
+    This_resource_updates_and_replaces_a_previous_version = 'This resource updates and replaces a previous version'
+    This_resource_has_been_replaced_by_a_newer_version = 'This resource has been replaced by a newer version'
     This_resource_is_described_by = 'This resource is described by'
     This_resource_conforms_to_established_standard_described_by = (
         'This resource conforms to established standard described by'
     )
-    This_resource_has_a_related_resource_in_another_format = (
-        'This resource has a related resource in another format'
-    )
+    This_resource_has_a_related_resource_in_another_format = 'This resource has a related resource in another format'
     This_resource_is_a_different_format_of = 'This resource is a different format of'
     This_resource_is_required_by = 'This resource is required by'
     This_resource_requires = 'This resource requires'
     This_resource_is_referenced_by = 'This resource is referenced by'
     The_content_of_this_resource_references = 'The content of this resource references'
     This_resource_replaces = 'This resource replaces'
-    The_content_of_this_resource_is_derived_from = (
-        'The content of this resource is derived from'
-    )
+    The_content_of_this_resource_is_derived_from = 'The content of this resource is derived from'
 
 
 class Relation(BaseModel):
@@ -285,9 +275,7 @@ class ResourceMetadata(BaseModel):
         description='A string containing the name given to a resource',
         title='Title',
     )
-    abstract: str = Field(
-        ..., description='A string containing a summary of a resource', title='Abstract'
-    )
+    abstract: str = Field(..., description='A string containing a summary of a resource', title='Abstract')
     subjects: List[str] = Field(
         ...,
         description='A list of keyword strings expressing the topic of a resource',

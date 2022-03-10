@@ -17,7 +17,7 @@ from dspback.routers.submissions import submit_record
 from dspback.schemas.earthchem.model import Ecl20
 from dspback.schemas.external.model import GenericDatasetSchemaForCzNetDataSubmissionPortalV100
 from dspback.schemas.hydroshare.model import ResourceMetadata
-from dspback.schemas.zenodo.model import NotRequiredZenodo, ResponseModelZenodo, ZenodoDatasetsSchemaForCzNetV100
+from dspback.schemas.zenodo.model import ZenodoDatasetsSchemaForCzNetV100
 
 router = InferringRouter()
 
@@ -157,8 +157,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
 class ZenodoMetadataRoutes(MetadataRoutes):
 
     request_model = ZenodoDatasetsSchemaForCzNetV100
-    request_model_update = NotRequiredZenodo
-    response_model = ResponseModelZenodo
+    response_model = ZenodoDatasetsSchemaForCzNetV100
     repository_type = RepositoryType.ZENODO
 
     @router.post('/metadata/zenodo', response_model_exclude_unset=True, response_model=response_model)
@@ -185,7 +184,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         response_model_exclude_unset=True,
         response_model=response_model,
     )
-    async def update_metadata(self, metadata: request_model_update, identifier):
+    async def update_metadata(self, metadata: request_model, identifier):
         existing_metadata = await self.get_metadata_repository(identifier)
         incoming_metadata = metadata.json(skip_defaults=True, exclude_unset=True)
         merged_metadata = {"metadata": {**existing_metadata, **json.loads(incoming_metadata)}}

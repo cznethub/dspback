@@ -193,7 +193,8 @@
         "CC-BY-NC-ND-4.0",
         "other-open",
         "other-at"
-      ]
+      ],
+      "default": "CC-BY-4.0"
     },
     "notes": {
       "title": "Additional notes",
