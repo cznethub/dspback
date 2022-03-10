@@ -137,7 +137,8 @@
   "required": [
     "title",
     "abstract",
-    "subjects"
+    "subjects",
+    "awards"
   ],
   "definitions": {
     "Creator": {
