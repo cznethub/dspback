@@ -36,27 +36,9 @@
       "scope": "#/properties/spatial_coverage"
     },
     {
-      "type": "Group",
+      "type": "Control",
       "label": "Period coverage",
-      "elements": [
-        {
-          "type": "HorizontalLayout",
-          "elements": [
-            {
-              "type": "Control",
-              "scope": "#/definitions/PeriodCoverage/properties/name"
-            },
-            {
-              "type": "Control",
-              "scope": "#/definitions/PeriodCoverage/properties/start"
-            },
-            {
-              "type": "Control",
-              "scope": "#/definitions/PeriodCoverage/properties/end"
-            }
-          ]
-        }        
-      ]
+      "scope": "#/properties/period_coverage"
     },
     {
       "type": "Control",

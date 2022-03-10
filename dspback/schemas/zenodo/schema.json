@@ -24,11 +24,15 @@
       "description": "List of community identifiers.",
       "items": {
         "title": "Community identifier",
-        "type": "string"
-      },
-      "default": ["czdata"],
-      "contains": {
-        "enum": ["czdata"]
+        "type": "object",
+        "properties": {
+          "identifier": {
+            "title": "Identifier",
+            "type": "string",
+            "description": "The community identifier"
+          }
+        },
+        "default": [{ "identifier": "czdata" }]
       }
     },
     "contributors": {
@@ -165,7 +169,7 @@
       "title": "Keywords",
       "type": "array",
       "description": "Free text keywords.",
-      "minItems": 1,
+      "minItems": 2,
       "uniqueItems": true,
       "items": {
         "title": "Keyword",
@@ -189,7 +193,8 @@
         "CC-BY-NC-ND-4.0",
         "other-open",
         "other-at"
-      ]
+      ],
+      "default": "CC-BY-4.0"
     },
     "notes": {
       "title": "Additional notes",

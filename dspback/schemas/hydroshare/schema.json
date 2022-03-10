@@ -18,6 +18,7 @@
       "title": "Subject keywords",
       "description": "A list of keyword strings expressing the topic of a resource",
       "default": ["CZNet"],
+      "minItems": 2,
       "contains": {
         "enum": ["CZNet"]
       },
