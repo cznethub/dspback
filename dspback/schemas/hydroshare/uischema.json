@@ -54,20 +54,14 @@
     },
     {
       "type": "Group",
-      "label": "Rights",
       "elements": [
         {
-          "type": "HorizontalLayout",
-          "elements": [
-            {
-              "type": "Control",
-              "scope": "#/definitions/Rights/properties/statement"
-            },
-            {
-              "type": "Control",
-              "scope": "#/definitions/Rights/properties/url"
-            }
-          ]
+          "type": "Control",
+          "scope": "#/properties/rights/properties/statement"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/rights/properties/url"
         }
       ]
     },
