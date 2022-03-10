@@ -20,7 +20,7 @@
       "title": "Subject Keywords",
       "type": "array",
       "description": "A list of free text keywords related to the resource.",
-      "minItems": 1,
+      "minItems": 2,
       "uniqueItems": true,
       "items": {
         "type": "string"
