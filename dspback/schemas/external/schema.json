@@ -386,12 +386,16 @@
         "units": {
           "title": "Units",
           "description": "The units applying to the unlabelled numeric values of north and east.",
-          "type": "string"
+          "type": "string",
+          "const": "Decimal degrees",
+          "readOnly": true
         },
         "projection": {
           "title": "Projection",
           "description": "The name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
-          "type": "string"
+          "type": "string",
+          "const": "Decimal degrees",
+          "readOnly": true
         }
       },
       "required": [
@@ -449,12 +453,16 @@
         "units": {
           "title": "Units",
           "description": "A string containing the units applying to the unlabelled numeric values of northlimit, eastlimit, southlimit, and westlimit.",
-          "type": "string"
+          "type": "string",
+          "const": "Decimal degrees",
+          "readOnly": true
         },
         "projection": {
           "title": "Projection",
           "description": "A string containing the name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
-          "type": "string"
+          "type": "string",
+          "const": "Decimal degrees",
+          "readOnly": true
         }
       },
       "required": [
