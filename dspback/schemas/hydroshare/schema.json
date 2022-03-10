@@ -183,12 +183,6 @@
           "maxLength": 2083,
           "format": "uri",
           "type": "string"
-        },
-        "description": {
-          "title": "HydroShare Profile",
-          "description": "A string containing the path to the hydroshare profile",
-          "maxLength": 50,
-          "type": "string"
         }
       }
     },
@@ -229,12 +223,6 @@
           "minLength": 1,
           "maxLength": 2083,
           "format": "uri",
-          "type": "string"
-        },
-        "description": {
-          "title": "Description",
-          "description": "A string containing the path to the hydroshare profile",
-          "maxLength": 50,
           "type": "string"
         }
       }
