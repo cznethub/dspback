@@ -53,17 +53,8 @@
       "scope": "#/properties/awards"
     },
     {
-      "type": "Group",
-      "elements": [
-        {
-          "type": "Control",
-          "scope": "#/properties/rights/properties/statement"
-        },
-        {
-          "type": "Control",
-          "scope": "#/properties/rights/properties/url"
-        }
-      ]
+      "type": "Control",
+      "scope": "#/properties/rights"
     },
     {
       "type": "Control",
