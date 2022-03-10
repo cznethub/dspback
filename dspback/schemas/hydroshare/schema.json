@@ -351,12 +351,6 @@
       "description": "A class used to represent geographic coverage metadata for a resource or aggregation expressed as a\npoint location",
       "type": "object",
       "properties": {
-        "type": {
-          "title": "Geographic coverage type",
-          "description": "A string containing the type of geographic coverage",
-          "const": "point",
-          "type": "string"
-        },
         "name": {
           "title": "Name",
           "description": "A string containing a name for the place associated with the geographic coverage",
@@ -379,12 +373,16 @@
         "units": {
           "title": "Units",
           "description": "The units applying to the unlabelled numeric values of north and east",
-          "type": "string"
+          "type": "string",
+          "const": "Decimal degrees",
+          "readOnly": true
         },
         "projection": {
           "title": "Projection",
           "description": "The name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
-          "type": "string"
+          "type": "string",
+          "const": "WGS 84 EPSG:4326",
+          "readOnly": true
         }
       },
       "required": [
@@ -399,12 +397,6 @@
       "description": "A class used to represent geographic coverage metadata for a resource or aggregation expressed as a\nlatitude-longitude bounding box",
       "type": "object",
       "properties": {
-        "type": {
-          "title": "Geographic coverage type",
-          "description": "A string containing the type of geographic coverage",
-          "const": "box",
-          "type": "string"
-        },
         "name": {
           "title": "Name",
           "description": "A string containing a name for the place associated with the geographic coverage",
@@ -441,12 +433,16 @@
         "units": {
           "title": "Units",
           "description": "A string containing the units applying to the unlabelled numeric values of northlimit, eastlimit, southlimit, and westlimit",
-          "type": "string"
+          "type": "string",
+          "const": "Decimal degrees",
+          "readOnly": true
         },
         "projection": {
           "title": "Projection",
           "description": "A string containing the name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
-          "type": "string"
+          "type": "string",
+          "const": "WGS 84 EPSG:4326",
+          "readOnly": true
         }
       },
       "required": [
