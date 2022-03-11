@@ -371,14 +371,14 @@
         },
         "east": {
           "title": "East",
-          "description": "The coordinate of the point location measured in the east direction.",
+          "description": "The coordinate of the point location measured in the east direction (between -180 and 180)",
           "exclusiveMinimum": -180,
           "exclusiveMaximum": 180,
           "type": "number"
         },
         "north": {
           "title": "North",
-          "description": "The coordinate of the point location measured in the north direction.",
+          "description": " The coordinate of the point location measured in the north direction (between -90 and 90)",
           "exclusiveMinimum": -90,
           "exclusiveMaximum": 90,
           "type": "number"
@@ -386,12 +386,16 @@
         "units": {
           "title": "Units",
           "description": "The units applying to the unlabelled numeric values of north and east.",
-          "type": "string"
+          "type": "string",
+          "const": "Decimal degrees",
+          "readOnly": true
         },
         "projection": {
           "title": "Projection",
           "description": "The name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
-          "type": "string"
+          "type": "string",
+          "const": "Decimal degrees",
+          "readOnly": true
         }
       },
       "required": [
@@ -420,28 +424,28 @@
         },
         "northlimit": {
           "title": "North limit",
-          "description": "A floating point value containing the constant coordinate for the northernmost face or edge of the bounding box.",
+          "description": "A floating point value containing the constant coordinate for the northernmost face or edge of the bounding box (between -90 and 90)",
           "exclusiveMinimum": -90,
           "exclusiveMaximum": 90,
           "type": "number"
         },
         "eastlimit": {
           "title": "East limit",
-          "description": "A floating point value containing the constant coordinate for the easternmost face or edge of the bounding box.",
+          "description": "A floating point value containing the constant coordinate for the easternmost face or edge of the bounding box (between -180 and 180)",
           "exclusiveMinimum": -180,
           "exclusiveMaximum": 180,
           "type": "number"
         },
         "southlimit": {
           "title": "South limit",
-          "description": "A floating point value containing the constant coordinate for the southernmost face or edge of the bounding box.",
+          "description": "A floating point value containing the constant coordinate for the southernmost face or edge of the bounding box (between -90 and 90)",
           "exclusiveMinimum": -90,
           "exclusiveMaximum": 90,
           "type": "number"
         },
         "westlimit": {
           "title": "West limit",
-          "description": "A floating point value containing the constant coordinate for the westernmost face or edge of the bounding box.",
+          "description": "A floating point value containing the constant coordinate for the westernmost face or edge of the bounding box (between -180 and 180)",
           "exclusiveMinimum": -180,
           "exclusiveMaximum": 180,
           "type": "number"
@@ -449,12 +453,16 @@
         "units": {
           "title": "Units",
           "description": "A string containing the units applying to the unlabelled numeric values of northlimit, eastlimit, southlimit, and westlimit.",
-          "type": "string"
+          "type": "string",
+          "const": "Decimal degrees",
+          "readOnly": true
         },
         "projection": {
           "title": "Projection",
           "description": "A string containing the name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
-          "type": "string"
+          "type": "string",
+          "const": "Decimal degrees",
+          "readOnly": true
         }
       },
       "required": [

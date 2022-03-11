@@ -137,7 +137,8 @@
   "required": [
     "title",
     "abstract",
-    "subjects"
+    "subjects",
+    "awards"
   ],
   "definitions": {
     "Creator": {
@@ -182,12 +183,6 @@
           "maxLength": 2083,
           "format": "uri",
           "type": "string"
-        },
-        "description": {
-          "title": "HydroShare Profile",
-          "description": "A string containing the path to the hydroshare profile",
-          "maxLength": 50,
-          "type": "string"
         }
       }
     },
@@ -228,12 +223,6 @@
           "minLength": 1,
           "maxLength": 2083,
           "format": "uri",
-          "type": "string"
-        },
-        "description": {
-          "title": "Description",
-          "description": "A string containing the path to the hydroshare profile",
-          "maxLength": 50,
           "type": "string"
         }
       }
@@ -351,14 +340,14 @@
         },
         "east": {
           "title": "East",
-          "description": "The coordinate of the point location measured in the east direction",
+          "description": "The coordinate of the point location measured in the east direction (between -180 and 180)",
           "exclusiveMinimum": -180,
           "exclusiveMaximum": 180,
           "type": "number"
         },
         "north": {
           "title": "North",
-          "description": "The coordinate of the point location measured in the north direction",
+          "description": " The coordinate of the point location measured in the north direction (between -90 and 90)",
           "exclusiveMinimum": -90,
           "exclusiveMaximum": 90,
           "type": "number"
@@ -397,28 +386,28 @@
         },
         "northlimit": {
           "title": "North limit",
-          "description": "A floating point value containing the constant coordinate for the northernmost face or edge of the bounding box",
+          "description": "A floating point value containing the constant coordinate for the northernmost face or edge of the bounding box (between -90 and 90)",
           "exclusiveMinimum": -90,
           "exclusiveMaximum": 90,
           "type": "number"
         },
         "eastlimit": {
           "title": "East limit",
-          "description": "A floating point value containing the constant coordinate for the easternmost face or edge of the bounding box",
+          "description": "A floating point value containing the constant coordinate for the easternmost face or edge of the bounding box (between -180 and 180)",
           "exclusiveMinimum": -180,
           "exclusiveMaximum": 180,
           "type": "number"
         },
         "southlimit": {
           "title": "South limit",
-          "description": "A floating point value containing the constant coordinate for the southernmost face or edge of the bounding box",
+          "description": "A floating point value containing the constant coordinate for the southernmost face or edge of the bounding box (between -90 and 90)",
           "exclusiveMinimum": -90,
           "exclusiveMaximum": 90,
           "type": "number"
         },
         "westlimit": {
           "title": "West limit",
-          "description": "A floating point value containing the constant coordinate for the westernmost face or edge of the bounding box",
+          "description": "A floating point value containing the constant coordinate for the westernmost face or edge of the bounding box (between -180 and 180)",
           "exclusiveMinimum": -180,
           "exclusiveMaximum": 180,
           "type": "number"
