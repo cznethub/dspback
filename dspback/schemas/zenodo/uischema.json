@@ -69,7 +69,7 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/funding"
+      "scope": "#/properties/grants"
     },
     {
       "type": "Group",
