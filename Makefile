@@ -44,3 +44,9 @@ build:
 .PHONY: bash
 bash:
 	docker exec -it dsp_dev_dspback /bin/bash
+
+.PHONY: build-pydantic-schemas
+build-pydantic-schemas:
+	docker exec dsp_dev_dspback datamodel-codegen --input-file-type jsonschema --input dspback/schemas/hydroshare/schema.json --output dspback/schemas/hydroshare/model.py
+	docker exec dsp_dev_dspback datamodel-codegen --input-file-type jsonschema --input dspback/schemas/zenodo/schema.json --output dspback/schemas/zenodo/model.py
+	docker exec dsp_dev_dspback datamodel-codegen --input-file-type jsonschema --input dspback/schemas/external/schema.json --output dspback/schemas/external/model.py

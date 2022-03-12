@@ -28,6 +28,7 @@ def submission_check(access_token):
 
 def new_external_record(user_cookie, external):
     response = client.post(prefix + "/metadata/external?access_token=" + user_cookie, json=external)
+    assert response.status_code == 201
     response_json = response.json()
     return response_json["identifier"]
 

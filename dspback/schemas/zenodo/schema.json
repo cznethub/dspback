@@ -149,34 +149,22 @@
       "format": "date",
       "description": "Embargo date of record (ISO8601 formatted date) - YYYY-MM-DD."
     },
-    "funding": {
-      "title": "Funding information",
+    "grants": {
+      "title": "Grants",
       "type": "array",
-      "description": "Source of grants/awards which have funded all or part of this particular record.",
+      "description": "List of OpenAIRE-supported grants, which have funded the research for this deposition..",
       "items": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "funding_agency": {
-            "title": "Funding agency",
+          "id": {
+            "title": "Grant Identifier with DOI prefix",
             "type": "string",
-            "description": "Name of the agency that funded the grant or project."
-          },
-          "grant_number": {
-            "title": "Grant number or identifier",
-            "type": "string",
-            "description": "A unique numeric or string identifer for the grant or project."
-          },
-          "grant_name": {
-            "title": "Grant name",
-            "type": "string",
-            "description": "The name or title of the grant or project."
+            "description": "OpenAIRE-supported grant identifier (i.e. 10.13039/501100000780::283595)."
           }
         },
         "required": [
-          "funding_agency",
-          "grant_name",
-          "grant_number"
+          "id"
         ]
       }
     },
@@ -384,6 +372,6 @@
     "title",
     "description",
     "keywords",
-    "funding"
+    "grants"
   ]
 }
