@@ -150,7 +150,10 @@
           "title": "Name",
           "description": "A string containing the name of the creator",
           "maxLength": 100,
-          "type": "string"
+          "type": "string",
+          "options": {
+            "placeholder": "e.g. 'Horsburgh, Jeffery S.'"
+          }
         },
         "phone": {
           "title": "Phone",
@@ -168,13 +171,19 @@
           "title": "Organization",
           "description": "A string containing the name of the organization with which the creator is affiliated",
           "maxLength": 200,
-          "type": "string"
+          "type": "string",
+          "options": {
+            "placeholder": "e.g. 'Utah State University'"
+          }
         },
         "email": {
           "title": "Email",
           "description": "A string containing an email address for the creator",
           "type": "string",
-          "format": "email"
+          "format": "email",
+          "options": {
+            "placeholder": "e.g. 'jeff.horsburgh@usu.edu'"
+          }
         },
         "homepage": {
           "title": "Homepage",
@@ -209,13 +218,19 @@
         "organization": {
           "title": "Organization",
           "description": "A string containing the name of the organization with which the contributor is affiliated",
-          "type": "string"
+          "type": "string",
+          "options": {
+            "placeholder": "e.g. 'Utah State University'"
+          }
         },
         "email": {
           "title": "Email",
           "description": "A string containing an email address for the contributor",
           "type": "string",
-          "format": "email"
+          "format": "email",
+          "options": {
+            "placeholder": "e.g. 'jeff.horsburgh@usu.edu'"
+          }
         },
         "homepage": {
           "title": "Homepage",
@@ -227,42 +242,34 @@
         }
       }
     },
-    "RelationType": {
-      "title": "RelationType",
-      "description": "An enumeration.",
-      "enum": [
-        "The content of this resource is part of",
-        "This resource includes",
-        "The content of this resource was created by a related App or software program",
-        "The content of this resource was created by",
-        "This resource updates and replaces a previous version",
-        "This resource has been replaced by a newer version",
-        "This resource is described by",
-        "This resource conforms to established standard described by",
-        "This resource has a related resource in another format",
-        "This resource is a different format of",
-        "This resource is required by",
-        "This resource requires",
-        "This resource is referenced by",
-        "The content of this resource references",
-        "This resource replaces",
-        "The content of this resource is derived from"
-      ],
-      "type": "string"
-    },
+    
     "Relation": {
       "title": "Related Resource Metadata",
       "description": "A class used to represent the metadata associated with a resource related to the resource being described",
       "type": "object",
       "properties": {
         "type": {
-          "title": "Relation type",
-          "description": "The type of relationship with the related resource",
-          "allOf": [
-            {
-              "$ref": "#/definitions/RelationType"
-            }
-          ]
+          "title": "RelationType",
+          "description": "An enumeration.",
+          "enum": [
+            "The content of this resource is part of",
+            "This resource includes",
+            "The content of this resource was created by a related App or software program",
+            "The content of this resource was created by",
+            "This resource updates and replaces a previous version",
+            "This resource has been replaced by a newer version",
+            "This resource is described by",
+            "This resource conforms to established standard described by",
+            "This resource has a related resource in another format",
+            "This resource is a different format of",
+            "This resource is required by",
+            "This resource requires",
+            "This resource is referenced by",
+            "The content of this resource references",
+            "This resource replaces",
+            "The content of this resource is derived from"
+          ],
+          "type": "string"
         },
         "value": {
           "title": "Value",
@@ -356,6 +363,7 @@
           "title": "Units",
           "description": "The units applying to the unlabelled numeric values of north and east",
           "type": "string",
+          "default": "Decimal degrees",
           "const": "Decimal degrees",
           "readOnly": true
         },
@@ -363,15 +371,14 @@
           "title": "Projection",
           "description": "The name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
           "type": "string",
+          "default": "WGS 84 EPSG:4326",
           "const": "WGS 84 EPSG:4326",
           "readOnly": true
         }
       },
       "required": [
         "east",
-        "north",
-        "units",
-        "projection"
+        "north"
       ]
     },
     "BoxCoverage": {
@@ -416,6 +423,7 @@
           "title": "Units",
           "description": "A string containing the units applying to the unlabelled numeric values of northlimit, eastlimit, southlimit, and westlimit",
           "type": "string",
+          "default": "Decimal degrees",
           "const": "Decimal degrees",
           "readOnly": true
         },
@@ -423,6 +431,7 @@
           "title": "Projection",
           "description": "A string containing the name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
           "type": "string",
+          "default": "WGS 84 EPSG:4326",
           "const": "WGS 84 EPSG:4326",
           "readOnly": true
         }
@@ -431,8 +440,7 @@
         "northlimit",
         "eastlimit",
         "southlimit",
-        "westlimit",
-        "units"
+        "westlimit"
       ]
     },
     "PeriodCoverage": {

@@ -32,7 +32,10 @@
             "description": "The community identifier"
           }
         },
-        "default": [{ "identifier": "czdata" }]
+        "default": [{ "identifier": "czdata" }],
+        "contains": {
+          "enum": [{ "identifier": "czdata" }]
+        }
       }
     },
     "contributors": {
@@ -51,12 +54,18 @@
           "name": {
             "title": "Full name",
             "type": "string",
-            "description": "Full name of person or organisation. Personal name format: family, given."
+            "description": "Full name of person or organisation. Personal name format: family, given.",
+            "options": {
+              "placeholder": "e.g. 'Horsburgh, Jeffery S.'"
+            }
           },
           "orcid": {
             "title": "ORCID",
             "type": "string",
-            "description": "ORCID identifier for creator."
+            "description": "ORCID identifier for creator.",
+            "options": {
+              "placeholder": "e.g. '0000-0002-0768-3196'"
+            }
           },
           "type": {
             "title": "Contribution type",
@@ -109,12 +118,18 @@
           "name": {
             "title": "Full name",
             "type": "string",
-            "description": "Full name of person or organisation. Personal name format: family, given."
+            "description": "Full name of person or organisation. Personal name format: family, given.",
+            "options": {
+              "placeholder": "e.g. 'Horsburgh, Jeffery S.'"
+            }
           },
           "orcid": {
             "title": "ORCID",
             "type": "string",
-            "description": "ORCID identifier for creator."
+            "description": "ORCID identifier for creator.",
+            "options": {
+              "placeholder": "e.g. '0000-0002-0768-3196'"
+            }
           }
         },
         "required": [
@@ -219,7 +234,10 @@
           "raw_reference": {
             "title": "Reference string",
             "type": "string",
-            "description": "A string providing the full reference for the related item."
+            "description": "A string providing the full reference for the related item.",
+            "options": {
+              "placeholder": "e.g. 'Cranmer, Kyle et al. (2014). Decouple software associated to arXiv:1401.0080.'"
+            }
           }
         }
       }
@@ -234,7 +252,10 @@
           "identifier": {
             "title": "Identifier",
             "type": "string",
-            "description": "Identifier of the related publication or dataset."
+            "description": "Identifier of the related publication or dataset.",
+            "options": {
+              "placeholder": "e.g. '10.1234/foobar.567890'"
+            }
           },
           "relation": {
             "title": "Relationship type",
@@ -362,6 +383,7 @@
   "required": [
     "title",
     "description",
-    "keywords"
+    "keywords",
+    "funding"
   ]
 }
