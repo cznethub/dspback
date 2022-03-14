@@ -36,6 +36,13 @@ openapi_schema = get_openapi(
     description="Standardized interface with validation for managing metadata across repositories",
     routes=app.routes,
 )
+openapi_schema["info"]["contact"] = \
+    {
+       "name": "Learn more about this API",
+       "url": "https://github.com/cznethub/dspback",
+       "email": "sblack@cuahsi.org"
+   }
+
 
 app.openapi_schema = openapi_schema
 

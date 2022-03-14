@@ -11,7 +11,7 @@ The Data Submission Portal is a website that provides recommendations, best prac
 make up
 ```
 
-Access the OpenAPI docs at http://0.0.0.0:5002/docs
+Access the OpenAPI docs at http://0.0.0.0:5002/redoc
 
 #### Run the full stack (with dspfront)
 A make command exists for building the dspfront image.  It temporarily clones the repository with the default branch and builds the image for you.
