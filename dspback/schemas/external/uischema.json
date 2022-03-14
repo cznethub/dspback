@@ -54,10 +54,12 @@
     },
     {
       "type": "Control",
+      "label": "Temporal coverage",
       "scope": "#/properties/temporalCoverage"
     },
     {
       "type": "Control",
+      "label": "Spatial coverage",
       "scope": "#/properties/spatialCoverage"
     },
     {
