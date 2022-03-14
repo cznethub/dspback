@@ -27,10 +27,18 @@ test-cov-gh-action:
 
 .PHONY: up
 up:
-	docker-compose --env-file .env up
+	docker-compose --env-file .env up dspback database
 
 .PHONY: up-d
 up-d:
+	docker-compose --env-file .env up -d dspback database
+
+.PHONY: up-all
+up-all:
+	docker-compose --env-file .env up
+
+.PHONY: up-all-d
+up-all-d:
 	docker-compose --env-file .env up -d
 
 .PHONY: down
@@ -40,6 +48,13 @@ down:
 .PHONY: build
 build:
 	docker-compose --env-file .env build --force-rm
+
+.PHONY: build-dspfront
+build-dspfront:
+	rm -rf dspfront
+	git clone https://github.com/cznethub/dspfront.git
+	docker build -t dspfront dspfront
+	rm -rf dspfront
 
 .PHONY: bash
 bash:
