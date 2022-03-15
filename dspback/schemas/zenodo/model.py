@@ -198,7 +198,7 @@ class UploadType(Enum):
 
 class ZenodoDatasetsSchemaForCzNetV100(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = Extra.ignore
 
     access_conditions: Optional[str] = Field(
         None,

@@ -358,12 +358,6 @@
       "description": "Geographic coverage metadata for a resource or aggregation expressed as a point location",
       "type": "object",
       "properties": {
-        "type": {
-          "title": "Geographic coverage type",
-          "description": "A string containing the type of geographic coverage.",
-          "const": "point",
-          "type": "string"
-        },
         "name": {
           "title": "Name",
           "description": "A string containing a name for the place associated with the geographic coverage.",
@@ -387,6 +381,7 @@
           "title": "Units",
           "description": "The units applying to the unlabelled numeric values of north and east.",
           "type": "string",
+          "default": "Decimal degrees",
           "const": "Decimal degrees",
           "readOnly": true
         },
@@ -394,7 +389,8 @@
           "title": "Projection",
           "description": "The name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
           "type": "string",
-          "const": "Decimal degrees",
+          "default": "WGS 84 EPSG:4326",
+          "const": "WGS 84 EPSG:4326",
           "readOnly": true
         }
       },
@@ -411,12 +407,6 @@
       "description": "Geographic coverage metadata for a resource expressed as a latitude-longitude bounding box.",
       "type": "object",
       "properties": {
-        "type": {
-          "title": "Geographic coverage type",
-          "description": "A string containing the type of geographic coverage.",
-          "const": "box",
-          "type": "string"
-        },
         "name": {
           "title": "Name",
           "description": "A string containing a name for the place associated with the geographic coverage.",
@@ -454,6 +444,7 @@
           "title": "Units",
           "description": "A string containing the units applying to the unlabelled numeric values of northlimit, eastlimit, southlimit, and westlimit.",
           "type": "string",
+          "default": "Decimal degrees",
           "const": "Decimal degrees",
           "readOnly": true
         },
@@ -461,7 +452,8 @@
           "title": "Projection",
           "description": "A string containing the name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
           "type": "string",
-          "const": "Decimal degrees",
+          "default": "WGS 84 EPSG:4326",
+          "const": "WGS 84 EPSG:4326",
           "readOnly": true
         }
       },
