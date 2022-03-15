@@ -395,11 +395,8 @@
         }
       },
       "required": [
-        "type",
         "east",
-        "north",
-        "units",
-        "projection"
+        "north"
       ]
     },
     "BoxCoverage": {
@@ -461,9 +458,7 @@
         "northlimit",
         "eastlimit",
         "southlimit",
-        "westlimit",
-        "units",
-        "projection"
+        "westlimit"
       ]
     }
   },
