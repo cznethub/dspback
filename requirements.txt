@@ -1,6 +1,6 @@
 pandas
 aiofiles
-authlib
+authlib==0.15.5
 bs4
 httpx
 fastapi
@@ -18,3 +18,4 @@ pytest
 pytest-asyncio
 alembic
 python-jose
+MarkupSafe==2.1.0
