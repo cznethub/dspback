@@ -373,7 +373,6 @@
   "required": [
     "title",
     "description",
-    "keywords",
-    "grants"
+    "keywords"
   ]
 }
