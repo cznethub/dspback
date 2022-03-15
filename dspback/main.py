@@ -13,10 +13,12 @@ app.add_middleware(SessionMiddleware, secret_key=get_settings().session_secret_k
 
 app.mount("/api/schema", StaticFiles(directory="dspback/schemas"), name="schemas")
 
-app.include_router(authentication.router, prefix="/api", tags=["Authentication"])
-app.include_router(repository_authorization.router, prefix="/api", tags=["Repository Authorization"])
-app.include_router(submissions.router, prefix="/api", tags=["Submissions"])
+app.include_router(authentication.router, prefix="/api", tags=["Authentication"], include_in_schema=False)
+app.include_router(
+    repository_authorization.router, prefix="/api", tags=["Repository Authorization"], include_in_schema=False
+)
 app.include_router(metadata_class.router, prefix="/api")
+app.include_router(submissions.router, prefix="/api", tags=["Submissions"])
 
 
 @app.middleware("http")
@@ -36,12 +38,11 @@ openapi_schema = get_openapi(
     description="Standardized interface with validation for managing metadata across repositories",
     routes=app.routes,
 )
-openapi_schema["info"]["contact"] = \
-    {
-       "name": "Learn more about this API",
-       "url": "https://github.com/cznethub/dspback",
-       "email": "sblack@cuahsi.org"
-   }
+openapi_schema["info"]["contact"] = {
+    "name": "Learn more about this API",
+    "url": "https://github.com/cznethub/dspback",
+    "email": "sblack@cuahsi.org",
+}
 
 
 app.openapi_schema = openapi_schema

@@ -81,7 +81,12 @@ class HydroShareMetadataRoutes(MetadataRoutes):
     repository_type = RepositoryType.HYDROSHARE
 
     @router.post(
-        '/metadata/hydroshare', response_model_exclude_unset=True, response_model=response_model, tags=["HydroShare"]
+        '/metadata/hydroshare',
+        response_model_exclude_unset=True,
+        response_model=response_model,
+        tags=["HydroShare"],
+        summary="Create a HydroShare resource",
+        description="Validates the incoming metadata, creates a new HydroShare resource and creates a submission record.",
     )
     async def create_metadata_repository(self, metadata: request_model):
         response = requests.post(
@@ -105,6 +110,8 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         response_model_exclude_unset=True,
         response_model=response_model,
         tags=["HydroShare"],
+        summary="Update a HydroShare resource",
+        description="Validates the incoming metadata and updates the HydroShare resource associated with the provided identifier.",
     )
     async def update_metadata(self, metadata: request_model, identifier):
         response = requests.put(
@@ -138,6 +145,8 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         response_model_exclude_unset=True,
         response_model=response_model,
         tags=["HydroShare"],
+        summary="Get a HydroShare resource",
+        description="Retrieves the metadata for the HydroShare resource.",
     )
     async def get_metadata_repository(self, identifier):
         json_metadata = await self._retrieve_metadata_from_repository(identifier)
@@ -145,7 +154,12 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         await self.submit(identifier=identifier, json_metadata=json_metadata)
         return json_metadata
 
-    @router.delete('/metadata/hydroshare/{identifier}', tags=["HydroShare"])
+    @router.delete(
+        '/metadata/hydroshare/{identifier}',
+        tags=["HydroShare"],
+        summary="Delete a HydroShare resource",
+        description="Deletes the HydroShare resource along with the submission record.",
+    )
     async def delete_metadata_repository(self, identifier):
         response = requests.delete(self.delete_url % identifier, params={"access_token": self.access_token})
 
@@ -160,6 +174,8 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         response_model_exclude_unset=True,
         response_model=response_model,
         tags=["HydroShare"],
+        summary="Register a HydroShare resource",
+        description="Creates a submission record of the HydroShare resource.",
     )
     async def submit_repository_record(self, identifier: str):
         json_metadata = await self.submit(identifier)
@@ -173,7 +189,14 @@ class ZenodoMetadataRoutes(MetadataRoutes):
     response_model = ZenodoDatasetsSchemaForCzNetV100
     repository_type = RepositoryType.ZENODO
 
-    @router.post('/metadata/zenodo', response_model_exclude_unset=True, response_model=response_model, tags=["Zenodo"])
+    @router.post(
+        '/metadata/zenodo',
+        response_model_exclude_unset=True,
+        response_model=response_model,
+        tags=["Zenodo"],
+        summary="Create a Zenodo resource",
+        description="Validates the incoming metadata, creates a new Zenodo record and creates a submission record.",
+    )
     async def create_metadata_repository(self, metadata: request_model):
         metadata_json = {"metadata": json.loads(metadata.json(exclude_none=True))}
         response = requests.post(
@@ -197,6 +220,8 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         response_model_exclude_unset=True,
         response_model=response_model,
         tags=["Zenodo"],
+        summary="Update a Zenodo record",
+        description="Validates the incoming metadata and updates the Zenodo record associated with the provided identifier.",
     )
     async def update_metadata(self, metadata: request_model, identifier):
         existing_metadata = await self.get_metadata_repository(identifier)
@@ -229,13 +254,20 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         response_model_exclude_unset=True,
         response_model=response_model,
         tags=["Zenodo"],
+        summary="Get a Zenodo record",
+        description="Retrieves the metadata for the Zenodo record.",
     )
     async def get_metadata_repository(self, identifier):
         json_metadata = await self._retrieve_metadata_from_repository(identifier)
         await self.submit(identifier=identifier, json_metadata=json_metadata)
         return json_metadata["metadata"]
 
-    @router.delete('/metadata/zenodo/{identifier}', tags=["Zenodo"])
+    @router.delete(
+        '/metadata/zenodo/{identifier}',
+        tags=["Zenodo"],
+        summary="Delete a Zenodo record",
+        description="Deletes the Zenodo record along with the submission record.",
+    )
     async def delete_metadata_repository(self, identifier):
         response = requests.delete(self.delete_url % identifier, params={"access_token": self.access_token})
 
@@ -244,7 +276,14 @@ class ZenodoMetadataRoutes(MetadataRoutes):
 
         delete_submission(self.db, self.repository_type, identifier, self.user)
 
-    @router.put('/submit/zenodo/{identifier}', name="submit", response_model=SubmissionBase, tags=["Zenodo"])
+    @router.put(
+        '/submit/zenodo/{identifier}',
+        name="submit",
+        response_model=SubmissionBase,
+        tags=["Zenodo"],
+        summary="Register a Zenodo record",
+        description="Creates a submission record of the Zenodo record.",
+    )
     async def submit_repository_record(self, identifier: str):
         json_metadata = await self.submit(identifier)
         return json_metadata["metadata"]
@@ -290,7 +329,12 @@ class ExternalMetadataRoutes(MetadataRoutes):
     repository_type = RepositoryType.EXTERNAL
 
     @router.post(
-        '/metadata/external', response_model_exclude_unset=True, response_model=response_model, tags=["External"]
+        '/metadata/external',
+        response_model_exclude_unset=True,
+        response_model=response_model,
+        tags=["External"],
+        summary="Create an external record",
+        description="Create an external record along with the submission record.",
     )
     async def create_metadata_repository(self, metadata: request_model):
         metadata.identifier = str(uuid.uuid4())
@@ -303,6 +347,8 @@ class ExternalMetadataRoutes(MetadataRoutes):
         response_model_exclude_unset=True,
         response_model=response_model,
         tags=["External"],
+        summary="Update an external record",
+        description="update an external record along with the submission record.",
     )
     async def update_metadata(self, metadata: request_model, identifier):
         return await self.submit(identifier, metadata.dict())
@@ -312,6 +358,8 @@ class ExternalMetadataRoutes(MetadataRoutes):
         response_model_exclude_unset=True,
         response_model=response_model,
         tags=["External"],
+        summary="Get an external record",
+        description="Get an external record along with the submission record.",
     )
     async def get_metadata_repository(self, identifier):
         submission = self.user.submission(self.db, identifier)
@@ -319,6 +367,11 @@ class ExternalMetadataRoutes(MetadataRoutes):
         metadata_json = json.loads(metadata_json_str)
         return metadata_json
 
-    @router.delete('/metadata/external/{identifier}', tags=["External"])
+    @router.delete(
+        '/metadata/external/{identifier}',
+        tags=["External"],
+        summary="Delete an external record",
+        description="Deletes an external record.",
+    )
     async def delete_metadata_repository(self, identifier):
         delete_submission(self.db, self.repository_type, identifier, self.user)
