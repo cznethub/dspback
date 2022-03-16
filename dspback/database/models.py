@@ -4,7 +4,7 @@ from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeMeta, Session, declarative_base, relationship, sessionmaker
 
 from dspback.config import get_settings
-from dspback.schemas import RepositoryType
+from dspback.pydantic_schemas import RepositoryType
 
 engine = create_engine(get_settings().database_url)
 
@@ -20,7 +20,8 @@ class UserTable(Base):
     name = Column(String(length=64), nullable=False)
     # email = Column(String(length=64), nullable=False)
     orcid = Column(String(length=64), nullable=False)
-    access_token = Column(String(length=64), nullable=False)
+    orcid_access_token = Column(String(length=64), nullable=False)
+    access_token = Column(String(length=256), nullable=True)
     refresh_token = Column(String(length=128), nullable=True)
     expires_in = Column(BigInteger, nullable=True)
     expires_at = Column(BigInteger, nullable=True)
@@ -32,6 +33,13 @@ class UserTable(Base):
         return (
             db.query(RepositoryTokenTable)
             .filter(RepositoryTokenTable.user_id == self.id, RepositoryTokenTable.type == repo_type)
+            .first()
+        )
+
+    def submission(self, db: Session, identifier) -> 'RepositorySubmissionTable':
+        return (
+            db.query(RepositorySubmissionTable)
+            .filter(RepositorySubmissionTable.user_id == self.id, RepositorySubmissionTable.identifier == identifier)
             .first()
         )
 
@@ -72,6 +80,8 @@ class RepositorySubmissionTable(Base):
     repo_type = Column(String(length=64), nullable=False)
     submitted = Column(DateTime, default=datetime.utcnow)
     user_id = Column(Integer, ForeignKey('user.id'))
+    url = Column(String())
+    metadata_json = Column(String(), nullable=True)
 
     UniqueConstraint('identifier')
 

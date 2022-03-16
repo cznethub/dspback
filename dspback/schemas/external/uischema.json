@@ -1,0 +1,86 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    { 
+      "type": "Group",
+      "label": "Basic Information",
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/name"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/url"
+        },
+        {
+          "type": "HorizontalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/dateCreated"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/dateModified"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/datePublished"
+            }
+          ]
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/version"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/description"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/keywords"
+        }
+      ]
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/creators"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/contributors"
+    },
+    {
+      "type": "Control",
+      "label": "Temporal coverage",
+      "scope": "#/properties/temporalCoverage"
+    },
+    {
+      "type": "Control",
+      "label": "Spatial coverage",
+      "scope": "#/properties/spatialCoverage"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/relations"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/funders"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/license"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/provider"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/notes"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
-import typing
 from datetime import datetime, timedelta
+from typing import Any, Optional
 
-from fastapi import HTTPException, Request, Depends
+from fastapi import Depends, HTTPException, Request
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
@@ -11,9 +11,9 @@ from sqlalchemy.orm import Session
 from starlette import status
 from starlette.status import HTTP_403_FORBIDDEN
 
-from dspback.database.models import RepositoryTokenTable, UserTable
 from dspback.config import get_settings
-from dspback.schemas import ORCIDResponse, RepositoryToken, RepositoryType, TokenData
+from dspback.database.models import RepositoryTokenTable, UserTable
+from dspback.pydantic_schemas import ORCIDResponse, RepositoryToken, RepositoryType, TokenData
 
 
 class OAuth2AuthorizationBearerToken(OAuth2):
@@ -34,27 +34,30 @@ class OAuth2AuthorizationBearerToken(OAuth2):
         flows = OAuthFlowsModel(password={"tokenUrl": tokenUrl, "scopes": scopes})
         super().__init__(flows=flows, scheme_name=scheme_name, auto_error=auto_error)
 
-    async def __call__(self, request: Request) -> typing.Optional[str]:
-        header_authorization: str = request.headers.get("Authorization")
-        cookie_authorization: str = request.cookies.get("Authorization")
+    async def __call__(self, request: Request, access_token: Optional[str] = None) -> Optional[str]:
+        authorization = False
+        scheme = "bearer"
 
-        header_scheme, header_param = get_authorization_scheme_param(header_authorization)
-        cookie_scheme, cookie_param = get_authorization_scheme_param(cookie_authorization)
-
-        if header_scheme.lower() == "bearer":
+        if access_token:
             authorization = True
-            scheme = header_scheme
-            param = header_param
-
-        elif cookie_scheme.lower() == "bearer":
-            authorization = True
-            scheme = cookie_scheme
-            param = cookie_param
+            param = access_token
 
         else:
-            authorization = False
+            header_authorization: str = request.headers.get("Authorization")
+            cookie_authorization: str = request.cookies.get("Authorization")
 
-        if not authorization or scheme.lower() != "bearer":
+            header_scheme, header_param = get_authorization_scheme_param(header_authorization)
+            cookie_scheme, cookie_param = get_authorization_scheme_param(cookie_authorization)
+
+            if header_scheme.lower() == scheme:
+                authorization = True
+                param = header_param
+
+            elif cookie_scheme.lower() == scheme:
+                authorization = True
+                param = cookie_param
+
+        if not authorization:
             if self.auto_error:
                 raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Not authenticated")
             else:
@@ -70,18 +73,20 @@ class Token(BaseModel):
 oauth2_scheme = OAuth2AuthorizationBearerToken(tokenUrl="/token")
 
 
-def url_for(request: Request, name: str, outside_host: str, **path_params: typing.Any) -> str:
+def url_for(request: Request, name: str, **path_params: Any) -> str:
     url_path = request.app.url_path_for(name, **path_params)
     # TODO - get the parent router path instead of hardcoding /api
-    return "https://{}{}".format(outside_host, url_path)
+    return "https://{}{}".format(get_settings().outside_host, url_path)
 
 
-def create_access_token(data: dict, expiration_minutes: str, secret_key: str, algorithm: str) -> str:
+def encode_access_token(orcid: str) -> str:
+    data = {"sub": orcid}
+    settings = get_settings()
     to_encode = data.copy()
-    access_token_expires = timedelta(minutes=expiration_minutes)
+    access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
     expire = datetime.utcnow() + access_token_expires
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=algorithm)
+    encoded_jwt = jwt.encode(to_encode, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
     return encoded_jwt
 
 
@@ -95,10 +100,13 @@ def create_or_update_user(db: Session, orcid_response: ORCIDResponse) -> UserTab
 
 
 def create_user_table(db: Session, orcid_response: ORCIDResponse) -> UserTable:
+    access_token = encode_access_token(orcid_response.orcid)
+
     db_user = UserTable(
         name=orcid_response.name,
         orcid=orcid_response.orcid,
-        access_token=orcid_response.access_token,
+        access_token=access_token,
+        orcid_access_token=orcid_response.access_token,
         refresh_token=orcid_response.refresh_token,
         expires_in=orcid_response.expires_in,
         expires_at=orcid_response.expires_at,
@@ -110,7 +118,9 @@ def create_user_table(db: Session, orcid_response: ORCIDResponse) -> UserTable:
 
 
 def update_user_table(db: Session, db_user: UserTable, orcid_response: ORCIDResponse) -> UserTable:
-    db_user.access_token = orcid_response.access_token
+    access_token = encode_access_token(orcid_response.orcid)
+    db_user.access_token = access_token
+    db_user.orcid_access_token = orcid_response.access_token
     db_user.refresh_token = orcid_response.refresh_token
     db_user.expires_in = orcid_response.expires_in
     db_user.expires_at = orcid_response.expires_at
@@ -137,7 +147,7 @@ def create_repository_token(repository: str, db: Session, user: UserTable, repos
         user_id=user.id,
         # refresh_token=repository_response['access_token'],
         expires_in=repository_response.get('expires_in', None),
-        expires_at=repository_response.get('expires_at', None)
+        expires_at=repository_response.get('expires_at', None),
     )
     db.add(db_repository)
     db.commit()
@@ -177,28 +187,29 @@ def get_db(request: Request) -> Session:
     return request.state.db
 
 
-async def get_current_user(request: Request, settings=Depends(get_settings)) -> UserTable:
+async def get_current_user(
+    request: Request, settings=Depends(get_settings), token: str = Depends(oauth2_scheme)
+) -> UserTable:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    token: str = await oauth2_scheme(request)
     db: Session = get_db(request)
     try:
         payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
-        orcid: str = payload.get("sub")
-        if orcid is None:
+        token_data = TokenData(**payload)
+        if token_data.orcid is None:
             raise credentials_exception
-        token_data = TokenData(orcid=orcid)
+        if token_data.expiration < datetime.utcnow().timestamp():
+            # TODO register token in db for requested expiration
+            credentials_exception.detail = "Token is expired"
+            raise credentials_exception
     except JWTError:
         raise credentials_exception
     user: UserTable = get_user_table(db, orcid=token_data.orcid)
     if user is None:
         raise credentials_exception
+    if not user.access_token or user.access_token != token:
+        raise credentials_exception
     return user
-
-
-async def get_repository(repository: RepositoryType, db=Depends(get_db), user=Depends(get_current_user)) -> RepositoryTokenTable:
-    repository_token: RepositoryTokenTable = user.repository_token(db, repository)
-    return repository_token

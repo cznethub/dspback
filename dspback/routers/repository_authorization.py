@@ -1,23 +1,28 @@
+import json
+
 from authlib.integrations.starlette_client import OAuthError
 from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.params import Depends
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
 
-from dspback.config import oauth, repository_config, Settings
+from dspback.config import Settings, get_settings, oauth, repository_config
 from dspback.database.models import UserTable
 from dspback.database.procedures import delete_repository_access_token
 from dspback.dependencies import create_or_update_repository_token, get_current_user, get_db, url_for
-from dspback.config import get_settings
-from dspback.schemas import RepositoryToken, RepositoryType
+from dspback.pydantic_schemas import RepositoryToken, RepositoryType
 
 router = APIRouter()
 
 
 @router.get('/authorize/{repository}')
-async def authorize_repository(repository: str, request: Request, user: UserTable = Depends(get_current_user),
-                               settings: Settings = Depends(get_settings)):
-    redirect_uri = url_for(request, 'auth_repository', settings.outside_host, repository=repository)
+async def authorize_repository(
+    repository: str,
+    request: Request,
+    user: UserTable = Depends(get_current_user),
+    settings: Settings = Depends(get_settings),
+):
+    redirect_uri = url_for(request, 'auth_repository', repository=repository)
     return await getattr(oauth, repository).authorize_redirect(request, redirect_uri)
 
 
@@ -36,7 +41,9 @@ async def auth_repository(
 
     # TODO sort out await
     await create_or_update_repository_token(db, user, repository, token)
-    return RedirectResponse("/")
+    responseHTML = '<html><head><title>CzHub Sign In</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
+    responseHTML = responseHTML.replace("%value%", json.dumps({'token': token}))
+    return HTMLResponse(responseHTML)
 
 
 @router.get("/access_token/{repository}", response_model=RepositoryToken)

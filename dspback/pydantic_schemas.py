@@ -4,7 +4,9 @@ from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
-from pydantic import BaseModel, root_validator, validator
+from pydantic import BaseModel, Field, HttpUrl, root_validator, validator
+
+from dspback.config import get_settings
 
 
 class ORCIDResponse(BaseModel):
@@ -22,7 +24,8 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    orcid: Optional[str] = None
+    orcid: Optional[str] = Field(alias="sub")
+    expiration: Optional[int] = Field(alias="exp")
 
 
 class StringEnum(str, Enum):
@@ -32,7 +35,8 @@ class StringEnum(str, Enum):
 class RepositoryType(StringEnum):
     ZENODO = "zenodo"
     HYDROSHARE = "hydroshare"
-    GITLAB = "gitlab"
+    EARTHCHEM = "earthchem"
+    EXTERNAL = "external"
 
 
 class ORCIDResponse(BaseModel):
@@ -67,7 +71,8 @@ class SubmissionBase(BaseModel):
     authors: List[str] = []
     repo_type: RepositoryType = None
     identifier: str = None
-    submitted: datetime = None
+    submitted: datetime = datetime.utcnow()
+    url: HttpUrl = None
 
     @validator('authors', pre=True)
     def extract_author_names(cls, values):
@@ -92,6 +97,7 @@ class UserBase(BaseModel):
     # email: EmailStr = None
     orcid: str = None
     access_token: str = None
+    orcid_access_token: str = None
     refresh_token: str = None
     expires_in: int = None
     expires_at: int = None
@@ -130,12 +136,15 @@ class ZenodoRecord(BaseRecord):
         return values
 
     def to_submission(self, identifier) -> Submission:
+        settings = get_settings()
+        view_url = settings.zenodo_view_url % identifier
         return Submission(
             title=self.title,
             authors=[creator.name for creator in self.creators],
             repo_type=RepositoryType.ZENODO,
-            submitted=self.modified,
+            submitted=datetime.utcnow(),
             identifier=identifier,
+            url=view_url,
         )
 
 
@@ -153,38 +162,34 @@ class HydroShareRecord(BaseRecord):
         return value.split("/")[-1]
 
     def to_submission(self, identifier) -> Submission:
+        settings = get_settings()
+        view_url = settings.hydroshare_view_url
+        view_url = view_url % identifier
         return Submission(
             title=self.title,
             authors=[creator.name for creator in self.creators],
             repo_type=RepositoryType.HYDROSHARE,
-            submitted=self.modified,
+            submitted=datetime.utcnow(),
             identifier=identifier,
+            url=view_url,
         )
 
 
-class GitLabRecord(BaseRecord):
+class ExternalRecord(BaseRecord):
+    class Creator(BaseModel):
+        name: str = None
 
-    content: str = None
-    file_path: str = None
-    creators: List[str] = []
-    submitted: datetime = datetime.now()
-
-    @validator("content")
-    def base64_decode(cls, value):
-        try:
-            decodedBytes = base64.b64decode(value)
-        except Exception:
-            return value
-        decodedStr = str(decodedBytes, "utf-8")
-        return decodedStr
+    name: str = None
+    creators: List[Creator] = []
+    identifier: str = None
+    url: HttpUrl = None
 
     def to_submission(self, identifier) -> Submission:
-        content = json.loads(self.content)
-        # TODO content should have creators and moified?  or maybe pull that from the commit?
         return Submission(
-            title=content['title'],
+            title=self.name,
             authors=[creator.name for creator in self.creators],
-            repo_type=RepositoryType.GITLAB,
-            submitted=self.submitted,
+            repo_type=RepositoryType.EXTERNAL,
+            submitted=datetime.utcnow(),
             identifier=identifier,
+            url=self.url,
         )

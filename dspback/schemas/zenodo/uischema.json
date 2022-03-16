@@ -2,28 +2,48 @@
   "type": "VerticalLayout",
   "elements": [
     {
-      "type": "Control",
-      "scope": "#/properties/title"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/description"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/access_conditions"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/access_right"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/communities"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/contributors"
+      "type": "Group",
+      "label": "Basic Information",
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/title"
+        },
+        {
+          "type": "HorizontalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/version"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/upload_type",
+              "rule": {
+                "effect": "DISABLE",
+                "condition": {
+                  "scope": "#/properties/upload_type"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/description",
+          "options": {
+            "multi": true
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/keywords"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/communities"
+        }
+      ]
     },
     {
       "type": "Control",
@@ -31,39 +51,71 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/embargo_date"
+      "scope": "#/properties/contributors"
+    },
+    {
+      "type": "Group",
+      "label": "Related Resource Information",
+      "elements":[
+        {
+          "type": "Control",
+          "scope": "#/properties/references"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/related_identifiers"
+        }
+      ]
     },
     {
       "type": "Control",
-      "scope": "#/properties/funding"
+      "scope": "#/properties/grants"
     },
     {
-      "type": "Control",
-      "scope": "#/properties/keywords"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/license"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/notes"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/publication_date"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/references"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/related_identifiers"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/resource_type"
+      "type": "Group",
+      "label": "License",
+      "elements": [
+        {
+          "type": "HorizontalLayout",
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/access_right",
+                  "options": {
+                    "format": "radio"
+                  }
+                },
+                
+                {
+                  "type": "Control",
+                  "scope": "#/properties/embargo_date",
+                  "rule": {
+                    "effect": "DISABLE",
+                    "condition": {
+                      "scope": "#/properties/access_right",
+                      "schema": {
+                        "enum": ["open"]
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/license"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "type": "Control",
@@ -71,16 +123,9 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/version"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/upload_type",
-      "rule": {
-        "effect": "DISABLE",
-        "condition": {
-          "scope": "#/properties/upload_type"
-        }
+      "scope": "#/properties/notes",
+      "options": {
+        "multi": true
       }
     }
   ]

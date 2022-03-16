@@ -1,0 +1,41 @@
+name: Test Coverage
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    env:
+      COVERAGE_TOTAL: 10
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build containers
+      run: make build
+
+    - name: Startup containers
+      run: make up-d
+
+    - name: Sleep for 10 seconds
+      run: sleep 10s
+      shell: bash
+      
+    - name: Install dependencies
+      run: make install
+      
+    - name: Run Tests and Build Coverage
+      run: make test-cov-gh-action
+
+    - name: Comment coverage
+      uses: coroo/pytest-coverage-commentator@v1.0.2
+      with:
+        pytest-coverage: pytest-coverage.txt
+
+

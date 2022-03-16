@@ -17,7 +17,11 @@
     "subjects": {
       "title": "Subject keywords",
       "description": "A list of keyword strings expressing the topic of a resource",
-      "default": [],
+      "default": ["CZNet"],
+      "minItems": 2,
+      "contains": {
+        "enum": ["CZNet"]
+      },
       "type": "array",
       "items": {
         "type": "string"
@@ -41,15 +45,6 @@
         "$ref": "#/definitions/Contributor"
       }
     },
-    "sources": {
-      "title": "Sources",
-      "description": "A list of strings containing references to related resources from which a described resource was derived",
-      "default": [],
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
     "relations": {
       "title": "Related resources",
       "description": "A list of Relation objects representing resources related to a described resource",
@@ -62,19 +57,36 @@
     "additional_metadata": {
       "title": "Additional metadata",
       "description": "A dictionary containing key-value pair metadata associated with a resource",
-      "default": {},
-      "type": "object",
-      "additionalProperties": {
-        "type": "string"
+      "default": [],
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/AdditionalMetadata"
       }
     },
     "rights": {
       "title": "Rights",
       "description": "An object containing information about rights held in an over a resource",
-      "allOf": [
-        {
-          "$ref": "#/definitions/rights"
+      "type": "object",
+      "properties": {
+        "statement": {
+          "title": "Statement",
+          "description": "A string containing the text of the license or rights statement",
+          "type": "string",
+          "default": "This resource is shared under the Creative Commons Attribution CC BY."
+        },
+        "url": {
+          "title": "URL",
+          "description": "An object containing the URL pointing to a description of the license or rights statement",
+          "minLength": 1,
+          "maxLength": 65536,
+          "format": "uri",
+          "type": "string",
+          "default": "http://creativecommons.org/licenses/by/4.0/"
         }
+      },
+      "required": [
+        "statement",
+        "url"
       ]
     },
     "awards": {
@@ -122,6 +134,12 @@
       "type": "string"
     }
   },
+  "required": [
+    "title",
+    "abstract",
+    "subjects",
+    "awards"
+  ],
   "definitions": {
     "Creator": {
       "title": "Creator Metadata",
@@ -132,7 +150,10 @@
           "title": "Name",
           "description": "A string containing the name of the creator",
           "maxLength": 100,
-          "type": "string"
+          "type": "string",
+          "options": {
+            "placeholder": "e.g. 'Horsburgh, Jeffery S.'"
+          }
         },
         "phone": {
           "title": "Phone",
@@ -150,13 +171,19 @@
           "title": "Organization",
           "description": "A string containing the name of the organization with which the creator is affiliated",
           "maxLength": 200,
-          "type": "string"
+          "type": "string",
+          "options": {
+            "placeholder": "e.g. 'Utah State University'"
+          }
         },
         "email": {
           "title": "Email",
           "description": "A string containing an email address for the creator",
           "type": "string",
-          "format": "email"
+          "format": "email",
+          "options": {
+            "placeholder": "e.g. 'jeff.horsburgh@usu.edu'"
+          }
         },
         "homepage": {
           "title": "Homepage",
@@ -165,24 +192,6 @@
           "maxLength": 2083,
           "format": "uri",
           "type": "string"
-        },
-        "description": {
-          "title": "Description",
-          "description": "A string containing the path to the hydroshare profile",
-          "maxLength": 50,
-          "type": "string"
-        },
-        "identifiers": {
-          "title": "Creator identifiers",
-          "description": "A dictionary containing identifier types and URL links to alternative identifiers for the creator",
-          "default": {},
-          "type": "object",
-          "additionalProperties": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 65536,
-            "format": "uri"
-          }
         }
       }
     },
@@ -209,13 +218,19 @@
         "organization": {
           "title": "Organization",
           "description": "A string containing the name of the organization with which the contributor is affiliated",
-          "type": "string"
+          "type": "string",
+          "options": {
+            "placeholder": "e.g. 'Utah State University'"
+          }
         },
         "email": {
           "title": "Email",
           "description": "A string containing an email address for the contributor",
           "type": "string",
-          "format": "email"
+          "format": "email",
+          "options": {
+            "placeholder": "e.g. 'jeff.horsburgh@usu.edu'"
+          }
         },
         "homepage": {
           "title": "Homepage",
@@ -224,57 +239,37 @@
           "maxLength": 2083,
           "format": "uri",
           "type": "string"
-        },
-        "description": {
-          "title": "Description",
-          "description": "A string containing the path to the hydroshare profile",
-          "maxLength": 50,
-          "type": "string"
-        },
-        "identifiers": {
-          "title": "Contributor identifiers",
-          "description": "A dictionary containing identifier types and URL links to alternative identiers for the contributor",
-          "default": {},
-          "type": "object",
-          "additionalProperties": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 65536,
-            "format": "uri"
-          }
         }
       }
     },
-    "RelationType": {
-      "title": "RelationType",
-      "description": "An enumeration.",
-      "enum": [
-        "The content of this resource was copied from",
-        "The content of this resource is part of",
-        "Has Part",
-        "The content of this resource can be executed by",
-        "The content of this resource was created by",
-        "Version Of",
-        "Replaced By",
-        "The content of this resource serves as the data for",
-        "This resource cites",
-        "This resource is described by"
-      ],
-      "type": "string"
-    },
+    
     "Relation": {
       "title": "Related Resource Metadata",
       "description": "A class used to represent the metadata associated with a resource related to the resource being described",
       "type": "object",
       "properties": {
         "type": {
-          "title": "Relation type",
-          "description": "The type of relationship with the related resource",
-          "allOf": [
-            {
-              "$ref": "#/definitions/RelationType"
-            }
-          ]
+          "title": "RelationType",
+          "description": "An enumeration.",
+          "enum": [
+            "The content of this resource is part of",
+            "This resource includes",
+            "The content of this resource was created by a related App or software program",
+            "The content of this resource was created by",
+            "This resource updates and replaces a previous version",
+            "This resource has been replaced by a newer version",
+            "This resource is described by",
+            "This resource conforms to established standard described by",
+            "This resource has a related resource in another format",
+            "This resource is a different format of",
+            "This resource is required by",
+            "This resource requires",
+            "This resource is referenced by",
+            "The content of this resource references",
+            "This resource replaces",
+            "The content of this resource is derived from"
+          ],
+          "type": "string"
         },
         "value": {
           "title": "Value",
@@ -288,28 +283,23 @@
         "value"
       ]
     },
-    "rights": {
-      "title": "Rights Metadata",
-      "description": "A class used to represent the rights statement metadata associated with a resource",
+    "AdditionalMetadata": {
+      "title": "Key-Value",
+      "description": "A key-value pair",
       "type": "object",
       "properties": {
-        "statement": {
-          "title": "Statement",
-          "description": "A string containing the text of the license or rights statement",
+        "key": {
+          "title": "Key",
           "type": "string"
         },
-        "url": {
-          "title": "URL",
-          "description": "An object containing the URL pointing to a description of the license or rights statement",
-          "minLength": 1,
-          "maxLength": 65536,
-          "format": "uri",
+        "value": {
+          "title": "Value",
           "type": "string"
         }
       },
       "required": [
-        "statement",
-        "url"
+        "key",
+        "value"
       ]
     },
     "AwardInfo": {
@@ -350,12 +340,6 @@
       "description": "A class used to represent geographic coverage metadata for a resource or aggregation expressed as a\npoint location",
       "type": "object",
       "properties": {
-        "type": {
-          "title": "Geographic coverage type",
-          "description": "A string containing the type of geographic coverage",
-          "const": "point",
-          "type": "string"
-        },
         "name": {
           "title": "Name",
           "description": "A string containing a name for the place associated with the geographic coverage",
@@ -363,14 +347,14 @@
         },
         "east": {
           "title": "East",
-          "description": "The coordinate of the point location measured in the east direction",
+          "description": "The coordinate of the point location measured in the east direction (between -180 and 180)",
           "exclusiveMinimum": -180,
           "exclusiveMaximum": 180,
           "type": "number"
         },
         "north": {
           "title": "North",
-          "description": "The coordinate of the point location measured in the north direction",
+          "description": " The coordinate of the point location measured in the north direction (between -90 and 90)",
           "exclusiveMinimum": -90,
           "exclusiveMaximum": 90,
           "type": "number"
@@ -378,19 +362,23 @@
         "units": {
           "title": "Units",
           "description": "The units applying to the unlabelled numeric values of north and east",
-          "type": "string"
+          "type": "string",
+          "default": "Decimal degrees",
+          "const": "Decimal degrees",
+          "readOnly": true
         },
         "projection": {
           "title": "Projection",
           "description": "The name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
-          "type": "string"
+          "type": "string",
+          "default": "WGS 84 EPSG:4326",
+          "const": "WGS 84 EPSG:4326",
+          "readOnly": true
         }
       },
       "required": [
         "east",
-        "north",
-        "units",
-        "projection"
+        "north"
       ]
     },
     "BoxCoverage": {
@@ -398,12 +386,6 @@
       "description": "A class used to represent geographic coverage metadata for a resource or aggregation expressed as a\nlatitude-longitude bounding box",
       "type": "object",
       "properties": {
-        "type": {
-          "title": "Geographic coverage type",
-          "description": "A string containing the type of geographic coverage",
-          "const": "box",
-          "type": "string"
-        },
         "name": {
           "title": "Name",
           "description": "A string containing a name for the place associated with the geographic coverage",
@@ -411,28 +393,28 @@
         },
         "northlimit": {
           "title": "North limit",
-          "description": "A floating point value containing the constant coordinate for the northernmost face or edge of the bounding box",
+          "description": "A floating point value containing the constant coordinate for the northernmost face or edge of the bounding box (between -90 and 90)",
           "exclusiveMinimum": -90,
           "exclusiveMaximum": 90,
           "type": "number"
         },
         "eastlimit": {
           "title": "East limit",
-          "description": "A floating point value containing the constant coordinate for the easternmost face or edge of the bounding box",
+          "description": "A floating point value containing the constant coordinate for the easternmost face or edge of the bounding box (between -180 and 180)",
           "exclusiveMinimum": -180,
           "exclusiveMaximum": 180,
           "type": "number"
         },
         "southlimit": {
           "title": "South limit",
-          "description": "A floating point value containing the constant coordinate for the southernmost face or edge of the bounding box",
+          "description": "A floating point value containing the constant coordinate for the southernmost face or edge of the bounding box (between -90 and 90)",
           "exclusiveMinimum": -90,
           "exclusiveMaximum": 90,
           "type": "number"
         },
         "westlimit": {
           "title": "West limit",
-          "description": "A floating point value containing the constant coordinate for the westernmost face or edge of the bounding box",
+          "description": "A floating point value containing the constant coordinate for the westernmost face or edge of the bounding box (between -180 and 180)",
           "exclusiveMinimum": -180,
           "exclusiveMaximum": 180,
           "type": "number"
@@ -440,20 +422,25 @@
         "units": {
           "title": "Units",
           "description": "A string containing the units applying to the unlabelled numeric values of northlimit, eastlimit, southlimit, and westlimit",
-          "type": "string"
+          "type": "string",
+          "default": "Decimal degrees",
+          "const": "Decimal degrees",
+          "readOnly": true
         },
         "projection": {
           "title": "Projection",
           "description": "A string containing the name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
-          "type": "string"
+          "type": "string",
+          "default": "WGS 84 EPSG:4326",
+          "const": "WGS 84 EPSG:4326",
+          "readOnly": true
         }
       },
       "required": [
         "northlimit",
         "eastlimit",
         "southlimit",
-        "westlimit",
-        "units"
+        "westlimit"
       ]
     },
     "PeriodCoverage": {

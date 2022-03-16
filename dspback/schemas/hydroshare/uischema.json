@@ -1,17 +1,26 @@
 {
   "type": "VerticalLayout",
   "elements": [
-    {
-      "type": "Control",
-      "scope": "#/properties/title"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/abstract"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/subjects"
+    { 
+      "type": "Group",
+      "label": "Basic Information",
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/title"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/abstract",
+          "options": {
+            "multi": true
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/subjects"
+        }
+      ]
     },
     {
       "type": "Control",
@@ -23,7 +32,17 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/sources"
+      "label": "Spatial coverage",
+      "scope": "#/properties/spatial_coverage"
+    },
+    {
+      "type": "Control",
+      "label": "Period coverage",
+      "scope": "#/properties/period_coverage"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/additional_metadata"
     },
     {
       "type": "Control",
@@ -31,81 +50,21 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/additional_metadata"
-    },
-    {
-      "type": "Group",
-      "label": "Rigths",
-      "elements": [
-        {
-          "type": "Control",
-          "scope": "#/definitions/rights/properties/statement"
-        },
-        {
-          "type": "Control",
-          "scope": "#/definitions/rights/properties/url"
-        }
-      ]
-    },
-    {
-      "type": "Control",
       "scope": "#/properties/awards"
     },
     {
-      "type": "Group",
-      "label": "spatial_coverage",
-      "elements": [
-        {
-          "type": "Control",
-          "scope": "#/definitions/BoxCoverage/properties/name"
-        },
-        {
-          "type": "Control",
-          "scope": "#/definitions/BoxCoverage/properties/northlimit"
-        },
-        {
-          "type": "Control",
-          "scope": "#/definitions/BoxCoverage/properties/eastlimit"
-        },
-        {
-          "type": "Control",
-          "scope": "#/definitions/BoxCoverage/properties/southlimit"
-        },
-        {
-          "type": "Control",
-          "scope": "#/definitions/BoxCoverage/properties/westlimit"
-        },
-        {
-          "type": "Control",
-          "scope": "#/definitions/BoxCoverage/properties/units"
-        },
-        {
-          "type": "Control",
-          "scope": "#/definitions/BoxCoverage/properties/projection"
-        }
-      ]
-    },
-    {
-      "type": "Group",
-      "label": "Period coverage",
-      "elements": [
-        {
-          "type": "Control",
-          "scope": "#/definitions/PeriodCoverage/properties/name"
-        },
-        {
-          "type": "Control",
-          "scope": "#/definitions/PeriodCoverage/properties/start"
-        },
-        {
-          "type": "Control",
-          "scope": "#/definitions/PeriodCoverage/properties/end"
-        }
-      ]
+      "type": "Control",
+      "scope": "#/properties/rights"
     },
     {
       "type": "Control",
-      "scope": "#/properties/citation"
+      "scope": "#/properties/citation",
+      "rule": {
+        "effect": "DISABLE",
+        "condition": {
+          "scope": "#/properties/citation"
+        }
+      }
     }
   ]
 }

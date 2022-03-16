@@ -1,14 +1,16 @@
 from sqlalchemy.orm import Session
 
 from dspback.database.models import AuthorTable, RepositorySubmissionTable, UserTable
-from dspback.schemas import Submission, RepositoryToken
+from dspback.pydantic_schemas import RepositoryToken, RepositoryType, Submission
 
 
-def create_or_update_submission(db: Session, submission: Submission, user: UserTable) -> RepositorySubmissionTable:
-    # TODO filter by user
+def create_or_update_submission(
+    db: Session, submission: Submission, user: UserTable, metadata_json
+) -> RepositorySubmissionTable:
     submission_row = (
         db.query(RepositorySubmissionTable)
         .filter(RepositorySubmissionTable.identifier == submission.identifier)
+        .filter(RepositorySubmissionTable.user_id == user.id)
         .first()
     )
     if submission_row:
@@ -19,6 +21,8 @@ def create_or_update_submission(db: Session, submission: Submission, user: UserT
         repo_type=submission.repo_type,
         identifier=submission.identifier,
         user_id=user.id,
+        metadata_json=metadata_json,
+        url=submission.url,
     )
     db.add(db_repository_submission)
     db.flush()
@@ -31,12 +35,13 @@ def create_or_update_submission(db: Session, submission: Submission, user: UserT
     return db_repository_submission
 
 
-def delete_submission(db: Session, repository, identifier: str, user: UserTable):
-    # TODO filter by user and repository
+def delete_submission(db: Session, repository: RepositoryType, identifier: str, user: UserTable):
     submission_row = (
         db.query(RepositorySubmissionTable)
-            .filter(RepositorySubmissionTable.identifier == identifier)
-            .first()
+        .filter(RepositorySubmissionTable.identifier == identifier)
+        .filter(RepositorySubmissionTable.user_id == user.id)
+        .filter(RepositorySubmissionTable.repo_type == repository)
+        .first()
     )
     if submission_row:
         db.delete(submission_row)
@@ -48,3 +53,9 @@ def delete_repository_access_token(db: Session, repository, user: UserTable):
     if repository_token:
         db.delete(repository_token)
         db.commit()
+
+
+def delete_access_token(db: Session, user: UserTable):
+    user.access_token = None
+    db.add(user)
+    db.commit()
