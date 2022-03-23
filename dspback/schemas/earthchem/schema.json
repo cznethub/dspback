@@ -1,912 +1,865 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "required": [
-        "title",
-        "description",
-        "community",
-        "type",
-        "status",
-        "identifiers",
-        "dateCreated",
-        "datePublished",
-        "dateModified",
-        "additionalTypes",
-        "keywords",
-        "spatialCoverage",
-        "language",
-        "creators",
-        "contributors",
-        "relatedResources",
-        "fundings",
-        "files",
-        "licence"
-    ],
-    "title": "ECL 2.0",
-    "type": "object",
-    "properties": {
-        "title": {
-            "description": "Title of the resource.",
-            "maxLength": 500,
-            "type": "string"
+  "swagger": "2.0",
+  "info": {
+    "description": "EarthChemLibrary REST API",
+    "version": "0.1.0",
+    "title": "EarthChemLibrary REST API",
+    "contact": {
+      "name": "EarthChemLibrary",
+      "url": "https://www.earthchem.org/ecl",
+      "email": "info@earthchem.org"
+    },
+    "license": {
+      "name": "Apache License Version 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0\""
+    }
+  },
+  "host": "grg-doc-dev.ldeo.columbia.edu:8081",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Records",
+      "description": "Operations pertaining to records for ECL repository"
+    },
+    {
+      "name": "file-controller",
+      "description": "File Controller"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v2/files/{id}": {
+      "get": {
+        "tags": [
+          "file-controller"
+        ],
+        "summary": "getFileListOfRecord",
+        "operationId": "getFileListOfRecordUsingGET",
+        "consumes": [
+          "*/*"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/RecordFile"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
         },
-        "description": {
-            "description": "Description of the resource.",
-            "type": "string"
+        "security": [
+          {
+            "JWT": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      },
+      "delete": {
+        "tags": [
+          "file-controller"
+        ],
+        "summary": "removeAllFilesFromRecord",
+        "operationId": "removeAllFilesFromRecordUsingDELETE",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
         },
-        "community": {
-            "description": "A network of interacting scientists defined by ECL. Value comes from ECL controlled vocabulary.",
-            "enum": [
-                "Geochemistry & Petrology",
-                "Cosmochemistry",
-                "Geochronology",
-                "Experimental Petrology",
-                "Tephra Data",
-                "Clumped Isotopes",
-                "CZNet"
-            ],
+        "security": [
+          {
+            "JWT": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/v2/files/{id}/uploadFile": {
+      "post": {
+        "tags": [
+          "file-controller"
+        ],
+        "summary": "uploadSingleFile",
+        "operationId": "uploadSingleFileUsingPOST",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "description",
+            "in": "query",
+            "description": "description",
+            "required": true,
             "type": "string"
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "description": "file",
+            "required": true,
+            "type": "file"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/FileResponse"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
         },
-        "type": {
-            "description": "The nature or genre of the resource.Values come from DCMI Type Vocabulary.",
-            "enum": [
-                "Collection",
-                "Dataset",
-                "Event",
-                "Image",
-                "InteractiveResource",
-                "MovingImage",
-                "PhysicalObject",
-                "Service",
-                "Software",
-                "Sound",
-                "StillImage",
-                "Text"
-            ],
+        "security": [
+          {
+            "JWT": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/v2/files/{id}/{filename}": {
+      "get": {
+        "tags": [
+          "file-controller"
+        ],
+        "summary": "downloadSingleFileFromRecord",
+        "operationId": "downloadSingleFileFromRecordUsingGET",
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "path",
+            "description": "filename",
+            "required": true,
             "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
         },
-        "status": {
-            "description": "Indication of the progress status of the resource. Value comes from ECL controlled vocabulary.",
-            "enum": [
-                "incomplete",
-                "submitted",
-                "published",
-                "rejected",
-                "archived"
-            ],
+        "security": [
+          {
+            "JWT": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      },
+      "delete": {
+        "tags": [
+          "file-controller"
+        ],
+        "summary": "removeSingleFileFromRecord",
+        "operationId": "removeSingleFileFromRecordUsingDELETE",
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "path",
+            "description": "filename",
+            "required": true,
             "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/v2/records": {
+      "post": {
+        "tags": [
+          "Records"
+        ],
+        "summary": "createRecord",
+        "operationId": "createRecordUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "record",
+            "description": "record",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Record"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Record"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/v2/records/{id}": {
+      "get": {
+        "tags": [
+          "Records"
+        ],
+        "summary": "getRecord",
+        "operationId": "getRecordUsingGET",
+        "consumes": [
+          "*/*"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Record"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      },
+      "put": {
+        "tags": [
+          "Records"
+        ],
+        "summary": "updateRecord",
+        "operationId": "updateRecordUsingPUT",
+        "consumes": [
+          "application/json",
+          "*/*"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "in": "body",
+            "name": "record",
+            "description": "record",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Record"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Record"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    }
+  },
+  "securityDefinitions": {
+    "JWT": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "definitions": {
+    "Affiliation": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
         },
         "identifiers": {
-            "description": "Identifiers for the resource.",
-            "maxItems": 1,
-            "type": "array",
-            "additionalItems": false,
-            "items": {
-                "required": [
-                    "scheme",
-                    "schemeURI",
-                    "identifier",
-                    "url"
-                ],
-                "type": "object",
-                "properties": {
-                    "scheme": {
-                        "description": "Persistent identifier scheme.",
-                        "type": "string"
-                    },
-                    "schemeURI": {
-                        "description": "URL of the scheme.",
-                        "type": "string"
-                    },
-                    "identifier": {
-                        "description": "Identifier for the resource in the scheme.",
-                        "type": "string"
-                    },
-                    "url": {
-                        "description": "URL of the resource.",
-                        "type": "string"
-                    }
-                },
-                "additionalProperties": false
-            }
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Identifier"
+          }
+        }
+      },
+      "title": "Affiliation"
+    },
+    "Contributor": {
+      "type": "object",
+      "properties": {
+        "familyName": {
+          "type": "string"
         },
-        "dateCreated": {
-            "description": "The date on which the resource was created.",
-            "pattern": "((?:19|20)[0-9][0-9])-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])",
-            "type": "string"
+        "additionalName": {
+          "type": "string"
         },
-        "dateIssued": {
-            "description": "The date on which The DOI was assigned to the resource.",
-            "pattern": "((?:19|20)[0-9][0-9])-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])",
-            "type": "string"
+        "givenName": {
+          "type": "string"
         },
-        "datePublished": {
-            "description": "The date of the files contained in the resource to be allowed for downloading.",
-            "pattern": "((?:19|20)[0-9][0-9])-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])",
-            "type": "string"
+        "email": {
+          "type": "string"
         },
-        "dateModified": {
-            "description": "The date on which the resource was most recently modified.",
-            "pattern": "((?:19|20)[0-9][0-9])-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])",
-            "type": "string"
+        "type": {
+          "type": "string",
+          "enum": [
+            "leadAuthor",
+            "coAuthor"
+          ]
         },
-        "additionalTypes": {
-            "description": "The science domain of the content(analysis data, image, etc.) included in the resource. Values come from ECL controlled vocabulary.",
-            "type": "array",
-            "additionalItems": false,
-            "items": {
-                "description": "The science domain of the content(analysis data, image, etc.) included in the resource. Values come from ECL controlled vocabulary.",
-                "enum": [
-                    "Chemistry",
-                    "Chemistry:Rock",
-                    "Chemistry:Sediment",
-                    "Chemistry:Fluid",
-                    "Chemistry:Gas",
-                    "Geochronology",
-                    "Kinetics",
-                    "ModelData",
-                    "Other",
-                    "Petrography",
-                    "Petrology",
-                    "Petrology:Mineral",
-                    "Petrology:Experimental",
-                    "SampleInfo",
-                    "SocialScience",
-                    "Chemistry:ClumpedIsotope"
-                ],
-                "type": "string"
-            }
+        "position": {
+          "type": "integer",
+          "format": "int32"
         },
-        "keywords": {
-            "description": "Free form keywords for the resource.",
-            "type": "array",
-            "additionalItems": false,
-            "items": {
-                "description": "Free form keywords for the resource.",
-                "type": "string"
-            }
+        "identifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Identifier"
+          }
         },
-        "spatialCoverage": {
-            "description": "An explanation about the purpose of this instance.",
-            "required": [
-                "coverage",
-                "keywords",
-                "features"
-            ],
-            "type": "object",
-            "properties": {
-                "coverage": {
-                    "description": "An explanation about the purpose of this instance.",
-                    "enum": [
-                        "Space/Planetary",
-                        "Global",
-                        "Regional (Continents, Oceans)",
-                        "Other"
-                    ],
-                    "type": "string"
-                },
-                "keywords": {
-                    "type": "array",
-                    "additionalItems": false,
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "features": {
-                    "type": "array",
-                    "additionalItems": false,
-                    "items": {
-                        "required": [
-                            "geometry"
-                        ],
-                        "type": "object",
-                        "properties": {
-                            "geometry": {
-                                "description": "An explanation about the purpose of this instance.",
-                                "required": [
-                                    "type",
-                                    "coordinates"
-                                ],
-                                "type": "object",
-                                "properties": {
-                                    "type": {
-                                        "description": "Type of geometry.",
-                                        "enum": [
-                                            "Point",
-                                            "LineString",
-                                            "Polygon"
-                                        ],
-                                        "type": "string"
-                                    },
-                                    "coordinates": {
-                                        "type": "array",
-                                        "additionalItems": false,
-                                        "items": {
-                                            "type": "object",
-                                            "required": [
-                                                "lon",
-                                                "lat"
-                                            ],
-                                            "properties": {
-                                                "lon": {
-                                                    "description": "longitude",
-                                                    "type": "number"
-                                                },
-                                                "lat": {
-                                                    "description": "latitude",
-                                                    "type": "number"
-                                                },
-                                                "alt": {
-                                                    "description": "altitude",
-                                                    "type": "number"
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                "additionalProperties": false
-                            }
-                        },
-                        "additionalProperties": false
-                    }
-                }
-            },
-            "additionalProperties": false
+        "affiliation": {
+          "$ref": "#/definitions/Affiliation"
+        }
+      },
+      "title": "Contributor"
+    },
+    "Cordinate": {
+      "type": "object",
+      "properties": {
+        "lat": {
+          "type": "number",
+          "format": "double"
         },
-        "language": {
-            "default": "English",
-            "description": "The language used for the content of the resource.",
-            "enum": [
-                "Arabic",
-                "Bulgarian",
-                "Chinese",
-                "Croatian",
-                "Czech",
-                "Danish",
-                "Dutch",
-                "English",
-                "Finnish",
-                "French",
-                "German",
-                "Greek",
-                "Hindi",
-                "Italian",
-                "Japanese",
-                "Korean",
-                "Norwegian",
-                "Polish",
-                "Portuguese",
-                "Russian",
-                "Spanish",
-                "Swedish"
-            ],
-            "type": "string"
+        "lon": {
+          "type": "number",
+          "format": "double"
+        },
+        "alt": {
+          "type": "number",
+          "format": "double"
+        }
+      },
+      "title": "Cordinate"
+    },
+    "Creator": {
+      "type": "object",
+      "properties": {
+        "familyName": {
+          "type": "string"
+        },
+        "additionalName": {
+          "type": "string"
+        },
+        "givenName": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "owner",
+            "maintainer"
+          ]
+        },
+        "identifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Identifier"
+          }
+        },
+        "affiliation": {
+          "$ref": "#/definitions/Affiliation"
+        }
+      },
+      "title": "Creator"
+    },
+    "Feature": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "geometry": {
+          "$ref": "#/definitions/Geometry"
+        }
+      },
+      "title": "Feature"
+    },
+    "FileResponse": {
+      "type": "object",
+      "properties": {
+        "fileName": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "title": "FileResponse"
+    },
+    "Funder": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "alternateName": {
+          "type": "string"
+        },
+        "identifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Identifier"
+          }
+        }
+      },
+      "title": "Funder"
+    },
+    "Funding": {
+      "type": "object",
+      "properties": {
+        "identifer": {
+          "type": "string"
+        },
+        "identifier": {
+          "type": "string"
+        },
+        "funder": {
+          "$ref": "#/definitions/Funder"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "title": "Funding"
+    },
+    "Geometry": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Point",
+            "LineString",
+            "Polygon"
+          ]
+        },
+        "cordinates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Cordinate"
+          }
+        }
+      },
+      "title": "Geometry"
+    },
+    "Identifier": {
+      "type": "object",
+      "properties": {
+        "scheme": {
+          "type": "string"
+        },
+        "schemeURI": {
+          "type": "string"
+        },
+        "identifier": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "title": "Identifier"
+    },
+    "License": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "alternateName": {
+          "type": "string"
+        },
+        "identifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Identifier"
+          }
+        }
+      },
+      "title": "License"
+    },
+    "Record": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "community": {
+          "type": "string"
+        },
+        "identifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Identifier"
+          }
         },
         "creators": {
-            "description": "The people who create and maintain resource metadata.",
-            "type": "array",
-            "additionalItems": false,
-            "items": {
-                "type": "object",
-                "title": "The items schema",
-                "description": "An explanation about the purpose of this instance.",
-                "default": {},
-                "required": [
-                    "familyName",
-                    "givenName",
-                    "email",
-                    "type",
-                    "identifiers",
-                    "affiliation"
-                ],
-                "properties": {
-                    "familyName": {
-                        "type": "string"
-                    },
-                    "additionalName": {
-                        "description": "Used for a middle initial.",
-                        "type": "string"
-                    },
-                    "givenName": {
-                        "type": "string"
-                    },
-                    "email": {
-                        "type": "string"
-                    },
-                    "type": {
-                        "description": "The type of creator, controlled vocabulary",
-                        "enum": [
-                            "owner"
-                        ],
-                        "type": "string"
-                    },
-                    "identifiers": {
-                        "description": "Identifiers for the creator.",
-                        "type": "array",
-                        "additionalItems": false,
-                        "items": {
-                            "type": "object",
-                            "title": "The items schema",
-                            "description": "An explanation about the purpose of this instance.",
-                            "default": {},
-                            "required": [
-                                "scheme",
-                                "schemeURI",
-                                "identifier",
-                                "url"
-                            ],
-                            "properties": {
-                                "scheme": {
-                                    "description": "Persistent identifier scheme for the contributor.",
-                                    "type": "string"
-                                },
-                                "schemeURI": {
-                                    "description": "URL of the scheme.",
-                                    "type": "string"
-                                },
-                                "identifier": {
-                                    "description": "Identifier for the creator under specific scheme.",
-                                    "type": "string"
-                                },
-                                "url": {
-                                    "description": "URL for the creator under specific scheme.",
-                                    "type": "string"
-                                }
-                            },
-                            "additionalProperties": false
-                        }
-                    },
-                    "affiliation": {
-                        "description": "Affiliation of the creator.",
-                        "required": [
-                            "name",
-                            "identifiers"
-                        ],
-                        "type": "object",
-                        "properties": {
-                            "name": {
-                                "type": "string"
-                            },
-                            "identifiers": {
-                                "description": "Identifiers for the affiliation.",
-                                "type": "array",
-                                "additionalItems": false,
-                                "items": {
-                                    "type": "object",
-                                    "title": "The items schema",
-                                    "description": "An explanation about the purpose of this instance.",
-                                    "default": {},
-                                    "required": [
-                                        "scheme",
-                                        "schemeURI",
-                                        "identifier",
-                                        "url"
-                                    ],
-                                    "properties": {
-                                        "scheme": {
-                                            "description": "Persistent identifier scheme for affiliation.",
-                                            "enum": [
-                                                "ROR"
-                                            ],
-                                            "type": "string"
-                                        },
-                                        "schemeURI": {
-                                            "description": "URL of the scheme.",
-                                            "type": "string"
-                                        },
-                                        "identifier": {
-                                            "description": "Identifier for the affiliation under specific scheme.",
-                                            "type": "string"
-                                        },
-                                        "url": {
-                                            "description": "URL for the affiliation under specific scheme.",
-                                            "type": "string"
-                                        }
-                                    },
-                                    "additionalProperties": false
-                                }
-                            }
-                        },
-                        "additionalProperties": false
-                    }
-                },
-                "additionalProperties": false
-            }
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Creator"
+          }
         },
         "contributors": {
-            "description": "Contributors for the resource.",
-            "type": "array",
-            "additionalItems": false,
-            "items": {
-                "type": "object",
-                "title": "The items schema",
-                "description": "An explanation about the purpose of this instance.",
-                "default": {},
-                "required": [
-                    "type",
-                    "familyName",
-                    "givenName",
-                    "email",
-                    "identifiers"
-                ],
-                "properties": {
-                    "type": {
-                        "description": "Role of the contributor.",
-                        "enum": [
-                            "leadAuthor",
-                            "coAuthor"
-                        ],
-                        "type": "string"
-                    },
-                    "familyName": {
-                        "type": "string"
-                    },
-                    "additionalName": {
-                        "description": "Used for a middle initial.",
-                        "type": "string"
-                    },
-                    "givenName": {
-                        "type": "string"
-                    },
-                    "email": {
-                        "type": "string"
-                    },
-                    "position": {
-                        "description": "The position of a person in a sequence of contributors, apply only to 'coAuthor'.",
-                        "type": "integer"
-                    },
-                    "identifiers": {
-                        "description": "Identifier for the contributor.",
-                        "type": "array",
-                        "additionalItems": false,
-                        "items": {
-                            "type": "object",
-                            "title": "The items schema",
-                            "description": "An explanation about the purpose of this instance.",
-                            "default": {},
-                            "required": [
-                                "scheme",
-                                "schemeURI",
-                                "identifier",
-                                "url"
-                            ],
-                            "properties": {
-                                "scheme": {
-                                    "description": "Persistent identifier scheme for the contributor.",
-                                    "enum": [
-                                        "ORCID"
-                                    ],
-                                    "type": "string"
-                                },
-                                "schemeURI": {
-                                    "description": "URL of the scheme.",
-                                    "type": "string"
-                                },
-                                "identifier": {
-                                    "description": "Identifier for the contributor under specific scheme.",
-                                    "type": "string"
-                                },
-                                "url": {
-                                    "description": "URL for the contributor under specific scheme.",
-                                    "type": "string"
-                                }
-                            },
-                            "additionalProperties": false
-                        }
-                    },
-                    "affiliation": {
-                        "description": "Affiliation of the creator.",
-                        "required": [
-                            "name",
-                            "identifiers"
-                        ],
-                        "type": "object",
-                        "properties": {
-                            "name": {
-                                "type": "string"
-                            },
-                            "identifiers": {
-                                "description": "Identifiers for the affiliation.",
-                                "type": "array",
-                                "additionalItems": false,
-                                "items": {
-                                    "type": "object",
-                                    "title": "The items schema",
-                                    "description": "An explanation about the purpose of this instance.",
-                                    "default": {},
-                                    "required": [
-                                        "scheme",
-                                        "schemeURI",
-                                        "identifier",
-                                        "url"
-                                    ],
-                                    "properties": {
-                                        "scheme": {
-                                            "description": "Persistent identifier scheme for affiliation.",
-                                            "enum": [
-                                                "ROR"
-                                            ],
-                                            "type": "string"
-                                        },
-                                        "schemeURI": {
-                                            "description": "URL of the scheme.",
-                                            "type": "string"
-                                        },
-                                        "identifier": {
-                                            "description": "Identifier for the affiliation under specific scheme.",
-                                            "type": "string"
-                                        },
-                                        "url": {
-                                            "description": "URL for the affiliation under specific scheme.",
-                                            "type": "string"
-                                        }
-                                    },
-                                    "additionalProperties": false
-                                }
-                            }
-                        },
-                        "additionalProperties": false
-                    }
-                },
-                "additionalProperties": false
-            }
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Contributor"
+          }
+        },
+        "type": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "additionalTypes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "language": {
+          "type": "string"
+        },
+        "spatialCoverage": {
+          "$ref": "#/definitions/SpatialCoverage"
         },
         "relatedResources": {
-            "description": "A related resource(publication,physical sample, volcano that is referenced, cited, or otherwise pointed to by the described resource..",
-            "type": "array",
-            "additionalItems": false,
-            "items": {
-                "type": "object",
-                "title": "The items schema",
-                "description": "An explanation about the purpose of this instance.",
-                "default": {},
-                "required": [
-                    "bibliographicCitation",
-                    "identifiers",
-                    "relation",
-                    "type"
-                ],
-                "properties": {
-                    "bibliographicCitation": {
-                        "description": "A bibliographic reference for the related resource.",
-                        "type": "string"
-                    },
-                    "identifiers": {
-                        "description": "Identifiers for the related resources.",
-                        "type": "array",
-                        "additionalItems": false,
-                        "items": {
-                            "type": "object",
-                            "title": "The items schema",
-                            "description": "An explanation about the purpose of this instance.",
-                            "default": {},
-                            "required": [
-                                "scheme",
-                                "schemeURI",
-                                "identifier",
-                                "url"
-                            ],
-                            "properties": {
-                                "scheme": {
-                                    "description": "Persistent identifier scheme for related resources.",
-                                    "enum": [
-                                        "DOI",
-                                        "IGSN",
-                                        "SVN",
-                                        "R2R"
-                                    ],
-                                    "type": "string"
-                                },
-                                "schemeURI": {
-                                    "description": "URL of the scheme.",
-                                    "type": "string"
-                                },
-                                "identifier": {
-                                    "description": "Identifier for the related resource under specific scheme.",
-                                    "type": "string"
-                                },
-                                "url": {
-                                    "description": "URL for the related resource under specific scheme.",
-                                    "type": "string"
-                                }
-                            },
-                            "additionalProperties": false
-                        }
-                    },
-                    "relation": {
-                        "description": "The relationship of the resource being registered (A) and the related resource (B). Value comes from DataCite RelationType vocabulary.",
-                        "enum": [
-                            "isCitedBy",
-                            "cites",
-                            "isSupplementTo",
-                            "isSupplementedBy",
-                            "isContinuedBy",
-                            "continues",
-                            "isDescribedBy",
-                            "describes",
-                            "hasMetadata",
-                            "isMetadataFor",
-                            "isNewVersionOf",
-                            "isPreviousVersionOf",
-                            "isPartOf",
-                            "hasPart",
-                            "isReferencedBy",
-                            "references",
-                            "isDocumentedBy",
-                            "documents",
-                            "isCompiledBy",
-                            "compiles",
-                            "isVariantFormOf",
-                            "isOrignialFormOf",
-                            "isIdenticalTo",
-                            "isReviewedBy",
-                            "reviews",
-                            "isDerivedFrom",
-                            "isSourceOf",
-                            "requires",
-                            "isRequiredBy",
-                            "isObsoletedBy",
-                            "obsoletes",
-                            "isPublishedIn"
-                        ],
-                        "type": "string"
-                    },
-                    "type": {
-                        "description": "Type of the related resource.",
-                        "enum": [
-                            "publication",
-                            "phsicalSample",
-                            "volcano"
-                        ],
-                        "type": "string"
-                    }
-                },
-                "additionalProperties": false
-            }
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RelatedResource"
+          }
         },
         "fundings": {
-            "description": "Source of grants/awards which have funded the resource.",
-            "type": "array",
-            "additionalItems": false,
-            "items": {
-                "type": "object",
-                "title": "The items schema",
-                "description": "An explanation about the purpose of this instance.",
-                "default": {},
-                "required": [
-                    "identifier",
-                    "funder",
-                    "url"
-                ],
-                "properties": {
-                    "identifier": {
-                        "description": "Award number from the grant.",
-                        "type": "string"
-                    },
-                    "funder": {
-                        "description": "A person or organization that provides money for a particular purpose.",
-                        "required": [
-                            "name",
-                            "alternateName",
-                            "identifiers"
-                        ],
-                        "type": "object",
-                        "properties": {
-                            "name": {
-                                "description": "Name given to the funder.",
-                                "type": "string"
-                            },
-                            "alternateName": {
-                                "description": "Abbreviation for the given funder name.",
-                                "type": "string"
-                            },
-                            "identifiers": {
-                                "description": "Identifiers for the funder.",
-                                "type": "array",
-                                "additionalItems": false,
-                                "items": {
-                                    "type": "object",
-                                    "title": "The items schema",
-                                    "description": "An explanation about the purpose of this instance.",
-                                    "default": {},
-                                    "required": [
-                                        "scheme",
-                                        "schemeURI",
-                                        "identifier",
-                                        "url"
-                                    ],
-                                    "properties": {
-                                        "scheme": {
-                                            "description": "Persistant identifier scheme.",
-                                            "type": "string"
-                                        },
-                                        "schemeURI": {
-                                            "description": "URL of the scheme.",
-                                            "type": "string"
-                                        },
-                                        "identifier": {
-                                            "description": "Identifier for the funder under specific scheme.",
-                                            "type": "string"
-                                        },
-                                        "url": {
-                                            "description": "URL for the funder under specific scheme.",
-                                            "type": "string"
-                                        }
-                                    },
-                                    "additionalProperties": false
-                                }
-                            }
-                        },
-                        "additionalProperties": false
-                    },
-                    "url": {
-                        "description": "URL for the grant/award.",
-                        "type": "string"
-                    }
-                },
-                "additionalProperties": false
-            }
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Funding"
+          }
         },
-        "files": {
-            "description": "Files attached to the resource.",
-            "uniqueItems": true,
-            "type": "array",
-            "additionalItems": false,
-            "items": {
-                "description": "Profile object of a single file.",
-                "required": [
-                    "name",
-                    "fileID",
-                    "description",
-                    "format",
-                    "position",
-                    "size",
-                    "checksum",
-                    "uploadDate"
-                ],
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "description": "Name given to the file in the resource.",
-                        "maxLength": 512,
-                        "type": "string"
-                    },
-                    "fileID": {
-                        "description": "ECL internal identifier for the file in the resource.",
-                        "type": "integer"
-                    },
-                    "description": {
-                        "description": "Description of the file in the resource.",
-                        "maxLength": 256,
-                        "type": "string"
-                    },
-                    "format": {
-                        "description": "Format of the file in the resource.",
-                        "enum": [
-                            ".asc",
-                            ".bin",
-                            ".bmp",
-                            ".csv",
-                            ".ctf",
-                            ".doc",
-                            ".docx",
-                            ".f",
-                            ".geojson",
-                            ".gif",
-                            ".h5",
-                            ".hdf",
-                            ".HEIC",
-                            ".html",
-                            ".ipynb",
-                            ".jgw",
-                            ".jpeg",
-                            ".jpg",
-                            ".js",
-                            ".json",
-                            ".kml",
-                            ".m",
-                            ".md",
-                            ".nc",
-                            ".pdf",
-                            ".png",
-                            ".ppt",
-                            ".pptx",
-                            ".ps",
-                            ".rdf",
-                            ".tar.gz",
-                            ".tif",
-                            ".tiff",
-                            ".tsv",
-                            ".txt",
-                            ".xls",
-                            ".xlsm",
-                            ".xlsx",
-                            ".xml",
-                            ".zip"
-                        ],
-                        "type": "string"
-                    },
-                    "position": {
-                        "description": "The position of a file in a sequence of all uploading files.",
-                        "type": "integer"
-                    },
-                    "size": {
-                        "description": "The size of the file in the resource in bytes.",
-                        "type": "integer"
-                    },
-                    "checksum": {
-                        "description": "A Checksum is value that allows the contents of a file to be authenticated.",
-                        "type": "string"
-                    },
-                    "uploadDate": {
-                        "description": "Date when the file was uploaded.",
-                        "pattern": "((?:19|20)[0-9][0-9])-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])",
-                        "type": "string"
-                    }
-                },
-                "additionalProperties": false
-            }
-        },
-        "licence": {
-            "description": "The license for all files contained in the resource.",
-            "required": [
-                "name",
-                "alternateName",
-                "identifiers"
-            ],
-            "type": "object",
-            "properties": {
-                "name": {
-                    "description": "Name given to the license.",
-                    "type": "string"
-                },
-                "alternateName": {
-                    "description": "Short identifier given to the license.",
-                    "enum": [
-                        "CC-BY-NC-SA-3.0",
-                        "CC-BY-NC-SA-4.0",
-                        "CC-BY-SA-4.0",
-                        "CC0-1.0"
-                    ],
-                    "type": "string"
-                },
-                "identifiers": {
-                    "description": "Identifiers for the license.",
-                    "uniqueItems": true,
-                    "type": "array",
-                    "additionalItems": false,
-                    "items": {
-                        "description": "Identifiers for the license.",
-                        "required": [
-                            "scheme",
-                            "schemeURI",
-                            "identifier",
-                            "url"
-                        ],
-                        "type": "object",
-                        "properties": {
-                            "scheme": {
-                                "description": "Persistent identifier scheme.",
-                                "type": "string"
-                            },
-                            "schemeURI": {
-                                "description": "URL of the scheme.",
-                                "type": "string"
-                            },
-                            "identifier": {
-                                "description": "Identifier for the license under the specific scheme.",
-                                "type": "string"
-                            },
-                            "url": {
-                                "description": "URL for the license under the specific scheme.",
-                                "type": "string"
-                            }
-                        },
-                        "additionalProperties": false
-                    }
-                }
-            },
-            "additionalProperties": false
+        "license": {
+          "$ref": "#/definitions/License"
         }
+      },
+      "title": "Record"
     },
-    "additionalProperties": false
+    "RecordFile": {
+      "type": "object",
+      "properties": {
+        "checkum": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "position": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "serverName": {
+          "type": "string"
+        },
+        "size": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "uploadDate": {
+          "type": "string"
+        }
+      },
+      "title": "RecordFile"
+    },
+    "RelatedResource": {
+      "type": "object",
+      "properties": {
+        "bibliographicCitation": {
+          "type": "string"
+        },
+        "identifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Identifier"
+          }
+        },
+        "relation": {
+          "type": "string",
+          "enum": [
+            "isCitedBy",
+            "cites",
+            "isSupplementTo",
+            "isSupplementedBy",
+            "isContinuedBy",
+            "continues",
+            "isDescribedBy",
+            "describes",
+            "hasMetadata",
+            "isMetadataFor",
+            "isNewVersionOf",
+            "isPreviousVersionOf",
+            "isPartOf",
+            "hasPart",
+            "isReferencedBy",
+            "references",
+            "isDocumentedBy",
+            "documents",
+            "isCompiledBy",
+            "compiles",
+            "isVariantFormOf",
+            "isOrignialFormOf",
+            "isIdenticalTo",
+            "isReviewedBy",
+            "reviews",
+            "isDerivedFrom",
+            "isSourceOf",
+            "requires",
+            "isRequiredBy",
+            "isObsoletedBy",
+            "obsoletes",
+            "isPublishedIn"
+          ]
+        }
+      },
+      "title": "RelatedResource"
+    },
+    "SpatialCoverage": {
+      "type": "object",
+      "properties": {
+        "coverage": {
+          "type": "string"
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Feature"
+          }
+        }
+      },
+      "title": "SpatialCoverage"
+    }
+  }
 }

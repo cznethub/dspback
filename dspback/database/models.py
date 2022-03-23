@@ -51,8 +51,8 @@ class RepositoryTokenTable(Base):
 
     id = Column(Integer, primary_key=True)
     type = Column(String(length=64), nullable=False)
-    access_token = Column(String(length=128), nullable=False)
-    refresh_token = Column(String(length=128), nullable=True)
+    access_token = Column(String(length=2048), nullable=False)
+    refresh_token = Column(String(length=2048), nullable=True)
     expires_in = Column(BigInteger, nullable=True)
     expires_at = Column(BigInteger, nullable=True)
     user_id = Column(Integer, ForeignKey('user.id'))
