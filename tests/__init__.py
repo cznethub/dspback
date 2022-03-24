@@ -79,3 +79,9 @@ def zenodo(change_test_dir):
 def external(change_test_dir):
     with open("data/external.json", "r") as f:
         return json.loads(f.read())
+
+
+@pytest.fixture
+def earthchem(change_test_dir):
+    with open("data/earthchem.json", "r") as f:
+        return json.loads(f.read())
