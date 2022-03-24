@@ -5,8 +5,8 @@ from datetime import datetime
 import pytest
 
 from dspback.config import get_settings
-from dspback.pydantic_schemas import ExternalRecord, HydroShareRecord, RepositoryType, ZenodoRecord
-from tests import change_test_dir, external, hydroshare, zenodo
+from dspback.pydantic_schemas import EarthChemRecord, ExternalRecord, HydroShareRecord, RepositoryType, ZenodoRecord
+from tests import change_test_dir, earthchem, external, hydroshare, zenodo
 
 
 def test_hydroshare_to_submission(hydroshare):
@@ -44,3 +44,17 @@ def test_external_to_submission(external):
     assert external_submission.submitted <= datetime.utcnow()
     assert external_submission.identifier == "947940"
     assert external_submission.url == external_record.url
+
+
+def test_eartchchem_to_submission(earthchem):
+    earthchem_record = EarthChemRecord(**earthchem)
+    earthchem_submission = earthchem_record.to_submission("947940")
+
+    assert earthchem_submission.title == earthchem_record.title
+    assert earthchem_submission.authors == [
+        f"{creator.familyName}, {creator.givenName}" for creator in earthchem_record.creators
+    ]
+    assert earthchem_submission.repo_type == RepositoryType.EARTHCHEM
+    assert earthchem_submission.submitted <= datetime.utcnow()
+    assert earthchem_submission.identifier == "947940"
+    assert earthchem_submission.url == get_settings().earthchem_view_url % "947940"

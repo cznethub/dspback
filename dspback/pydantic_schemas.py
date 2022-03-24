@@ -184,14 +184,16 @@ class EarthChemRecord(BaseRecord):
     creators: List[Creator] = []
 
     def to_submission(self, identifier) -> Submission:
+        settings = get_settings()
+        view_url = settings.earthchem_view_url
+        view_url = view_url % identifier
         return Submission(
             title=self.title,
             authors=[f"{creator.familyName}, {creator.givenName}" for creator in self.creators],
             repo_type=RepositoryType.EARTHCHEM,
             submitted=datetime.utcnow(),
             identifier=identifier,
-            # TODO
-            url="https://no.idea.what.it.is",
+            url=view_url,
         )
 
 
