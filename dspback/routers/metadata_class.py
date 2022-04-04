@@ -365,7 +365,8 @@ class EarthChemMetadataRoutes(MetadataRoutes):
 
     @router.put('/submit/earthchem/{identifier}', name="submit", tags=["EarthChem"])
     async def submit_repository_record(self, identifier: str):
-        raise NotImplementedError("EarthChem metadata endpoints are not implemented yet")
+        json_metadata = await self.submit(identifier)
+        return json_metadata
 
 
 @cbv(router)
