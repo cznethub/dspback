@@ -1,467 +1,74 @@
 {
-  "swagger": "2.0",
-  "info": {
-    "description": "EarthChemLibrary REST API",
-    "version": "0.1.0",
-    "title": "EarthChemLibrary REST API",
-    "contact": {
-      "name": "EarthChemLibrary",
-      "url": "https://www.earthchem.org/ecl",
-      "email": "info@earthchem.org"
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "community": {
+      "type": "string"
+    },
+    "identifiers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Identifier"
+      }
+    },
+    "creators": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Creator"
+      }
+    },
+    "contributors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Contributor"
+      }
+    },
+    "type": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "additionalTypes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "language": {
+      "type": "string"
+    },
+    "spatialCoverage": {
+      "$ref": "#/definitions/SpatialCoverage"
+    },
+    "relatedResources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/RelatedResource"
+      }
+    },
+    "fundings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Funding"
+      }
     },
     "license": {
-      "name": "Apache License Version 2.0",
-      "url": "https://www.apache.org/licenses/LICENSE-2.0\""
+      "$ref": "#/definitions/License"
     }
   },
-  "host": "grg-doc-dev.ldeo.columbia.edu:8081",
-  "basePath": "/",
-  "tags": [
-    {
-      "name": "Records",
-      "description": "Operations pertaining to records for ECL repository"
-    },
-    {
-      "name": "file-controller",
-      "description": "File Controller"
-    }
-  ],
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
-  ],
-  "paths": {
-    "/v2/files/{id}": {
-      "get": {
-        "tags": [
-          "file-controller"
-        ],
-        "summary": "getFileListOfRecord",
-        "operationId": "getFileListOfRecordUsingGET",
-        "consumes": [
-          "*/*"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/RecordFile"
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "JWT": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "delete": {
-        "tags": [
-          "file-controller"
-        ],
-        "summary": "removeAllFilesFromRecord",
-        "operationId": "removeAllFilesFromRecordUsingDELETE",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "string"
-            }
-          },
-          "204": {
-            "description": "No Content"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          }
-        },
-        "security": [
-          {
-            "JWT": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/v2/files/{id}/uploadFile": {
-      "post": {
-        "tags": [
-          "file-controller"
-        ],
-        "summary": "uploadSingleFile",
-        "operationId": "uploadSingleFileUsingPOST",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "parameters": [
-          {
-            "name": "description",
-            "in": "query",
-            "description": "description",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "file",
-            "in": "formData",
-            "description": "file",
-            "required": true,
-            "type": "file"
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "description": "id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/FileResponse"
-            }
-          },
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "JWT": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/v2/files/{id}/{filename}": {
-      "get": {
-        "tags": [
-          "file-controller"
-        ],
-        "summary": "downloadSingleFileFromRecord",
-        "operationId": "downloadSingleFileFromRecordUsingGET",
-        "parameters": [
-          {
-            "name": "filename",
-            "in": "path",
-            "description": "filename",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "description": "id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "JWT": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "delete": {
-        "tags": [
-          "file-controller"
-        ],
-        "summary": "removeSingleFileFromRecord",
-        "operationId": "removeSingleFileFromRecordUsingDELETE",
-        "parameters": [
-          {
-            "name": "filename",
-            "in": "path",
-            "description": "filename",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "description": "id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "string"
-            }
-          },
-          "204": {
-            "description": "No Content"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          }
-        },
-        "security": [
-          {
-            "JWT": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/v2/records": {
-      "post": {
-        "tags": [
-          "Records"
-        ],
-        "summary": "createRecord",
-        "operationId": "createRecordUsingPOST",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "record",
-            "description": "record",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Record"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/Record"
-            }
-          },
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "JWT": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/v2/records/{id}": {
-      "get": {
-        "tags": [
-          "Records"
-        ],
-        "summary": "getRecord",
-        "operationId": "getRecordUsingGET",
-        "consumes": [
-          "*/*"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/Record"
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "JWT": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "put": {
-        "tags": [
-          "Records"
-        ],
-        "summary": "updateRecord",
-        "operationId": "updateRecordUsingPUT",
-        "consumes": [
-          "application/json",
-          "*/*"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "in": "body",
-            "name": "record",
-            "description": "record",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Record"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/Record"
-            }
-          },
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "JWT": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    }
-  },
-  "securityDefinitions": {
-    "JWT": {
-      "type": "apiKey",
-      "name": "Authorization",
-      "in": "header"
-    }
-  },
+  "title": "Record",
   "definitions": {
     "Affiliation": {
       "type": "object",
@@ -683,78 +290,6 @@
         }
       },
       "title": "License"
-    },
-    "Record": {
-      "type": "object",
-      "properties": {
-        "title": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "community": {
-          "type": "string"
-        },
-        "identifiers": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Identifier"
-          }
-        },
-        "creators": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Creator"
-          }
-        },
-        "contributors": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Contributor"
-          }
-        },
-        "type": {
-          "type": "string"
-        },
-        "status": {
-          "type": "string"
-        },
-        "additionalTypes": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "keywords": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "language": {
-          "type": "string"
-        },
-        "spatialCoverage": {
-          "$ref": "#/definitions/SpatialCoverage"
-        },
-        "relatedResources": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/RelatedResource"
-          }
-        },
-        "fundings": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Funding"
-          }
-        },
-        "license": {
-          "$ref": "#/definitions/License"
-        }
-      },
-      "title": "Record"
     },
     "RecordFile": {
       "type": "object",
