@@ -1,0 +1,57 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Group",
+      "label": "Basic Information",
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/title"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/description",
+          "options": {
+            "multi": true
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/type"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/additionalTypes"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/status"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/community"
+        }
+      ]
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/creators"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/contributors"
+    },
+    {
+      "type": "Group",
+      "label": "Related Resource Information",
+      "elements":[
+        {
+          "type": "Control",
+          "scope": "#/properties/identifiers"
+        }
+      ]
+    }
+    
+  ]
+}

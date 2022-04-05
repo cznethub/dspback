@@ -107,10 +107,6 @@
             "coAuthor"
           ]
         },
-        "position": {
-          "type": "integer",
-          "format": "int32"
-        },
         "identifiers": {
           "type": "array",
           "items": {
@@ -127,16 +123,13 @@
       "type": "object",
       "properties": {
         "lat": {
-          "type": "number",
-          "format": "double"
+          "type": "number"
         },
         "lon": {
-          "type": "number",
-          "format": "double"
+          "type": "number"
         },
         "alt": {
-          "type": "number",
-          "format": "double"
+          "type": "number"
         }
       },
       "title": "Cordinate"
@@ -307,8 +300,7 @@
           "type": "string"
         },
         "position": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "serverName": {
           "type": "string"
