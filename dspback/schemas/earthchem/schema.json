@@ -1,47 +1,103 @@
 {
+  "title": "Record",
   "type": "object",
   "properties": {
     "title": {
-      "type": "string"
+      "title": "Dataset Title",
+      "type": "string",
+      "description": "A descriptive title of the dataset"
     },
     "description": {
-      "type": "string"
+      "title": "Abstract or Description",
+      "type": "string",
+      "description": "Describe measurements, location, and purpose of the dataset",
+      "maxLength": 250
     },
     "community": {
-      "type": "string"
+      "title": "Community",
+      "type": "string",
+      "default": "CZNet",
+      "readOnly": true
     },
     "identifiers": {
+      "title": "Related Information",
       "type": "array",
       "items": {
         "$ref": "#/definitions/Identifier"
       }
     },
     "creators": {
+      "title": "Lead Authors",
       "type": "array",
       "items": {
         "$ref": "#/definitions/Creator"
       }
     },
     "contributors": {
+      "title": "Co-Authors",
       "type": "array",
+      "maxContains": 2,
       "items": {
         "$ref": "#/definitions/Contributor"
       }
     },
     "type": {
-      "type": "string"
+      "title": "Dataset Type",
+      "type": "string",
+      "default": "Collection",
+      "enum": [
+        "Collection",
+        "Dataset",
+        "Image",
+        "InteractiveResource",
+        "MovingImage",
+        "PhysicalObject",
+        "Service",
+        "Software",
+        "Sound",
+        "StillImage",
+        "Text"
+      ]
     },
     "status": {
       "type": "string"
     },
     "additionalTypes": {
+      "title": "Data Types",
       "type": "array",
       "items": {
-        "type": "string"
-      }
+        "type": "string",
+        "enum": [
+          "Chemistry",
+          "Chemistry:ClumpedIsotope",
+          "Chemistry:Fluid",
+          "Chemistry:Gas",
+          "Chemistry:Rock",
+          "Chemistry:Sediment",
+          "Geochronology",
+          "Kinetics",
+          "ModelData",
+          "Petrography",
+          "Petrology",
+          "Petrology:Experimental",
+          "Petrology:Mineral",
+          "SampleInfo",
+          "SocialScience",
+          "Other"
+        ]
+      },
+      "default": [],
+      "uniqueItems": true
     },
     "keywords": {
+      "title": "Keywords",
       "type": "array",
+      "description": "A list of non-geographic keywords. (e.g. volatiles, ultra-slow spreading ridges, mantle melting, CO2 fluxes)",
+      "default": ["CZNet"],
+      "minItems": 2,
+      "contains": {
+        "enum": ["CZNet"]
+      },
       "items": {
         "type": "string"
       }
@@ -68,7 +124,16 @@
       "$ref": "#/definitions/License"
     }
   },
-  "title": "Record",
+  "required": [
+    "title",
+    "description",
+    "creators",
+    "keywords",
+    "spatialCoverage",
+    "additionalTypes",
+    "community",
+    "type"
+  ],
   "definitions": {
     "Affiliation": {
       "type": "object",
@@ -98,7 +163,8 @@
           "type": "string"
         },
         "email": {
-          "type": "string"
+          "type": "string",
+          "format": "email"
         },
         "type": {
           "type": "string",
@@ -117,7 +183,11 @@
           "$ref": "#/definitions/Affiliation"
         }
       },
-      "title": "Contributor"
+      "title": "Contributor",
+      "required": [
+        "familyName",
+        "givenName"
+      ]
     },
     "Cordinate": {
       "type": "object",
@@ -135,19 +205,25 @@
       "title": "Cordinate"
     },
     "Creator": {
+      "title": "Lead Author",
       "type": "object",
       "properties": {
         "familyName": {
+          "title": "Family Name",
           "type": "string"
         },
         "additionalName": {
+          "title": "Additional Name",
           "type": "string"
         },
         "givenName": {
+          "title": "Given Name",
           "type": "string"
         },
         "email": {
-          "type": "string"
+          "title": "Email",
+          "type": "string",
+          "format": "email"
         },
         "type": {
           "type": "string",
@@ -166,7 +242,11 @@
           "$ref": "#/definitions/Affiliation"
         }
       },
-      "title": "Creator"
+      "required": [
+        "familyName",
+        "givenName",
+        "email"
+      ]
     },
     "Feature": {
       "type": "object",
@@ -192,38 +272,33 @@
       },
       "title": "FileResponse"
     },
-    "Funder": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "alternateName": {
-          "type": "string"
-        },
-        "identifiers": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Identifier"
-          }
-        }
-      },
-      "title": "Funder"
-    },
     "Funding": {
       "type": "object",
       "properties": {
-        "identifer": {
-          "type": "string"
-        },
         "identifier": {
           "type": "string"
         },
         "funder": {
-          "$ref": "#/definitions/Funder"
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "alternateName": {
+              "type": "string"
+            },
+            "identifiers": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Identifier"
+              }
+            }
+          },
+          "title": "Funder"
         },
         "url": {
-          "type": "string"
+          "type": "string",
+          "format": "uri"
         }
       },
       "title": "Funding"
@@ -368,16 +443,25 @@
       "title": "RelatedResource"
     },
     "SpatialCoverage": {
+      "title": "Spatial Coverage Information",
       "type": "object",
       "properties": {
         "coverage": {
-          "type": "string"
+          "title": "Spatial Coverage",
+          "type": "string",
+          "enum": [
+            "Global",
+            "Regional",
+            "Space/Planetary"
+          ]
         },
         "keywords": {
+          "title": "Geographic Keywords",
           "type": "array",
           "items": {
             "type": "string"
-          }
+          },
+          "description": "Provide appropriate geographic keywords for searches. (e.g. Pacific Ocean, Aleutian Islands)"
         },
         "features": {
           "type": "array",
@@ -386,7 +470,7 @@
           }
         }
       },
-      "title": "SpatialCoverage"
+      "required": ["coverage"]
     }
   }
 }

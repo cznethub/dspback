@@ -17,30 +17,59 @@
           }
         },
         {
+          "type": "HorizontalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/type"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/additionalTypes"
+            }
+          ]
+        },
+        {
+          "label": "Keywords",
           "type": "Control",
-          "scope": "#/properties/type"
+          "scope": "#/properties/keywords"
+        },
+        {
+          "type": "HorizontalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/status"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/community"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/language"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "HorizontalLayout",
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/creators"
         },
         {
           "type": "Control",
-          "scope": "#/properties/additionalTypes"
-        },
-        {
-          "type": "Control",
-          "scope": "#/properties/status"
-        },
-        {
-          "type": "Control",
-          "scope": "#/properties/community"
+          "scope": "#/properties/contributors"
         }
       ]
     },
     {
       "type": "Control",
-      "scope": "#/properties/creators"
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/contributors"
+      "label": "Spatial Coverage Information",
+      "scope": "#/properties/spatialCoverage"
     },
     {
       "type": "Group",
@@ -51,7 +80,14 @@
           "scope": "#/properties/identifiers"
         }
       ]
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/fundings"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/license"
     }
-    
   ]
 }
