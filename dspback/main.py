@@ -6,7 +6,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from dspback.config import get_settings
 from dspback.database.models import SessionLocal
-from dspback.routers import authentication, metadata_class, repository_authorization, submissions
+from dspback.routers import authentication, gitlab, metadata_class, repository_authorization, submissions
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=get_settings().session_secret_key)
@@ -18,6 +18,7 @@ app.include_router(
     repository_authorization.router, prefix="/api", tags=["Repository Authorization"], include_in_schema=False
 )
 app.include_router(metadata_class.router, prefix="/api")
+app.include_router(gitlab.router, prefix="/api")
 app.include_router(submissions.router, prefix="/api", tags=["Submissions"])
 
 
