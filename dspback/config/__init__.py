@@ -70,7 +70,7 @@ class Settings(BaseSettings):
     gitlab_delete_url: HttpUrl
     gitlab_file_create_url: HttpUrl
     gitlab_file_delete_url: HttpUrl
-    gitlab_file_read_url: HttpUrl
+    gitlab_file_read_url: str
     gitlab_view_url: HttpUrl
     gitlab_health_url: HttpUrl
 
