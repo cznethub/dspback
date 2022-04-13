@@ -40,6 +40,12 @@ class GitLabMetadataRoutes(MetadataRoutes):
                 raise HTTPException(status_code=response.status_code, detail=response.text)
 
             identifier = response.json()["id"]
+        return await self.create_metadata_aggregation(metadata, identifier, branch)
+
+    @router.post('/metadata/gitlab/{identifier}', tags=["GitLab"])
+    async def create_metadata_aggregation(
+        self, metadata: request_model, identifier=None, branch: str = "main"
+    ) -> response_model:
 
         response = requests.post(
             self.update_url % identifier + ".hs%2Faggregations.json",
@@ -98,6 +104,7 @@ class GitLabMetadataRoutes(MetadataRoutes):
     async def get_metadata_repository(self, identifier, branch: str = "main") -> response_model:
         json_metadata = await self._retrieve_metadata_from_repository(identifier, branch)
         await self.submit(identifier=identifier, json_metadata=json_metadata)
+        json_metadata["id"] = identifier
         return json_metadata
 
     @router.delete('/metadata/gitlab/{identifier}', tags=["GitLab"])
@@ -117,7 +124,15 @@ class GitLabMetadataRoutes(MetadataRoutes):
         return json_metadata
 
     @router.get('/files/gitlab/{identifier}', name="files_list", tags=["GitLab"])
-    async def list_files(self, identifier: str, branch: str = "main"):
+    async def files_list(self, identifier: str, branch: str = "main"):
+        def parse_listing(files_and_folders):
+            files_list = []
+            for f in files_and_folders:
+                if f["type"] == "tree":
+                    continue
+                files_list.append(f)
+            return files_list
+
         listfiles_url = 'https://gitlab.com/api/v4/projects/%s/repository/tree' % identifier
         response = requests.get(
             listfiles_url + f"?ref={branch}&recursive=true", params={"access_token": self.access_token}
@@ -126,4 +141,17 @@ class GitLabMetadataRoutes(MetadataRoutes):
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
-        return json.loads(response.text)
+        files = parse_listing(response.json())
+        return JSONResponse(files)
+
+    @router.post('/files/gitlab/{identifier}/{file_identifier}', name="files_list", tags=["GitLab"])
+    async def file_add(self, identifier: str, path: str = None, branch: str = "main"):
+        raise NotImplementedError("")
+
+    @router.put('/files/gitlab/{identifier}/{file_identifier}', name="files_list", tags=["GitLab"])
+    async def file_move(self, identifier: str, file_identifier: str, path: str, branch: str = "main"):
+        raise NotImplementedError("")
+
+    @router.delete('/files/gitlab/{identifier}', name="files_list", tags=["GitLab"])
+    async def file_delete(self, identifier: str, branch: str = "main"):
+        raise NotImplementedError("")
