@@ -1,5 +1,6 @@
 import base64
 import json
+import os
 from datetime import datetime
 from enum import Enum
 from typing import List, Optional
@@ -243,3 +244,26 @@ class GitLabRecord(BaseRecord):
             identifier=identifier,
             url=view_url,
         )
+
+class HSFile(BaseModel):
+    path: str
+    checksum: str = None
+    size: int = None
+
+    @property
+    def name(self):
+        return os.path.basename(self.path)
+
+class GitLabFile(BaseModel):
+    """
+    "id": "a1e8f8d745cc87e3a9248358d9352bb7f9a0aeba",
+    "name": "html",
+    "type": "tree",
+    "path": "files/html",
+    "mode": "040000"
+    """
+    id: str
+    name: str
+    type: str
+    path: str
+    mode: str

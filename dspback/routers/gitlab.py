@@ -1,8 +1,9 @@
 import base64
 import json
+import uuid
 
 import requests
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile
 from fastapi_restful.cbv import cbv
 from starlette.responses import JSONResponse
 
@@ -22,6 +23,31 @@ class GitLabMetadataRoutes(MetadataRoutes):
     response_model = ResourceMetadata
     repository_type = RepositoryType.GITLAB
 
+    async def _write_metadata(self, identifier, branch, metadata, aggregation_identifier):
+        all_metadata = await self._retrieve_metadata_from_repository(identifier, branch)
+        if aggregation_identifier in all_metadata:
+            existing_metadata = all_metadata[aggregation_identifier]
+            incoming_metadata = metadata.json(skip_defaults=True, exclude_unset=True)
+            merged_metadata = {**existing_metadata, **json.loads(incoming_metadata)}
+        else:
+            merged_metadata = metadata
+        all_metadata[str(aggregation_identifier)] = json.loads(merged_metadata.json())
+        as_json = json.dumps(all_metadata)
+        response = requests.put(
+            self.update_url % identifier + ".hs%2Faggregations.json",
+            data={
+                "branch": branch,
+                "content": as_json,
+                "commit_message": "some automated message",
+            },
+            params={
+                "access_token": self.access_token,
+            },
+        )
+
+        if response.status_code >= 300:
+            raise HTTPException(status_code=response.status_code, detail=response.text)
+
     @router.post('/metadata/gitlab', tags=["GitLab"])
     async def create_metadata_repository(
         self, metadata: request_model, identifier=None, branch: str = "main"
@@ -36,10 +62,21 @@ class GitLabMetadataRoutes(MetadataRoutes):
                 timeout=15.0,
             )
 
+            identifier = response.json()["id"]
+
             if response.status_code >= 300:
                 raise HTTPException(status_code=response.status_code, detail=response.text)
 
-            identifier = response.json()["id"]
+            response = requests.post(
+                self.update_url % identifier + ".hs%2Faggregations.json",
+                data={"branch": branch, "content": "{}",
+                      "commit_message": "some automated message"},
+                params={
+                    "access_token": self.access_token,
+                },
+                timeout=15.0,
+            )
+
         return await self.create_metadata_aggregation(metadata, identifier, branch)
 
     @router.post('/metadata/gitlab/{identifier}', tags=["GitLab"])
@@ -47,25 +84,16 @@ class GitLabMetadataRoutes(MetadataRoutes):
         self, metadata: request_model, identifier=None, branch: str = "main"
     ) -> response_model:
 
-        response = requests.post(
-            self.update_url % identifier + ".hs%2Faggregations.json",
-            data={"branch": branch, "content": metadata.json(indent=2), "commit_message": "some automated message"},
-            params={
-                "access_token": self.access_token,
-            },
-            timeout=15.0,
-        )
+        aggregation_identifier = uuid.uuid4()
+        await self._write_metadata(identifier, branch, metadata, aggregation_identifier)
 
-        if response.status_code >= 300:
-            raise HTTPException(status_code=response.status_code, detail=response.text)
-
-        json_metadata = await self.get_metadata_repository(identifier, branch)
+        json_metadata = await self.get_aggregation_metadata_repository(identifier, aggregation_identifier, branch)
 
         return JSONResponse(json_metadata, status_code=201)
 
     @router.put('/metadata/gitlab/{identifier}', tags=["GitLab"])
-    async def update_metadata(self, metadata: request_model_update, identifier, branch: str = "main") -> response_model:
-        existing_metadata = await self.get_metadata_repository(identifier, branch)
+    async def update_metadata(self, metadata: request_model_update, identifier, aggregation_identifier: str = None, branch: str = "main") -> response_model:
+        existing_metadata = await self.get_aggregation_metadata_repository(identifier, branch)
         incoming_metadata = metadata.json(skip_defaults=True, exclude_unset=True)
         merged_metadata = {**existing_metadata, **json.loads(incoming_metadata)}
         response = requests.put(
@@ -85,7 +113,7 @@ class GitLabMetadataRoutes(MetadataRoutes):
 
         return await self.get_metadata_repository(identifier, branch)
 
-    async def _retrieve_metadata_from_repository(self, identifier, branch: str = "main"):
+    async def _retrieve_metadata_from_repository(self, identifier, branch: str):
         def base64_decode(content):
             return str(base64.b64decode(content), "utf-8")
 
@@ -96,14 +124,21 @@ class GitLabMetadataRoutes(MetadataRoutes):
 
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
-
-        json_metadata = json.loads(base64_decode(json.loads(response.text)["content"]))
-        return json_metadata
+        response_json = response.json()
+        decoded_content = base64_decode(response_json["content"])
+        json_metadata = json.loads(decoded_content)
+        # TOOO, won't be able to do this soon
+        agg_metadata = list(json_metadata.values())
+        submission_json_metadata = {}
+        if len(agg_metadata) > 0:
+            submission_json_metadata = list(json_metadata.values())[0]
+            await self.submit(identifier=identifier, json_metadata=submission_json_metadata)
+        return submission_json_metadata
 
     @router.get('/metadata/gitlab/{identifier}', tags=["GitLab"])
-    async def get_metadata_repository(self, identifier, branch: str = "main") -> response_model:
+    async def get_aggregation_metadata_repository(self, identifier, aggregation_identifier: str = None, branch: str = "main") -> response_model:
         json_metadata = await self._retrieve_metadata_from_repository(identifier, branch)
-        await self.submit(identifier=identifier, json_metadata=json_metadata)
+        #aggregation_metadata = json_metadata[aggregation_identifier]
         json_metadata["id"] = identifier
         return json_metadata
 
@@ -123,15 +158,15 @@ class GitLabMetadataRoutes(MetadataRoutes):
         json_metadata = await self.submit(identifier)
         return json_metadata
 
-    @router.get('/files/gitlab/{identifier}', name="files_list", tags=["GitLab"])
-    async def files_list(self, identifier: str, branch: str = "main"):
-        def parse_listing(files_and_folders):
-            files_list = []
-            for f in files_and_folders:
-                if f["type"] == "tree":
-                    continue
-                files_list.append(f)
-            return files_list
+    def _hs_files(self, identifier: str, branch: str):
+        _, hs_files = self._all_files(identifier, branch)
+        return hs_files
+
+    def _files(self, identifier: str, branch: str):
+        files, _ = self._all_files(identifier, branch)
+        return files
+
+    def _all_files(self, identifier: str, branch: str):
 
         listfiles_url = 'https://gitlab.com/api/v4/projects/%s/repository/tree' % identifier
         response = requests.get(
@@ -141,17 +176,51 @@ class GitLabMetadataRoutes(MetadataRoutes):
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
-        files = parse_listing(response.json())
+        files = []
+        hs_files = []
+        for file in response.json():
+            if file["type"] == "tree":
+                pass  # is directory
+            elif file["path"].startswith(".hs/"):
+                hs_files.append(file)
+            else:
+                files.append(file)
+        return files, hs_files
+
+    @router.get('/files/gitlab/{identifier}', name="files_list", tags=["GitLab"])
+    async def files_list(self, identifier: str, branch: str = "main"):
+        files = self._files(identifier, branch)
         return JSONResponse(files)
 
-    @router.post('/files/gitlab/{identifier}/{file_identifier}', name="files_list", tags=["GitLab"])
-    async def file_add(self, identifier: str, path: str = None, branch: str = "main"):
-        raise NotImplementedError("")
+    @router.post('/files/gitlab/{identifier}', name="file_add", tags=["GitLab"])
+    async def file_add(self, identifier: str, file: UploadFile, aggregation: str = None, path: str = None, branch: str = "main"):
 
-    @router.put('/files/gitlab/{identifier}/{file_identifier}', name="files_list", tags=["GitLab"])
-    async def file_move(self, identifier: str, file_identifier: str, path: str, branch: str = "main"):
-        raise NotImplementedError("")
+        response = requests.post(
+            self.update_url % identifier + file.filename,
+            data={"branch": branch, "content": await file.read(), "commit_message": "some automated message"},
+            params={
+                "access_token": self.access_token,
+            },
+            timeout=15.0,
+        )
 
-    @router.delete('/files/gitlab/{identifier}', name="files_list", tags=["GitLab"])
-    async def file_delete(self, identifier: str, branch: str = "main"):
-        raise NotImplementedError("")
+        if response.status_code >= 300:
+            raise HTTPException(status_code=response.status_code, detail=response.text)
+
+    @router.put('/files/gitlab/{identifier}/{file_identifier}', name="file_add", tags=["GitLab"])
+    async def file_update(self, identifier: str, file_identifier: str, file: UploadFile, aggregation: str = None, path: str = None, branch: str = "main"):
+        files, _ = self._files(identifier, branch)
+        f = next(f for f in files if f.id == file_identifier)
+        response = requests.put(
+            self.update_url % identifier + f.path,
+            data={"branch": branch, "content": await file.read(), "commit_message": "some automated message"},
+            params={
+                "access_token": self.access_token,
+            },
+            timeout=15.0,
+        )
+
+        if response.status_code >= 300:
+            raise HTTPException(status_code=response.status_code, detail=response.text)
+
+        return response

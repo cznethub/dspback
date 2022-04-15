@@ -68,9 +68,10 @@ class Settings(BaseSettings):
     gitlab_update_url: HttpUrl
     gitlab_read_url: HttpUrl
     gitlab_delete_url: HttpUrl
-    gitlab_file_create_url: HttpUrl
-    gitlab_file_delete_url: HttpUrl
+    gitlab_file_create_url: str
+    gitlab_file_delete_url: str
     gitlab_file_read_url: str
+    gitlab_move_or_rename_url: str
     gitlab_view_url: HttpUrl
     gitlab_health_url: HttpUrl
 
@@ -196,6 +197,7 @@ repository_config = {
         "file_create": settings.earthchem_file_create_url,
         "file_delete": settings.earthchem_file_delete_url,
         "file_read": settings.earthchem_file_read_url,
+        "move_or_rename_url": settings.gitlab_move_or_rename_url,
         "view_url": settings.earthchem_view_url,
         "schema": "/api/schema/earthchem/schema.json",
         "uischema": "/api/schema/earthchem/uischema.json",
