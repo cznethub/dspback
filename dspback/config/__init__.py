@@ -71,6 +71,7 @@ class Settings(BaseSettings):
     gitlab_file_create_url: str
     gitlab_file_delete_url: str
     gitlab_file_read_url: str
+    gitlab_folder_read_url: str
     gitlab_move_or_rename_url: str
     gitlab_view_url: HttpUrl
     gitlab_health_url: HttpUrl
@@ -229,6 +230,7 @@ repository_config = {
         "file_create": settings.gitlab_file_create_url,
         "file_delete": settings.gitlab_file_delete_url,
         "file_read": settings.gitlab_file_read_url,
+        "folder_read": settings.gitlab_folder_read_url,
         "view_url": settings.gitlab_view_url,
         "schema": "/api/schema/gitlab/schema.json",
         "uischema": "/api/schema/gitlab/uischema.json",

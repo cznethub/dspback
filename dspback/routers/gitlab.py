@@ -69,8 +69,7 @@ class GitLabMetadataRoutes(MetadataRoutes):
 
             response = requests.post(
                 self.update_url % identifier + ".hs%2Faggregations.json",
-                data={"branch": branch, "content": "{}",
-                      "commit_message": "some automated message"},
+                data={"branch": branch, "content": "{}", "commit_message": "some automated message"},
                 params={
                     "access_token": self.access_token,
                 },
@@ -92,7 +91,9 @@ class GitLabMetadataRoutes(MetadataRoutes):
         return JSONResponse(json_metadata, status_code=201)
 
     @router.put('/metadata/gitlab/{identifier}', tags=["GitLab"])
-    async def update_metadata(self, metadata: request_model_update, identifier, aggregation_identifier: str = None, branch: str = "main") -> response_model:
+    async def update_metadata(
+        self, metadata: request_model_update, identifier, aggregation_identifier: str = None, branch: str = "main"
+    ) -> response_model:
         existing_metadata = await self.get_aggregation_metadata_repository(identifier, branch)
         incoming_metadata = metadata.json(skip_defaults=True, exclude_unset=True)
         merged_metadata = {**existing_metadata, **json.loads(incoming_metadata)}
@@ -136,9 +137,11 @@ class GitLabMetadataRoutes(MetadataRoutes):
         return submission_json_metadata
 
     @router.get('/metadata/gitlab/{identifier}', tags=["GitLab"])
-    async def get_aggregation_metadata_repository(self, identifier, aggregation_identifier: str = None, branch: str = "main") -> response_model:
+    async def get_aggregation_metadata_repository(
+        self, identifier, aggregation_identifier: str = None, branch: str = "main"
+    ) -> response_model:
         json_metadata = await self._retrieve_metadata_from_repository(identifier, branch)
-        #aggregation_metadata = json_metadata[aggregation_identifier]
+        # aggregation_metadata = json_metadata[aggregation_identifier]
         json_metadata["id"] = identifier
         return json_metadata
 
@@ -159,12 +162,12 @@ class GitLabMetadataRoutes(MetadataRoutes):
         return json_metadata
 
     def _hs_files(self, identifier: str, branch: str):
-        _, hs_files = self._all_files(identifier, branch)
+        _, _, hs_files = self._all_files(identifier, branch)
         return hs_files
 
     def _files(self, identifier: str, branch: str):
-        files, _ = self._all_files(identifier, branch)
-        return files
+        files, folders, _ = self._all_files(identifier, branch)
+        return files, folders
 
     def _all_files(self, identifier: str, branch: str):
 
@@ -178,22 +181,40 @@ class GitLabMetadataRoutes(MetadataRoutes):
 
         files = []
         hs_files = []
+        folders = []
         for file in response.json():
             if file["type"] == "tree":
-                pass  # is directory
+                if file["name"] != ".hs":
+                    folders.append(file)
             elif file["path"].startswith(".hs/"):
                 hs_files.append(file)
             else:
                 files.append(file)
-        return files, hs_files
+        return files, folders, hs_files
 
     @router.get('/files/gitlab/{identifier}', name="files_list", tags=["GitLab"])
-    async def files_list(self, identifier: str, branch: str = "main"):
-        files = self._files(identifier, branch)
-        return JSONResponse(files)
+    async def files_list(self, identifier: str, path: str, branch: str = "main"):
+        files, folders = self._files(identifier, branch)
+
+        files_in_folder = []
+        for f in files:
+            if f["path"].startswith(path):
+                if not path:
+                    if f["name"] == f["path"]:
+                        files_in_folder.append(f)
+                else:
+                    files_in_folder.append(f)
+        folders_in_folder = []
+        for f in folders:
+            if f["path"].startswith(path) and f["path"] != path:
+                folders_in_folder.append(f)
+
+        return JSONResponse({"files": files_in_folder, "folders": folders_in_folder})
 
     @router.post('/files/gitlab/{identifier}', name="file_add", tags=["GitLab"])
-    async def file_add(self, identifier: str, file: UploadFile, aggregation: str = None, path: str = None, branch: str = "main"):
+    async def file_add(
+        self, identifier: str, file: UploadFile, aggregation: str = None, path: str = None, branch: str = "main"
+    ):
 
         response = requests.post(
             self.update_url % identifier + file.filename,
@@ -208,8 +229,16 @@ class GitLabMetadataRoutes(MetadataRoutes):
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
     @router.put('/files/gitlab/{identifier}/{file_identifier}', name="file_add", tags=["GitLab"])
-    async def file_update(self, identifier: str, file_identifier: str, file: UploadFile, aggregation: str = None, path: str = None, branch: str = "main"):
-        files, _ = self._files(identifier, branch)
+    async def file_update(
+        self,
+        identifier: str,
+        file_identifier: str,
+        file: UploadFile,
+        aggregation: str = None,
+        path: str = None,
+        branch: str = "main",
+    ):
+        files, _, _ = self._files(identifier, branch)
         f = next(f for f in files if f.id == file_identifier)
         response = requests.put(
             self.update_url % identifier + f.path,

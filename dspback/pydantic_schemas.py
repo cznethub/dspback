@@ -245,6 +245,7 @@ class GitLabRecord(BaseRecord):
             url=view_url,
         )
 
+
 class HSFile(BaseModel):
     path: str
     checksum: str = None
@@ -254,6 +255,7 @@ class HSFile(BaseModel):
     def name(self):
         return os.path.basename(self.path)
 
+
 class GitLabFile(BaseModel):
     """
     "id": "a1e8f8d745cc87e3a9248358d9352bb7f9a0aeba",
@@ -262,6 +264,7 @@ class GitLabFile(BaseModel):
     "path": "files/html",
     "mode": "040000"
     """
+
     id: str
     name: str
     type: str
