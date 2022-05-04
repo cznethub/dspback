@@ -54,17 +54,8 @@
       ]
     },
     {
-      "type": "HorizontalLayout",
-      "elements": [
-        {
-          "type": "Control",
-          "scope": "#/properties/creators"
-        },
-        {
-          "type": "Control",
-          "scope": "#/properties/contributors"
-        }
-      ]
+      "type": "Control",
+      "scope": "#/properties/contributors"
     },
     {
       "type": "Control",
