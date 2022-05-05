@@ -17,7 +17,8 @@
       "title": "Community",
       "type": "string",
       "default": "CZNet",
-      "readOnly": true
+      "readOnly": true,
+      "options": { "hidden": true }
     },
     "identifiers": {
       "title": "Related Information",
@@ -26,25 +27,16 @@
         "$ref": "#/definitions/Identifier"
       }
     },
-    "creators": {
-      "title": "Lead Authors",
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/Creator"
-      }
-    },
     "contributors": {
-      "title": "Co-Authors",
+      "title": "Contributors",
       "type": "array",
-      "maxContains": 2,
-      "items": {
-        "$ref": "#/definitions/Contributor"
-      }
+      "maxContains": 3,
+      "items": { "$ref": "#/definitions/Contributor" }
     },
     "type": {
       "title": "Dataset Type",
       "type": "string",
-      "default": "Collection",
+      "default": "Dataset",
       "enum": [
         "Collection",
         "Dataset",
@@ -60,7 +52,13 @@
       ]
     },
     "status": {
-      "type": "string"
+      "type": "string",
+      "options": { "hidden": true },
+      "default": "incomplete",
+      "enum": [
+        "incomplete",
+        "completed"
+      ]
     },
     "additionalTypes": {
       "title": "Data Types",
@@ -202,50 +200,6 @@
         }
       },
       "title": "Cordinate"
-    },
-    "Creator": {
-      "title": "Lead Author",
-      "type": "object",
-      "properties": {
-        "familyName": {
-          "title": "Family Name",
-          "type": "string"
-        },
-        "additionalName": {
-          "title": "Additional Name",
-          "type": "string"
-        },
-        "givenName": {
-          "title": "Given Name",
-          "type": "string"
-        },
-        "email": {
-          "title": "Email",
-          "type": "string",
-          "format": "email"
-        },
-        "type": {
-          "type": "string",
-          "enum": [
-            "owner",
-            "maintainer"
-          ]
-        },
-        "identifiers": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Identifier"
-          }
-        },
-        "affiliation": {
-          "$ref": "#/definitions/Affiliation"
-        }
-      },
-      "required": [
-        "familyName",
-        "givenName",
-        "email"
-      ]
     },
     "Feature": {
       "type": "object",

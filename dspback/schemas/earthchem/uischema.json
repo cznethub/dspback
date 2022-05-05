@@ -33,25 +33,16 @@
           "label": "Keywords",
           "type": "Control",
           "scope": "#/properties/keywords"
-        },
-        {
-          "type": "HorizontalLayout",
-          "elements": [
-            {
-              "type": "Control",
-              "scope": "#/properties/status"
-            },
-            {
-              "type": "Control",
-              "scope": "#/properties/community"
-            },
-            {
-              "type": "Control",
-              "scope": "#/properties/language"
-            }
-          ]
         }
       ]
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/status"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/community"
     },
     {
       "type": "Control",
