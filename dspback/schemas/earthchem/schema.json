@@ -26,13 +26,6 @@
         "$ref": "#/definitions/Identifier"
       }
     },
-    "creators": {
-      "title": "Lead Authors",
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/Creator"
-      }
-    },
     "contributors": {
       "title": "Co-Authors",
       "type": "array",
@@ -202,50 +195,6 @@
         }
       },
       "title": "Cordinate"
-    },
-    "Creator": {
-      "title": "Lead Author",
-      "type": "object",
-      "properties": {
-        "familyName": {
-          "title": "Family Name",
-          "type": "string"
-        },
-        "additionalName": {
-          "title": "Additional Name",
-          "type": "string"
-        },
-        "givenName": {
-          "title": "Given Name",
-          "type": "string"
-        },
-        "email": {
-          "title": "Email",
-          "type": "string",
-          "format": "email"
-        },
-        "type": {
-          "type": "string",
-          "enum": [
-            "owner",
-            "maintainer"
-          ]
-        },
-        "identifiers": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Identifier"
-          }
-        },
-        "affiliation": {
-          "$ref": "#/definitions/Affiliation"
-        }
-      },
-      "required": [
-        "familyName",
-        "givenName",
-        "email"
-      ]
     },
     "Feature": {
       "type": "object",
