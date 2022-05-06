@@ -34,6 +34,7 @@ class UserTable(Base):
             db.query(RepositoryTokenTable)
             .filter(RepositoryTokenTable.user_id == self.id, RepositoryTokenTable.type == repo_type)
             .first()
+            # TODO assert there is only one
         )
 
     def submission(self, db: Session, identifier) -> 'RepositorySubmissionTable':

@@ -88,7 +88,6 @@
                     "format": "radio"
                   }
                 },
-                
                 {
                   "type": "Control",
                   "scope": "#/properties/embargo_date",
