@@ -98,8 +98,7 @@
         }
       },
       "required": [
-        "statement",
-        "url"
+        "license"
       ]
     },
     "awards": {
