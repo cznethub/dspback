@@ -66,39 +66,13 @@
     "rights": {
       "title": "Rights",
       "description": "An object containing information about rights held in an over a resource",
-      "type": "object",
-      "properties": {
-        "license": {
-          "title": "License",
-          "description": "Available License Options",
-          "type": "string",
-          "enum": [
-            "CC-BY-4.0",
-            "CC-BY-SA-4.0",
-            "CC-BY-ND-4.0",
-            "CC-BY-NC-SA-4.0",
-            "CC-BY-NC-4.0",
-            "CC-BY-NC-ND-4.0",
-            "other"
-          ],
-          "default": "CC-BY-4.0"
+      "anyOf": [
+        {
+          "$ref": "#/definitions/License"
         },
-        "statement": {
-          "title": "Statement",
-          "description": "A string containing the text of the license or rights statement",
-          "type": "string"
-        },
-        "url": {
-          "title": "URL",
-          "description": "An object containing the URL pointing to a description of the license or rights statement",
-          "minLength": 1,
-          "maxLength": 65536,
-          "format": "uri",
-          "type": "string"
+        {
+          "$ref": "#/definitions/Rights"
         }
-      },
-      "required": [
-        "license"
       ]
     },
     "awards": {
@@ -150,7 +124,8 @@
     "title",
     "abstract",
     "subjects",
-    "awards"
+    "awards",
+    "rights"
   ],
   "definitions": {
     "Creator": {
@@ -254,7 +229,6 @@
         }
       }
     },
-    
     "Relation": {
       "title": "Related Resource Metadata",
       "description": "A class used to represent the metadata associated with a resource related to the resource being described",
@@ -505,6 +479,50 @@
       },
       "required": [
         "name",
+        "url"
+      ]
+    },
+    "License": {
+      "title": "Choose License",
+      "description": "An object containing information about rights held in an over a resource",
+      "type": "object",
+      "properties": {
+        "license": {
+          "type": "string",
+          "enum": [
+            "CC-BY-4.0",
+            "CC-BY-SA-4.0",
+            "CC-BY-ND-4.0",
+            "CC-BY-NC-SA-4.0",
+            "CC-BY-NC-4.0",
+            "CC-BY-NC-ND-4.0"
+          ],
+          "default": "CC-BY-4.0"
+        }
+      },
+      "required": ["license"]
+    },
+    "Rights": {
+      "title": "Custom License",
+      "description": "An object containing information about rights held in an over a resource",
+      "type": "object",
+      "properties": {
+        "statement": {
+          "title": "Statement",
+          "description": "A string containing the text of the license or rights statement",
+          "type": "string"
+        },
+        "url": {
+          "title": "URL",
+          "description": "An object containing the URL pointing to a description of the license or rights statement",
+          "minLength": 1,
+          "maxLength": 65536,
+          "format": "uri",
+          "type": "string"
+        }
+      },
+      "required": [
+        "statement",
         "url"
       ]
     }

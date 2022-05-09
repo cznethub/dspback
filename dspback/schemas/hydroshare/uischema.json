@@ -53,49 +53,8 @@
       "scope": "#/properties/awards"
     },
     {
-      "type": "VerticalLayout",
-      "elements": [
-        {
-          "type": "Group",
-          "label": "Rights",
-          "elements": [
-            {
-              "type": "Control",
-              "scope": "#/properties/rights/properties/license"
-            },
-            {
-              "type": "Control",
-              "scope": "#/properties/rights/properties/statement",
-              "rule": {
-                "effect": "ENABLE",
-                "condition": {
-                  "scope": "#/properties/rights/properties/license",
-                  "schema": {
-                    "enum": [
-                      "other"
-                    ]
-                  }
-                }
-              }
-            },
-            {
-              "type": "Control",
-              "scope": "#/properties/rights/properties/url",
-              "rule": {
-                "effect": "ENABLE",
-                "condition": {
-                  "scope": "#/properties/rights/properties/license",
-                  "schema": {
-                    "enum": [
-                      "other"
-                    ]
-                  }
-                }
-              }
-            }
-          ]
-        }
-      ]
+      "type": "Control",
+      "scope": "#/properties/rights"
     },
     {
       "type": "Control",
