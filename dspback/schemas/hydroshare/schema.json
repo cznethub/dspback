@@ -101,7 +101,7 @@
     "spatial_coverage": {
       "title": "Spatial coverage",
       "description": "An object containing information about the spatial topic of a resource, the spatial applicability of a resource, or jurisdiction under with a resource is relevant",
-      "anyOf": [
+      "oneOf": [
         {
           "$ref": "#/definitions/PointCoverage"
         },

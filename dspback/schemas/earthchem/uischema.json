@@ -3,6 +3,17 @@
   "elements": [
     {
       "type": "Group",
+      "label": "Data File Release Information",
+      "description": "The maximum date in the future is two years forward from the date of dataset submission. Before the release date, its metadata will be available and searchable in the EarthChem Library, but the data file will not be available for download.",
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/datePublished"
+        }
+      ]
+    },
+    {
+      "type": "Group",
       "label": "Basic Information",
       "elements": [
         {
@@ -43,6 +54,10 @@
     {
       "type": "Control",
       "scope": "#/properties/community"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/leadAuthor"
     },
     {
       "type": "Control",
