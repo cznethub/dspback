@@ -66,27 +66,13 @@
     "rights": {
       "title": "Rights",
       "description": "An object containing information about rights held in an over a resource",
-      "type": "object",
-      "properties": {
-        "statement": {
-          "title": "Statement",
-          "description": "A string containing the text of the license or rights statement",
-          "type": "string",
-          "default": "This resource is shared under the Creative Commons Attribution CC BY."
+      "oneOf": [
+        {
+          "$ref": "#/definitions/License"
         },
-        "url": {
-          "title": "URL",
-          "description": "An object containing the URL pointing to a description of the license or rights statement",
-          "minLength": 1,
-          "maxLength": 65536,
-          "format": "uri",
-          "type": "string",
-          "default": "http://creativecommons.org/licenses/by/4.0/"
+        {
+          "$ref": "#/definitions/Rights"
         }
-      },
-      "required": [
-        "statement",
-        "url"
       ]
     },
     "awards": {
@@ -138,7 +124,8 @@
     "title",
     "abstract",
     "subjects",
-    "awards"
+    "awards",
+    "rights"
   ],
   "definitions": {
     "Creator": {
@@ -242,7 +229,6 @@
         }
       }
     },
-    
     "Relation": {
       "title": "Related Resource Metadata",
       "description": "A class used to represent the metadata associated with a resource related to the resource being described",
@@ -493,6 +479,50 @@
       },
       "required": [
         "name",
+        "url"
+      ]
+    },
+    "License": {
+      "title": "Choose a License",
+      "description": "An object containing information about rights held in an over a resource",
+      "type": "object",
+      "properties": {
+        "license": {
+          "type": "string",
+          "enum": [
+            "Creative Commons Attribution CC BY",
+            "Creative Commons Attribution-ShareAlike CC BY-SA",
+            "Creative Commons Attribution-NoDerivs CC BY-ND",
+            "Creative Commons Attribution-NoCommercial-ShareAlike CC BY-NC-SA",
+            "Creative Commons Attribution-NoCommercial CC BY-NC",
+            "Creative Commons Attribution-NoCommercial-NoDerivs CC BY-NC-ND"
+          ],
+          "default": "Creative Commons Attribution CC BY"
+        }
+      },
+      "required": ["license"]
+    },
+    "Rights": {
+      "title": "Custom License",
+      "description": "An object containing information about rights held in an over a resource",
+      "type": "object",
+      "properties": {
+        "statement": {
+          "title": "Statement",
+          "description": "A string containing the text of the license or rights statement",
+          "type": "string"
+        },
+        "url": {
+          "title": "URL",
+          "description": "An object containing the URL pointing to a description of the license or rights statement",
+          "minLength": 1,
+          "maxLength": 65536,
+          "format": "uri",
+          "type": "string"
+        }
+      },
+      "required": [
+        "statement",
         "url"
       ]
     }

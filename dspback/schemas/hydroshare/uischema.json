@@ -1,7 +1,7 @@
 {
   "type": "VerticalLayout",
   "elements": [
-    { 
+    {
       "type": "Group",
       "label": "Basic Information",
       "elements": [
