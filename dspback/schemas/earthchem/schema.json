@@ -15,7 +15,7 @@
       "options": {
         "max": { "amount": 2, "unit": "year" },
         "min": "today",
-        "default": { "amount": 2, "unit": "day" }
+        "default": { "amount": 3, "unit": "day" }
       }
     },
     "description": {
@@ -35,7 +35,30 @@
       "title": "Related Information",
       "type": "array",
       "items": {
-        "$ref": "#/definitions/Identifier"
+        "type": "object",
+        "properties": {
+          "scheme": {
+            "type": "string",
+            "title": "Scheme",
+            "oneOf": [
+              { "const": "DOI", "title": "Publication DOI" },
+              { "const": "IGSN", "title": "IGSN" },
+              { "const": "SVN", "title": "Smithsonian Volcano Number" },
+              { "const": "R2R", "title": "Cruise DOI" }
+            ]
+          },
+          "schemeURI": {
+            "type": "string"
+          },
+          "identifier": {
+            "type": "string",
+            "title": "Publication DOI"
+          },
+          "url": {
+            "type": "string",
+            "default": "IGSN"
+          }
+        }
       }
     },
     "leadAuthor": {
@@ -361,6 +384,12 @@
         "scheme": {
           "type": "string",
           "default": "ORCID",
+          "readOnly": true,
+          "options": { "hidden": true }
+        },
+        "schemeURI": {
+          "type": "string",
+          "default": "https://orcid.org/",
           "readOnly": true,
           "options": { "hidden": true }
         },
