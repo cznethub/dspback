@@ -35,30 +35,114 @@
       "title": "Related Information",
       "type": "array",
       "items": {
-        "type": "object",
-        "properties": {
-          "scheme": {
-            "type": "string",
-            "title": "Scheme",
-            "oneOf": [
-              { "const": "DOI", "title": "Publication DOI" },
-              { "const": "IGSN", "title": "IGSN" },
-              { "const": "SVN", "title": "Smithsonian Volcano Number" },
-              { "const": "R2R", "title": "Cruise DOI" }
-            ]
+        "title": "Related Information",
+        "options": { "flat": true },
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "Publication DOI",
+            "properties": {
+              "scheme": {
+                "type": "string",
+                "default": "DOI",
+                "readonly": true,
+                "options": { "hidden": true }
+              },
+              "schemeURI": {
+                "type": "string",
+                "options": { "hidden": true }
+              },
+              "identifier": {
+                "type": "string",
+                "title": "Publication DOI",
+                "description": "Enter most relevant publication DOI(s). E.g. '10.016/j.epsl.2009.11.018'"
+              },
+              "url": {
+                "type": "string",
+                "options": { "hidden": true }
+              }
+            },
+            "required": ["identifier"]
           },
-          "schemeURI": {
-            "type": "string"
+          {
+            "type": "object",
+            "title": "IGSN",
+            "properties": {
+              "scheme": {
+                "type": "string",
+                "default": "IGSN",
+                "readonly": true,
+                "options": { "hidden": true }
+              },
+              "schemeURI": {
+                "type": "string",
+                "options": { "hidden": true }
+              },
+              "identifier": {
+                "type": "string",
+                "title": "IGSN",
+                "description": "Provide IGSNs for your samples separated by commas."
+              },
+              "url": {
+                "type": "string",
+                "options": { "hidden": true }
+              }
+            },
+            "required": ["identifier"]
           },
-          "identifier": {
-            "type": "string",
-            "title": "Publication DOI"
+          {
+            "type": "object",
+            "title": "Smithsonian Volcano Number",
+            "properties": {
+              "scheme": {
+                "type": "string",
+                "default": "SVN",
+                "readonly": true,
+                "options": { "hidden": true }
+              },
+              "schemeURI": {
+                "type": "string",
+                "options": { "hidden": true }
+              },
+              "identifier": {
+                "type": "string",
+                "title": "Smithsonian Volcano Number",
+                "description": "Provide volcano numbers corresponding to your sample collection site."
+              },
+              "url": {
+                "type": "string",
+                "options": { "hidden": true }
+              }
+            },
+            "required": ["identifier"]
           },
-          "url": {
-            "type": "string",
-            "default": "IGSN"
+          {
+            "type": "object",
+            "title": "Cruise DOI",
+            "properties": {
+              "scheme": {
+                "type": "string",
+                "default": "R2R",
+                "readonly": true,
+                "options": { "hidden": true }
+              },
+              "schemeURI": {
+                "type": "string",
+                "options": { "hidden": true }
+              },
+              "identifier": {
+                "type": "string",
+                "title": "Cruise DOI",
+                "description": "Provide Cruise DOIs corresponding to your samples."
+              },
+              "url": {
+                "type": "string",
+                "options": { "hidden": true }
+              }
+            },
+            "required": ["identifier"]
           }
-        }
+        ]
       }
     },
     "leadAuthor": {
@@ -187,6 +271,7 @@
     },
     "Contributor": {
       "type": "object",
+      "title": "Co-Author",
       "properties": {
         "type": {
           "type": "string",
@@ -215,7 +300,6 @@
           "$ref": "#/definitions/Affiliation"
         }
       },
-      "title": "Contributor",
       "required": [
         "familyName",
         "givenName"
@@ -310,6 +394,7 @@
     },
     "Funding": {
       "type": "object",
+      "title": "Funding",
       "properties": {
         "identifier": {
           "type": "string"
@@ -336,8 +421,7 @@
           "type": "string",
           "format": "uri"
         }
-      },
-      "title": "Funding"
+      }
     },
     "Geometry": {
       "type": "object",

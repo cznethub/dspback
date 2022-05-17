@@ -53,6 +53,7 @@
       "scope": "#/properties/awards"
     },
     {
+      "label": "Rights",
       "type": "Control",
       "scope": "#/properties/rights"
     },

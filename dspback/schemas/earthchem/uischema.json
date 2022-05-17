@@ -69,14 +69,8 @@
       "scope": "#/properties/spatialCoverage"
     },
     {
-      "type": "Group",
-      "label": "Related Resource Information",
-      "elements":[
-        {
-          "type": "Control",
-          "scope": "#/properties/identifiers"
-        }
-      ]
+      "type": "Control",
+      "scope": "#/properties/identifiers"
     },
     {
       "type": "Control",
