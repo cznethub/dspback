@@ -49,6 +49,10 @@
     },
     {
       "type": "Control",
+      "scope": "#/properties/ifThenElse"
+    },
+    {
+      "type": "Control",
       "scope": "#/properties/status"
     },
     {
@@ -61,7 +65,10 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/contributors"
+      "scope": "#/properties/contributors",
+      "options": {
+        "showSortButtons": true
+      }
     },
     {
       "type": "Control",

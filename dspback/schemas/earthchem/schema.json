@@ -36,7 +36,7 @@
       "type": "array",
       "items": {
         "title": "Related Information",
-        "options": { "flat": true },
+        "options": { "flat": true, "dropdown": true },
         "oneOf": [
           {
             "type": "object",
@@ -55,7 +55,10 @@
               "identifier": {
                 "type": "string",
                 "title": "Publication DOI",
-                "description": "Enter most relevant publication DOI(s). E.g. '10.016/j.epsl.2009.11.018'"
+                "description": "Enter most relevant publication DOI(s). e.g. '10.016/j.epsl.2009.11.018'",
+                "options": {
+                  "placeholder": "e.g. '10.016/j.epsl.2009.11.018''"
+                }
               },
               "url": {
                 "type": "string",
@@ -154,6 +157,9 @@
       "maxContains": 3,
       "items": { "$ref": "#/definitions/Contributor" }
     },
+    "ifThenElse": {
+      "$ref": "#/definitions/IfThenElse"
+    },
     "type": {
       "title": "Dataset Type",
       "type": "string",
@@ -234,6 +240,7 @@
       }
     },
     "fundings": {
+      "title": "Funding Source",
       "type": "array",
       "items": {
         "$ref": "#/definitions/Funding"
@@ -276,16 +283,19 @@
         "type": {
           "type": "string",
           "readOnly": true,
-          "default": "coAuthor"
+          "default": "coAuthor",
+          "options": { "hidden": true }
         },
-        "familyName": {
+        "givenName": {
+          "title": "First Name",
           "type": "string"
         },
         "additionalName": {
           "title": "Middle Name",
           "type": "string"
         },
-        "givenName": {
+        "familyName": {
+          "title": "Last Name",
           "type": "string"
         },
         "email": {
@@ -305,22 +315,50 @@
         "givenName"
       ]
     },
+    "IfThenElse": {
+      "title": "IfThenElse",
+      "type": "object",
+      "properties": {
+        "b": {
+          "type": "string"
+        },
+        "c": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "if": {
+        "properties": {
+          "b": {
+            "const": "hi"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "c"
+        ]
+      }
+    },
     "LeadAuthor": {
       "type": "object",
       "properties": {
         "type": {
           "type": "string",
           "readOnly": true,
-          "default": "leadAuthor"
+          "default": "leadAuthor",
+          "options": { "hidden": true }
         },
-        "familyName": {
+        "givenName": {
+          "title": "First Name",
           "type": "string"
         },
         "additionalName": {
           "title": "Middle Name",
           "type": "string"
         },
-        "givenName": {
+        "familyName": {
+          "title": "Last Name",
           "type": "string"
         },
         "email": {
