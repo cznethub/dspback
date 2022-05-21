@@ -239,11 +239,7 @@
     "period_coverage": {
       "title": "Temporal coverage",
       "description": "An object containing information about the temporal topic or applicability of a resource",
-      "allOf": [
-        {
-          "$ref": "#/definitions/PeriodCoverage"
-        }
-      ]
+      "$ref": "#/definitions/PeriodCoverage"
     },
     "publisher": {
       "title": "Publisher",
@@ -257,7 +253,8 @@
     "citation": {
       "title": "Citation",
       "description": "A string containing the biblilographic citation for a resource",
-      "type": "string"
+      "type": "string",
+      "readOnly": true
     }
   },
   "required": [
@@ -462,7 +459,7 @@
       ]
     },
     "PeriodCoverage": {
-      "title": "Period Coverage Metadata",
+      "title": "Period coverage",
       "description": "A class used to represent temporal coverage metadata for a resource or aggregation",
       "type": "object",
       "properties": {

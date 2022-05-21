@@ -161,7 +161,10 @@
           "id": {
             "title": "Grant Identifier with DOI prefix",
             "type": "string",
-            "description": "OpenAIRE-supported grant identifier (i.e. 10.13039/501100000780::283595)."
+            "description": "OpenAIRE-supported grant identifier (e.g. 10.13039/501100000780::283595).",
+            "options": {
+              "placeholder": "e.g. '10.13039/501100000780::283595'"
+            }
           }
         },
         "required": [

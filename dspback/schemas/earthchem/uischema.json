@@ -49,10 +49,6 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/ifThenElse"
-    },
-    {
-      "type": "Control",
       "scope": "#/properties/status"
     },
     {
@@ -61,13 +57,79 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/leadAuthor"
+      "scope": "#/properties/leadAuthor",
+      "options": {
+        "detail": {
+          "type": "Group",
+          "label": "Lead Author",
+          "elements": [
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "label": "First Name",
+                  "type": "Control",
+                  "scope": "#/properties/givenName"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/additionalName"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/familyName"
+                }
+              ]
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/email"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/identifiers"
+            }
+          ]
+        }
+      }
     },
     {
       "type": "Control",
       "scope": "#/properties/contributors",
       "options": {
-        "showSortButtons": true
+        "showSortButtons": true,
+        "restrict": true,
+        "detail": {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "label": "First Name",
+                  "type": "Control",
+                  "scope": "#/properties/givenName"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/additionalName"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/familyName"
+                }
+              ]
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/email"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/identifiers"
+            }
+          ]
+        }
       }
     },
     {
@@ -85,7 +147,32 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/license"
+      "scope": "#/properties/license",
+      "options": {
+        "detail": {
+          "type": "Group",
+          "label": "License",
+          "elements": [
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/name"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/alternateName"
+                }
+              ]
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/identifiers"
+            }
+          ]
+        }
+      }
     }
   ]
 }

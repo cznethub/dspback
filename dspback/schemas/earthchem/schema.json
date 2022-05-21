@@ -4,8 +4,8 @@
   "properties": {
     "title": {
       "title": "Dataset Title",
-      "type": "string",
-      "description": "A descriptive title of the dataset"
+      "description": "A descriptive title of the dataset",
+      "type": "string"
     },
     "datePublished": {
       "title": "Release Date",
@@ -28,6 +28,7 @@
       "title": "Community",
       "type": "string",
       "default": "CZNet",
+      "const": "CZNet",
       "readOnly": true,
       "options": { "hidden": true }
     },
@@ -154,11 +155,8 @@
     "contributors": {
       "title": "Co-Authors",
       "type": "array",
-      "maxContains": 3,
+      "maxItems": 3,
       "items": { "$ref": "#/definitions/Contributor" }
-    },
-    "ifThenElse": {
-      "$ref": "#/definitions/IfThenElse"
     },
     "type": {
       "title": "Dataset Type",
@@ -243,7 +241,110 @@
       "title": "Funding Source",
       "type": "array",
       "items": {
-        "$ref": "#/definitions/Funding"
+        "options": { "flat": true },
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "NSF",
+            "properties": {
+              "identifier": {
+                "type": "string"
+              },
+              "funder": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "readOnly": true,
+                    "const": "National Science Foundation",
+                    "default": "National Science Foundation"
+                  },
+                  "alternateName": {
+                    "type": "string",
+                    "readOnly": true,
+                    "const": "NSF",
+                    "default": "NSF"
+                  },
+                  "identifiers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "scheme": {
+                          "type": "string"
+                        },
+                        "schemeURI": {
+                          "type": "string"
+                        },
+                        "identifier": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        }
+                      },
+                      "title": "Identifier"
+                    }
+                  }
+                },
+                "title": "Funder"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "readOnly": true,
+                "const": "https://ror.org/021nxhr62",
+                "default": "https://ror.org/021nxhr62"
+              }
+            }
+          },
+          { 
+            "type": "object",
+            "title": "Other",
+            "properties": {
+              "identifier": {
+                "type": "string"
+              },
+              "funder": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "alternateName": {
+                    "type": "string"
+                  },
+                  "identifiers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "scheme": {
+                          "type": "string"
+                        },
+                        "schemeURI": {
+                          "type": "string"
+                        },
+                        "identifier": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        }
+                      },
+                      "title": "Identifier"
+                    }
+                  }
+                },
+                "title": "Funder"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              }
+            }
+          } 
+        ]
       }
     },
     "license": {
@@ -283,6 +384,7 @@
         "type": {
           "type": "string",
           "readOnly": true,
+          "const": "coAuthor",
           "default": "coAuthor",
           "options": { "hidden": true }
         },
@@ -315,31 +417,6 @@
         "givenName"
       ]
     },
-    "IfThenElse": {
-      "title": "IfThenElse",
-      "type": "object",
-      "properties": {
-        "b": {
-          "type": "string"
-        },
-        "c": {
-          "type": "string",
-          "minLength": 1
-        }
-      },
-      "if": {
-        "properties": {
-          "b": {
-            "const": "hi"
-          }
-        }
-      },
-      "then": {
-        "required": [
-          "c"
-        ]
-      }
-    },
     "LeadAuthor": {
       "type": "object",
       "properties": {
@@ -347,6 +424,7 @@
           "type": "string",
           "readOnly": true,
           "default": "leadAuthor",
+          "const": "leadAuthor",
           "options": { "hidden": true }
         },
         "givenName": {
@@ -429,37 +507,6 @@
         }
       },
       "title": "FileResponse"
-    },
-    "Funding": {
-      "type": "object",
-      "title": "Funding",
-      "properties": {
-        "identifier": {
-          "type": "string"
-        },
-        "funder": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "alternateName": {
-              "type": "string"
-            },
-            "identifiers": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Identifier"
-              }
-            }
-          },
-          "title": "Funder"
-        },
-        "url": {
-          "type": "string",
-          "format": "uri"
-        }
-      }
     },
     "Geometry": {
       "type": "object",

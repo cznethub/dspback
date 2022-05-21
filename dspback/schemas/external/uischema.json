@@ -36,7 +36,10 @@
         },
         {
           "type": "Control",
-          "scope": "#/properties/description"
+          "scope": "#/properties/description",
+          "options": {
+            "multi": true
+          }
         },
         {
           "type": "Control",
@@ -46,11 +49,77 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/creators"
+      "scope": "#/properties/creators",
+      "options": {
+        "detail": {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/name"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/email"
+                }
+              ]
+            },
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/organization"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/orcid"
+                }
+              ]
+            }
+          ]
+        }
+      }
     },
     {
       "type": "Control",
-      "scope": "#/properties/contributors"
+      "scope": "#/properties/contributors",
+      "options": {
+        "detail": {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/name"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/email"
+                }
+              ]
+            },
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/organization"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/orcid"
+                }
+              ]
+            }
+          ]
+        }
+      }
     },
     {
       "type": "Control",

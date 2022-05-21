@@ -41,7 +41,8 @@
         },
         {
           "type": "Control",
-          "scope": "#/properties/communities"
+          "scope": "#/properties/communities",
+          "options": { "useTableLayout": true }
         }
       ]
     },
@@ -59,17 +60,20 @@
       "elements":[
         {
           "type": "Control",
-          "scope": "#/properties/references"
+          "scope": "#/properties/references",
+          "options": { "useTableLayout": true }
         },
         {
           "type": "Control",
-          "scope": "#/properties/related_identifiers"
+          "scope": "#/properties/related_identifiers",
+          "options": { "useTableLayout": true }
         }
       ]
     },
     {
       "type": "Control",
-      "scope": "#/properties/grants"
+      "scope": "#/properties/grants",
+      "options": { "useTableLayout": true }
     },
     {
       "type": "Group",
