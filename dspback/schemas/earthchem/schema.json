@@ -46,11 +46,15 @@
               "scheme": {
                 "type": "string",
                 "default": "DOI",
-                "readonly": true,
-                "options": { "hidden": true }
+                "const": "DOI",
+                "readOnly": true,
+                "options": { "hidden": true  }
               },
               "schemeURI": {
                 "type": "string",
+                "default": "",
+                "const": "",
+                "readOnly": true,
                 "options": { "hidden": true }
               },
               "identifier": {
@@ -63,6 +67,9 @@
               },
               "url": {
                 "type": "string",
+                "default": "",
+                "const": "",
+                "readOnly": true,
                 "options": { "hidden": true }
               }
             },
@@ -75,11 +82,15 @@
               "scheme": {
                 "type": "string",
                 "default": "IGSN",
-                "readonly": true,
+                "const": "IGSN",
+                "readOnly": true,
                 "options": { "hidden": true }
               },
               "schemeURI": {
                 "type": "string",
+                "default": "",
+                "const": "",
+                "readOnly": true,
                 "options": { "hidden": true }
               },
               "identifier": {
@@ -89,6 +100,9 @@
               },
               "url": {
                 "type": "string",
+                "default": "",
+                "const": "",
+                "readOnly": true,
                 "options": { "hidden": true }
               }
             },
@@ -101,11 +115,15 @@
               "scheme": {
                 "type": "string",
                 "default": "SVN",
-                "readonly": true,
+                "const": "SVN",
+                "readOnly": true,
                 "options": { "hidden": true }
               },
               "schemeURI": {
                 "type": "string",
+                "default": "",
+                "const": "",
+                "readOnly": true,
                 "options": { "hidden": true }
               },
               "identifier": {
@@ -115,6 +133,9 @@
               },
               "url": {
                 "type": "string",
+                "default": "",
+                "const": "",
+                "readOnly": true,
                 "options": { "hidden": true }
               }
             },
@@ -127,11 +148,15 @@
               "scheme": {
                 "type": "string",
                 "default": "R2R",
-                "readonly": true,
+                "const": "R2R",
+                "readOnly": true,
                 "options": { "hidden": true }
               },
               "schemeURI": {
                 "type": "string",
+                "default": "",
+                "const": "",
+                "readOnly": true,
                 "options": { "hidden": true }
               },
               "identifier": {
@@ -141,6 +166,9 @@
               },
               "url": {
                 "type": "string",
+                "default": "",
+                "const": "",
+                "readOnly": true,
                 "options": { "hidden": true }
               }
             },

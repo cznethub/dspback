@@ -99,6 +99,7 @@
       "options": {
         "showSortButtons": true,
         "restrict": true,
+        "elementLabelProp": "givenName",
         "detail": {
           "type": "VerticalLayout",
           "elements": [
@@ -139,7 +140,10 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/identifiers"
+      "scope": "#/properties/identifiers",
+      "options": {
+        "elementLabelProp": "scheme"
+      }
     },
     {
       "type": "Control",
