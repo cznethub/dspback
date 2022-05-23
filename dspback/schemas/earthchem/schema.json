@@ -581,12 +581,14 @@
         "scheme": {
           "type": "string",
           "default": "ORCID",
+          "const": "ORCID",
           "readOnly": true,
           "options": { "hidden": true }
         },
         "schemeURI": {
           "type": "string",
           "default": "https://orcid.org/",
+          "const": "https://orcid.org/",
           "readOnly": true,
           "options": { "hidden": true }
         },
@@ -596,6 +598,9 @@
           "pattern": "/(\\d{4}-){3}\\d{3}(\\d|X)/",
           "options": {
             "placeholder": "e.g. '0000-0001-2345-6789'"
+          },
+          "errorMessage": {
+            "pattern": "must match the ORCID pattern. e.g. '0000-0001-2345-6789'"
           }
         }
       }
