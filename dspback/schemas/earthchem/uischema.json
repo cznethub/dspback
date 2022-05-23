@@ -151,32 +151,7 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/license",
-      "options": {
-        "detail": {
-          "type": "Group",
-          "label": "License",
-          "elements": [
-            {
-              "type": "HorizontalLayout",
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/name"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/alternateName"
-                }
-              ]
-            },
-            {
-              "type": "Control",
-              "scope": "#/properties/identifiers"
-            }
-          ]
-        }
-      }
+      "scope": "#/properties/license"
     }
   ]
 }

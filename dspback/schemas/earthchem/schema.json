@@ -205,12 +205,13 @@
       ]
     },
     "status": {
+      "title": "Submission status",
       "type": "string",
-      "options": { "hidden": true },
+      "description": "Please select 'submitted' when the submission is ready to be reviewed by a curator.",
       "default": "incomplete",
       "enum": [
         "incomplete",
-        "completed"
+        "submitted"
       ]
     },
     "additionalTypes": {
@@ -387,7 +388,8 @@
     "spatialCoverage",
     "additionalTypes",
     "community",
-    "type"
+    "type",
+    "status"
   ],
   "definitions": {
     "Affiliation": {
@@ -606,22 +608,216 @@
       }
     },
     "License": {
+      "title": "License",
       "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
+      "options": { "dropdown": true },
+      "oneOf": [
+        {
+          "title": "CC-BY-NC-SA-3.0",
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "Creative Commons Attribution-NonCommercial-Share Alike 3.0 United States"
+            },
+            "alternateName": {
+              "type": "string",
+              "default": "CC-BY-NC-SA-3.0",
+              "const": "CC-BY-NC-SA-3.0",
+              "options": { "hidden": true }
+            },
+            "identifiers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "title": "Identifier",
+                "properties": {
+                  "scheme": {
+                    "type": "string",
+                    "default": "SPDX"
+                  },
+                  "schemeURI": {
+                    "type": "string",
+                    "default": "https://spdx.org/licenses/"
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "default": "CC-BY-NC-SA-3.0"
+                  },
+                  "url": {
+                  "type": "string",
+                  "default": "https://spdx.org/licenses/CC-BY-NC-SA-3.0",
+                  "format": "uri"
+                  }
+                }
+              }
+            }
+          }
         },
-        "alternateName": {
-          "type": "string"
+        {
+          "title": "CC-BY-4.0",
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "Creative Commons Attribution 4.0 International"
+            },
+            "alternateName": {
+              "type": "string",
+              "default": "CC-BY-4.0",
+              "const": "CC-BY-4.0",
+              "options": { "hidden": true }
+            },
+            "identifiers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "title": "Identifier",
+                "properties": {
+                  "scheme": {
+                    "type": "string",
+                    "default": "SPDX"
+                  },
+                  "schemeURI": {
+                    "type": "string",
+                    "default": "https://spdx.org/licenses/"
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "default": "CC-BY-4.0"
+                  },
+                  "url": {
+                  "type": "string",
+                  "default": "https://spdx.org/licenses/CC-BY-4.0",
+                  "format": "uri"
+                  }
+                }
+              }
+            }
+          }
         },
-        "identifiers": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Identifier"
+        {
+          "title": "CC-BY-SA-4.0",
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "Creative Commons Attribution-ShareAlike 4.0 International"
+            },
+            "alternateName": {
+              "type": "string",
+              "default": "CC-BY-SA-4.0",
+              "const": "CC-BY-SA-4.0",
+              "options": { "hidden": true }
+            },
+            "identifiers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "title": "Identifier",
+                "properties": {
+                  "scheme": {
+                    "type": "string",
+                    "default": "SPDX"
+                  },
+                  "schemeURI": {
+                    "type": "string",
+                    "default": "https://spdx.org/licenses/"
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "default": "CC-BY-SA-4.0"
+                  },
+                  "url": {
+                  "type": "string",
+                  "default": "https://spdx.org/licenses/CC-BY-SA-4.0",
+                  "format": "uri"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "CC-BY-NC-SA-4.0",
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
+            },
+            "alternateName": {
+              "type": "string",
+              "default": "CC-BY-NC-SA-4.0",
+              "const": "CC-BY-NC-SA-4.0",
+              "options": { "hidden": true }
+            },
+            "identifiers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "title": "Identifier",
+                "properties": {
+                  "scheme": {
+                    "type": "string",
+                    "default": "SPDX"
+                  },
+                  "schemeURI": {
+                    "type": "string",
+                    "default": "https://spdx.org/licenses/"
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "default": "CC-BY-NC-SA-4.0"
+                  },
+                  "url": {
+                  "type": "string",
+                  "default": "https://spdx.org/licenses/CC-BY-NC-SA-4.0",
+                  "format": "uri"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "CC0-1.0",
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "Creative Commons No Rights Reserved"
+            },
+            "alternateName": {
+              "type": "string",
+              "default": "CC0-1.0",
+              "const": "CC0-1.0",
+              "options": { "hidden": true }
+            },
+            "identifiers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "title": "Identifier",
+                "properties": {
+                  "scheme": {
+                    "type": "string",
+                    "default": "SPDX"
+                  },
+                  "schemeURI": {
+                    "type": "string",
+                    "default": "https://spdx.org/licenses/"
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "default": "CC0-1.0"
+                  },
+                  "url": {
+                  "type": "string",
+                  "default": "https://spdx.org/licenses/CC0-1.0",
+                  "format": "uri"
+                  }
+                }
+              }
+            }
           }
         }
-      },
-      "title": "License"
+      ]
     },
     "RecordFile": {
       "type": "object",
