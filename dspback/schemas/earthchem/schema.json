@@ -13,6 +13,7 @@
       "type": "string",
       "format": "date",
       "options": {
+        "placeholder": "YYYY-MM-DD",
         "max": { "amount": 2, "unit": "year" },
         "min": "today",
         "default": { "amount": 3, "unit": "day" }
@@ -207,7 +208,7 @@
     "status": {
       "title": "Submission status",
       "type": "string",
-      "description": "Please select 'submitted' when the submission is ready to be reviewed by a curator.",
+      "description": "Please select 'submitted' when the submission is ready to be reviewed.",
       "default": "incomplete",
       "enum": [
         "incomplete",
