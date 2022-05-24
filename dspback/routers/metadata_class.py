@@ -193,6 +193,27 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         return json_metadata
 
 
+def to_zenodo_format(metadata_json):
+    """
+    Prepares form input for Storage in Zenodo.  Notes is a string field we are using to store required funding
+    information. Our forms only use properties within the metadata property.
+    """
+    metadata_json["notes"] = json.dumps(metadata_json["notes"])
+    metadata_json = {"metadata": metadata_json}
+    return metadata_json
+
+
+def from_zenodo_format(json_metadata):
+    """
+    Prepares Zenodo storage for our forms.  Notes is a string field we are using to store required funding
+    information. Our forms only use properties within the metadata property.
+    """
+    json_metadata = json_metadata["metadata"]
+    if "notes" in json_metadata:
+        json_metadata["notes"] = json.loads(json_metadata["notes"])
+    return json_metadata
+
+
 @cbv(router)
 class ZenodoMetadataRoutes(MetadataRoutes):
 
@@ -209,7 +230,8 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         description="Validates the incoming metadata, creates a new Zenodo record and creates a submission record.",
     )
     async def create_metadata_repository(self, metadata: request_model):
-        metadata_json = {"metadata": json.loads(metadata.json(exclude_none=True))}
+        metadata_json = json.loads(metadata.json(exclude_none=True))
+        metadata_json = to_zenodo_format(metadata_json)
         response = requests.post(
             self.create_url,
             json=metadata_json,
@@ -237,7 +259,8 @@ class ZenodoMetadataRoutes(MetadataRoutes):
     async def update_metadata(self, metadata: request_model, identifier):
         existing_metadata = await self.get_metadata_repository(identifier)
         incoming_metadata = metadata.json(skip_defaults=True, exclude_unset=True)
-        merged_metadata = {"metadata": {**existing_metadata, **json.loads(incoming_metadata)}}
+        merged_metadata = {**existing_metadata, **json.loads(incoming_metadata)}
+        merged_metadata = to_zenodo_format(merged_metadata)
         response = requests.put(
             self.update_url % identifier,
             json=merged_metadata,
@@ -271,7 +294,8 @@ class ZenodoMetadataRoutes(MetadataRoutes):
     async def get_metadata_repository(self, identifier):
         json_metadata = await self._retrieve_metadata_from_repository(identifier)
         await self.submit(identifier=identifier, json_metadata=json_metadata)
-        return json_metadata["metadata"]
+        json_metadata = from_zenodo_format(json_metadata)
+        return json_metadata
 
     @router.delete(
         '/metadata/zenodo/{identifier}',

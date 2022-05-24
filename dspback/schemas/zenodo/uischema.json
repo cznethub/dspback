@@ -71,11 +71,6 @@
       ]
     },
     {
-      "type": "Control",
-      "scope": "#/properties/grants",
-      "options": { "useTableLayout": true }
-    },
-    {
       "type": "Group",
       "label": "License",
       "elements": [

@@ -150,28 +150,38 @@
       "format": "date",
       "description": "Embargo date of record (ISO8601 formatted date) - YYYY-MM-DD."
     },
-    "grants": {
-      "title": "Grants",
-      "type": "array",
-      "description": "List of OpenAIRE-supported grants, which have funded the research for this deposition..",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "title": "Grant Identifier with DOI prefix",
-            "type": "string",
-            "description": "OpenAIRE-supported grant identifier (e.g. 10.13039/501100000780::283595).",
-            "options": {
-              "placeholder": "e.g. '10.13039/501100000780::283595'"
-            }
-          }
+    "notes": {
+      "title": "Funding Agency Metadata",
+      "description": "A class used to represent the metadata associated with funding agency credits for a resource",
+      "type": "object",
+      "properties": {
+        "funding_agency_name": {
+          "title": "Agency name",
+          "description": "A string containing the name of the funding agency or organization",
+          "type": "string"
         },
-        "required": [
-          "id"
-        ]
+        "title": {
+          "title": "Award title",
+          "description": "A string containing the title of the project or award",
+          "type": "string"
+        },
+        "number": {
+          "title": "Award number",
+          "description": "A string containing the award number or other identifier",
+          "type": "string"
+        },
+        "funding_agency_url": {
+          "title": "Agency URL",
+          "description": "An object containing a URL pointing to a website describing the funding award",
+          "minLength": 1,
+          "maxLength": 65536,
+          "format": "uri",
+          "type": "string"
+        }
       },
-      "minItems": 1
+      "required": [
+        "funding_agency_name"
+      ]
     },
     "keywords": {
       "title": "Keywords",
@@ -203,11 +213,6 @@
         { "const": "other-at", "title": "Other (Attribution)" }
       ],
       "default": "CC-BY-4.0"
-    },
-    "notes": {
-      "title": "Additional notes",
-      "type": "string",
-      "description": "Additional notes for record."
     },
     "publication_date": {
       "title": "Publication date",
@@ -376,6 +381,7 @@
   "required": [
     "title",
     "description",
-    "keywords"
+    "keywords",
+    "notes"
   ]
 }
