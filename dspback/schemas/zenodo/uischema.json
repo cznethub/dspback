@@ -108,7 +108,7 @@
               ]
             },
             {
-              "type": "VerticalLayout",
+              "type": "HorizontalLayout",
               "elements": [
                 {
                   "type": "Control",
