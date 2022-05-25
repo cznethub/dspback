@@ -66,27 +66,51 @@
     "rights": {
       "title": "Rights",
       "description": "An object containing information about rights held in an over a resource",
-      "type": "object",
-      "properties": {
-        "statement": {
-          "title": "Statement",
-          "description": "A string containing the text of the license or rights statement",
-          "type": "string",
-          "default": "This resource is shared under the Creative Commons Attribution CC BY."
+      "oneOf": [
+        {
+          "title": "Choose a License",
+          "description": "An object containing information about rights held in an over a resource",
+          "type": "object",
+          "properties": {
+            "license": {
+              "type": "string",
+              "enum": [
+                "Creative Commons Attribution CC BY",
+                "Creative Commons Attribution-ShareAlike CC BY-SA",
+                "Creative Commons Attribution-NoDerivs CC BY-ND",
+                "Creative Commons Attribution-NoCommercial-ShareAlike CC BY-NC-SA",
+                "Creative Commons Attribution-NoCommercial CC BY-NC",
+                "Creative Commons Attribution-NoCommercial-NoDerivs CC BY-NC-ND"
+              ],
+              "default": "Creative Commons Attribution CC BY"
+            }
+          },
+          "required": ["license"]
         },
-        "url": {
-          "title": "URL",
-          "description": "An object containing the URL pointing to a description of the license or rights statement",
-          "minLength": 1,
-          "maxLength": 65536,
-          "format": "uri",
-          "type": "string",
-          "default": "http://creativecommons.org/licenses/by/4.0/"
+        {
+          "title": "Custom License",
+          "description": "An object containing information about rights held in an over a resource",
+          "type": "object",
+          "properties": {
+            "statement": {
+              "title": "Statement",
+              "description": "A string containing the text of the license or rights statement",
+              "type": "string"
+            },
+            "url": {
+              "title": "URL",
+              "description": "An object containing the URL pointing to a description of the license or rights statement",
+              "minLength": 1,
+              "maxLength": 65536,
+              "format": "uri",
+              "type": "string"
+            }
+          },
+          "required": [
+            "statement",
+            "url"
+          ]
         }
-      },
-      "required": [
-        "statement",
-        "url"
       ]
     },
     "awards": {
@@ -101,23 +125,121 @@
     "spatial_coverage": {
       "title": "Spatial coverage",
       "description": "An object containing information about the spatial topic of a resource, the spatial applicability of a resource, or jurisdiction under with a resource is relevant",
-      "anyOf": [
+      "oneOf": [
         {
-          "$ref": "#/definitions/PointCoverage"
+          "title": "Point Coverage Metadata",
+          "description": "A class used to represent geographic coverage metadata for a resource or aggregation expressed as a\npoint location",
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "description": "A string containing a name for the place associated with the geographic coverage",
+              "type": "string"
+            },
+            "east": {
+              "title": "East",
+              "description": "The coordinate of the point location measured in the east direction (between -180 and 180)",
+              "exclusiveMinimum": -180,
+              "exclusiveMaximum": 180,
+              "type": "number"
+            },
+            "north": {
+              "title": "North",
+              "description": " The coordinate of the point location measured in the north direction (between -90 and 90)",
+              "exclusiveMinimum": -90,
+              "exclusiveMaximum": 90,
+              "type": "number"
+            },
+            "units": {
+              "title": "Units",
+              "description": "The units applying to the unlabelled numeric values of north and east",
+              "type": "string",
+              "default": "Decimal degrees",
+              "const": "Decimal degrees",
+              "readOnly": true
+            },
+            "projection": {
+              "title": "Projection",
+              "description": "The name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
+              "type": "string",
+              "default": "WGS 84 EPSG:4326",
+              "const": "WGS 84 EPSG:4326",
+              "readOnly": true
+            }
+          },
+          "required": [
+            "east",
+            "north"
+          ]
         },
         {
-          "$ref": "#/definitions/BoxCoverage"
+          "title": "Box Coverage Metadata",
+          "description": "A class used to represent geographic coverage metadata for a resource or aggregation expressed as a\nlatitude-longitude bounding box",
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "description": "A string containing a name for the place associated with the geographic coverage",
+              "type": "string"
+            },
+            "northlimit": {
+              "title": "North limit",
+              "description": "A floating point value containing the constant coordinate for the northernmost face or edge of the bounding box (between -90 and 90)",
+              "exclusiveMinimum": -90,
+              "exclusiveMaximum": 90,
+              "type": "number"
+            },
+            "eastlimit": {
+              "title": "East limit",
+              "description": "A floating point value containing the constant coordinate for the easternmost face or edge of the bounding box (between -180 and 180)",
+              "exclusiveMinimum": -180,
+              "exclusiveMaximum": 180,
+              "type": "number"
+            },
+            "southlimit": {
+              "title": "South limit",
+              "description": "A floating point value containing the constant coordinate for the southernmost face or edge of the bounding box (between -90 and 90)",
+              "exclusiveMinimum": -90,
+              "exclusiveMaximum": 90,
+              "type": "number"
+            },
+            "westlimit": {
+              "title": "West limit",
+              "description": "A floating point value containing the constant coordinate for the westernmost face or edge of the bounding box (between -180 and 180)",
+              "exclusiveMinimum": -180,
+              "exclusiveMaximum": 180,
+              "type": "number"
+            },
+            "units": {
+              "title": "Units",
+              "description": "A string containing the units applying to the unlabelled numeric values of northlimit, eastlimit, southlimit, and westlimit",
+              "type": "string",
+              "default": "Decimal degrees",
+              "const": "Decimal degrees",
+              "readOnly": true
+            },
+            "projection": {
+              "title": "Projection",
+              "description": "A string containing the name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
+              "type": "string",
+              "default": "WGS 84 EPSG:4326",
+              "const": "WGS 84 EPSG:4326",
+              "readOnly": true
+            }
+          },
+          "required": [
+            "northlimit",
+            "eastlimit",
+            "southlimit",
+            "westlimit"
+          ]
         }
       ]
     },
     "period_coverage": {
       "title": "Temporal coverage",
       "description": "An object containing information about the temporal topic or applicability of a resource",
-      "allOf": [
-        {
-          "$ref": "#/definitions/PeriodCoverage"
-        }
-      ]
+      "$ref": "#/definitions/PeriodCoverage"
     },
     "publisher": {
       "title": "Publisher",
@@ -131,14 +253,16 @@
     "citation": {
       "title": "Citation",
       "description": "A string containing the biblilographic citation for a resource",
-      "type": "string"
+      "type": "string",
+      "readOnly": true
     }
   },
   "required": [
     "title",
     "abstract",
     "subjects",
-    "awards"
+    "awards",
+    "rights"
   ],
   "definitions": {
     "Creator": {
@@ -242,7 +366,6 @@
         }
       }
     },
-    
     "Relation": {
       "title": "Related Resource Metadata",
       "description": "A class used to represent the metadata associated with a resource related to the resource being described",
@@ -335,116 +458,8 @@
         "funding_agency_name"
       ]
     },
-    "PointCoverage": {
-      "title": "Point Coverage Metadata",
-      "description": "A class used to represent geographic coverage metadata for a resource or aggregation expressed as a\npoint location",
-      "type": "object",
-      "properties": {
-        "name": {
-          "title": "Name",
-          "description": "A string containing a name for the place associated with the geographic coverage",
-          "type": "string"
-        },
-        "east": {
-          "title": "East",
-          "description": "The coordinate of the point location measured in the east direction (between -180 and 180)",
-          "exclusiveMinimum": -180,
-          "exclusiveMaximum": 180,
-          "type": "number"
-        },
-        "north": {
-          "title": "North",
-          "description": " The coordinate of the point location measured in the north direction (between -90 and 90)",
-          "exclusiveMinimum": -90,
-          "exclusiveMaximum": 90,
-          "type": "number"
-        },
-        "units": {
-          "title": "Units",
-          "description": "The units applying to the unlabelled numeric values of north and east",
-          "type": "string",
-          "default": "Decimal degrees",
-          "const": "Decimal degrees",
-          "readOnly": true
-        },
-        "projection": {
-          "title": "Projection",
-          "description": "The name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
-          "type": "string",
-          "default": "WGS 84 EPSG:4326",
-          "const": "WGS 84 EPSG:4326",
-          "readOnly": true
-        }
-      },
-      "required": [
-        "east",
-        "north"
-      ]
-    },
-    "BoxCoverage": {
-      "title": "Box Coverage Metadata",
-      "description": "A class used to represent geographic coverage metadata for a resource or aggregation expressed as a\nlatitude-longitude bounding box",
-      "type": "object",
-      "properties": {
-        "name": {
-          "title": "Name",
-          "description": "A string containing a name for the place associated with the geographic coverage",
-          "type": "string"
-        },
-        "northlimit": {
-          "title": "North limit",
-          "description": "A floating point value containing the constant coordinate for the northernmost face or edge of the bounding box (between -90 and 90)",
-          "exclusiveMinimum": -90,
-          "exclusiveMaximum": 90,
-          "type": "number"
-        },
-        "eastlimit": {
-          "title": "East limit",
-          "description": "A floating point value containing the constant coordinate for the easternmost face or edge of the bounding box (between -180 and 180)",
-          "exclusiveMinimum": -180,
-          "exclusiveMaximum": 180,
-          "type": "number"
-        },
-        "southlimit": {
-          "title": "South limit",
-          "description": "A floating point value containing the constant coordinate for the southernmost face or edge of the bounding box (between -90 and 90)",
-          "exclusiveMinimum": -90,
-          "exclusiveMaximum": 90,
-          "type": "number"
-        },
-        "westlimit": {
-          "title": "West limit",
-          "description": "A floating point value containing the constant coordinate for the westernmost face or edge of the bounding box (between -180 and 180)",
-          "exclusiveMinimum": -180,
-          "exclusiveMaximum": 180,
-          "type": "number"
-        },
-        "units": {
-          "title": "Units",
-          "description": "A string containing the units applying to the unlabelled numeric values of northlimit, eastlimit, southlimit, and westlimit",
-          "type": "string",
-          "default": "Decimal degrees",
-          "const": "Decimal degrees",
-          "readOnly": true
-        },
-        "projection": {
-          "title": "Projection",
-          "description": "A string containing the name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
-          "type": "string",
-          "default": "WGS 84 EPSG:4326",
-          "const": "WGS 84 EPSG:4326",
-          "readOnly": true
-        }
-      },
-      "required": [
-        "northlimit",
-        "eastlimit",
-        "southlimit",
-        "westlimit"
-      ]
-    },
     "PeriodCoverage": {
-      "title": "Period Coverage Metadata",
+      "title": "Period coverage",
       "description": "A class used to represent temporal coverage metadata for a resource or aggregation",
       "type": "object",
       "properties": {

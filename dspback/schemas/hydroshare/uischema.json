@@ -1,7 +1,7 @@
 {
   "type": "VerticalLayout",
   "elements": [
-    { 
+    {
       "type": "Group",
       "label": "Basic Information",
       "elements": [
@@ -24,11 +24,103 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/creators"
+      "scope": "#/properties/creators",
+      "options": {
+        "detail": {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/name"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/email"
+                }
+              ]
+            },
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/organization"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/address"
+                }
+              ]
+            },
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/phone"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/homepage"
+                }
+              ]
+            }
+          ]
+        }
+      }
     },
     {
       "type": "Control",
-      "scope": "#/properties/contributors"
+      "scope": "#/properties/contributors",
+      "options": {
+        "detail": {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/name"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/email"
+                }
+              ]
+            },
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/organization"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/address"
+                }
+              ]
+            },
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/phone"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/homepage"
+                }
+              ]
+            }
+          ]
+        }
+      }
     },
     {
       "type": "Control",
@@ -37,22 +129,84 @@
     },
     {
       "type": "Control",
-      "label": "Period coverage",
-      "scope": "#/properties/period_coverage"
+      "scope": "#/properties/period_coverage",
+      "options": {
+        "detail": {
+          "type": "Group",
+          "label": "Period coverage",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/name"
+            },
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/start"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/end"
+                }
+              ]
+            }
+          ]
+        }
+      }
     },
     {
       "type": "Control",
-      "scope": "#/properties/additional_metadata"
+      "scope": "#/properties/additional_metadata",
+      "options": { "useTableLayout": true }
     },
     {
       "type": "Control",
-      "scope": "#/properties/relations"
+      "scope": "#/properties/relations",
+      "options": {
+        "useTableLayout": true
+      }
     },
     {
       "type": "Control",
-      "scope": "#/properties/awards"
+      "scope": "#/properties/awards",
+      "options": {
+        "detail": {
+          "type": "VerticalLayout",
+          "elements": [
+            { 
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/funding_agency_name"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/title"
+                }
+              ]
+            },
+            { 
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/number"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/funding_agency_url"
+                }
+              ]
+            }
+          ]
+        }
+      }
     },
     {
+      "label": "Rights",
       "type": "Control",
       "scope": "#/properties/rights"
     },

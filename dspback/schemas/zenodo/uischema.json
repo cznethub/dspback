@@ -41,7 +41,8 @@
         },
         {
           "type": "Control",
-          "scope": "#/properties/communities"
+          "scope": "#/properties/communities",
+          "options": { "useTableLayout": true }
         }
       ]
     },
@@ -59,17 +60,15 @@
       "elements":[
         {
           "type": "Control",
-          "scope": "#/properties/references"
+          "scope": "#/properties/references",
+          "options": { "useTableLayout": true }
         },
         {
           "type": "Control",
-          "scope": "#/properties/related_identifiers"
+          "scope": "#/properties/related_identifiers",
+          "options": { "useTableLayout": true }
         }
       ]
-    },
-    {
-      "type": "Control",
-      "scope": "#/properties/grants"
     },
     {
       "type": "Group",
@@ -88,7 +87,6 @@
                     "format": "radio"
                   }
                 },
-                
                 {
                   "type": "Control",
                   "scope": "#/properties/embargo_date",
@@ -105,7 +103,7 @@
               ]
             },
             {
-              "type": "VerticalLayout",
+              "type": "HorizontalLayout",
               "elements": [
                 {
                   "type": "Control",

@@ -11,7 +11,7 @@
     "access_right": {
       "title": "Access right",
       "type": "string",
-      "description": "Access right for record.",
+      "description": "Access right for record",
       "default": "open",
       "enum": [
         "open",
@@ -202,15 +202,15 @@
       "title": "License",
       "type": "string",
       "description": "License for embargoed/open access content.",
-      "enum": [
-        "CC-BY-4.0",
-        "CC-BY-SA-4.0",
-        "CC-BY-ND-4.0",
-        "CC-BY-NC-SA-4.0",
-        "CC-BY-NC-4.0",
-        "CC-BY-NC-ND-4.0",
-        "other-open",
-        "other-at"
+      "oneOf": [
+        { "const": "CC-BY-4.0", "title": "Creative Commons Attribution 4.0" },
+        { "const": "CC-BY-SA-4.0", "title": "Creative Commons Attribution Share-Alike 4.0" },
+        { "const": "CC-BY-NC-4.0", "title": "Creative Commons Attribution-NonCommercial 4.0" },
+        { "const": "CC-BY-ND-4.0", "title": "Attribution-NoDerivatives 4.0 International" },
+        { "const": "CC-BY-NC-SA-4.0", "title": "Attribution-NonCommercial-ShareAlike 4.0 International" },
+        { "const": "CC-BY-NC-ND-4.0", "title": "Attribution-NonCommercial-NoDerivatives 4.0 International" },
+        { "const": "other-open", "title": "Other (Open)" },
+        { "const": "other-at", "title": "Other (Attribution)" }
       ],
       "default": "CC-BY-4.0"
     },

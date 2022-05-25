@@ -1,47 +1,260 @@
 {
+  "title": "Record",
   "type": "object",
   "properties": {
     "title": {
+      "title": "Dataset Title",
+      "description": "A descriptive title of the dataset",
       "type": "string"
+    },
+    "datePublished": {
+      "title": "Release Date",
+      "description": "The date of the files contained in the resource to be allowed for downloading",
+      "type": "string",
+      "format": "date",
+      "options": {
+        "placeholder": "YYYY-MM-DD",
+        "max": { "amount": 2, "unit": "year" },
+        "min": "today",
+        "default": { "amount": 3, "unit": "day" }
+      }
     },
     "description": {
-      "type": "string"
+      "title": "Abstract or Description",
+      "type": "string",
+      "description": "Describe measurements, location, and purpose of the dataset",
+      "maxLength": 250
     },
     "community": {
-      "type": "string"
+      "title": "Community",
+      "type": "string",
+      "default": "CZNet",
+      "const": "CZNet",
+      "readOnly": true,
+      "options": { "hidden": true }
     },
     "identifiers": {
+      "title": "Related Information",
       "type": "array",
       "items": {
-        "$ref": "#/definitions/Identifier"
+        "title": "Related Information",
+        "options": { "flat": true, "dropdown": true },
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "Publication DOI",
+            "properties": {
+              "scheme": {
+                "type": "string",
+                "default": "DOI",
+                "const": "DOI",
+                "readOnly": true,
+                "options": { "hidden": true  }
+              },
+              "schemeURI": {
+                "type": "string",
+                "default": "",
+                "const": "",
+                "readOnly": true,
+                "options": { "hidden": true }
+              },
+              "identifier": {
+                "type": "string",
+                "title": "Publication DOI",
+                "description": "Enter most relevant publication DOI(s). e.g. '10.016/j.epsl.2009.11.018'",
+                "options": {
+                  "placeholder": "e.g. '10.016/j.epsl.2009.11.018''"
+                }
+              },
+              "url": {
+                "type": "string",
+                "default": "",
+                "const": "",
+                "readOnly": true,
+                "options": { "hidden": true }
+              }
+            },
+            "required": ["identifier"]
+          },
+          {
+            "type": "object",
+            "title": "IGSN",
+            "properties": {
+              "scheme": {
+                "type": "string",
+                "default": "IGSN",
+                "const": "IGSN",
+                "readOnly": true,
+                "options": { "hidden": true }
+              },
+              "schemeURI": {
+                "description": "URL of the scheme",
+                "type": "string",
+                "default": "",
+                "const": "",
+                "readOnly": true,
+                "options": { "hidden": true }
+              },
+              "identifier": {
+                "type": "string",
+                "title": "IGSN",
+                "description": "Provide IGSNs for your samples separated by commas."
+              },
+              "url": {
+                "type": "string",
+                "default": "",
+                "const": "",
+                "readOnly": true,
+                "options": { "hidden": true }
+              }
+            },
+            "required": ["identifier"]
+          },
+          {
+            "type": "object",
+            "title": "Smithsonian Volcano Number",
+            "properties": {
+              "scheme": {
+                "type": "string",
+                "default": "SVN",
+                "const": "SVN",
+                "readOnly": true,
+                "options": { "hidden": true }
+              },
+              "schemeURI": {
+                "type": "string",
+                "default": "",
+                "const": "",
+                "readOnly": true,
+                "options": { "hidden": true }
+              },
+              "identifier": {
+                "type": "string",
+                "title": "Smithsonian Volcano Number",
+                "description": "Provide volcano numbers corresponding to your sample collection site."
+              },
+              "url": {
+                "type": "string",
+                "default": "",
+                "const": "",
+                "readOnly": true,
+                "options": { "hidden": true }
+              }
+            },
+            "required": ["identifier"]
+          },
+          {
+            "type": "object",
+            "title": "Cruise DOI",
+            "properties": {
+              "scheme": {
+                "type": "string",
+                "default": "R2R",
+                "const": "R2R",
+                "readOnly": true,
+                "options": { "hidden": true }
+              },
+              "schemeURI": {
+                "type": "string",
+                "default": "",
+                "const": "",
+                "readOnly": true,
+                "options": { "hidden": true }
+              },
+              "identifier": {
+                "type": "string",
+                "title": "Cruise DOI",
+                "description": "Provide Cruise DOIs corresponding to your samples."
+              },
+              "url": {
+                "type": "string",
+                "default": "",
+                "const": "",
+                "readOnly": true,
+                "options": { "hidden": true }
+              }
+            },
+            "required": ["identifier"]
+          }
+        ]
       }
     },
-    "creators": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/Creator"
-      }
+    "leadAuthor": {
+      "$ref": "#/definitions/LeadAuthor"
     },
     "contributors": {
+      "title": "Co-Authors",
       "type": "array",
-      "items": {
-        "$ref": "#/definitions/Contributor"
-      }
+      "maxItems": 3,
+      "items": { "$ref": "#/definitions/Contributor" }
     },
     "type": {
-      "type": "string"
+      "title": "Dataset Type",
+      "description": "The nature or genre of the resource",
+      "type": "string",
+      "default": "Dataset",
+      "enum": [
+        "Collection",
+        "Dataset",
+        "Image",
+        "InteractiveResource",
+        "MovingImage",
+        "PhysicalObject",
+        "Service",
+        "Software",
+        "Sound",
+        "StillImage",
+        "Text"
+      ]
     },
     "status": {
-      "type": "string"
+      "title": "Submission status",
+      "type": "string",
+      "description": "Indication of the progress status of the resource.",
+      "default": "incomplete",
+      "options": { "hidden": true },
+      "enum": [
+        "incomplete",
+        "submitted"
+      ]
     },
     "additionalTypes": {
+      "title": "Data Types",
+      "description": "The science domain of the content",
       "type": "array",
       "items": {
-        "type": "string"
-      }
+        "type": "string",
+        "enum": [
+          "Chemistry",
+          "Chemistry:ClumpedIsotope",
+          "Chemistry:Fluid",
+          "Chemistry:Gas",
+          "Chemistry:Rock",
+          "Chemistry:Sediment",
+          "Geochronology",
+          "Kinetics",
+          "ModelData",
+          "Petrography",
+          "Petrology",
+          "Petrology:Experimental",
+          "Petrology:Mineral",
+          "SampleInfo",
+          "SocialScience",
+          "Other"
+        ]
+      },
+      "default": [],
+      "uniqueItems": true
     },
     "keywords": {
+      "title": "Keywords",
       "type": "array",
+      "description": "A list of non-geographic keywords. (e.g. volatiles, ultra-slow spreading ridges, mantle melting, CO2 fluxes)",
+      "default": ["CZNet"],
+      "minItems": 2,
+      "contains": {
+        "enum": ["CZNet"]
+      },
       "items": {
         "type": "string"
       }
@@ -59,16 +272,176 @@
       }
     },
     "fundings": {
+      "title": "Funding Source",
+      "description": "Source of grants/awards which have funded the resource",
       "type": "array",
       "items": {
-        "$ref": "#/definitions/Funding"
+        "title": "Funding Source",
+        "options": { "flat": true },
+        "anyOf": [
+          {
+            "type": "object",
+            "title": "NSF",
+            "properties": {
+              "identifier": {
+                "type": "string"
+              },
+              "funder": {
+                "title": "Funder",
+                "description": "A person or organization that provides money for a particular purpose",
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "readOnly": true,
+                    "default": "National Science Foundation"
+                  },
+                  "alternateName": {
+                    "type": "string",
+                    "readOnly": true,
+                    "default": "NSF"
+                  },
+                  "identifiers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "scheme",
+                        "schemeURI",
+                        "identifier",
+                        "url"
+                      ],
+                      "properties": {
+                        "scheme": {
+                          "description": "Persistant identifier scheme",
+                          "type": "string"
+                        },
+                        "schemeURI": {
+                          "description": "URL of the scheme",
+                          "type": "string"
+                        },
+                        "identifier": {
+                          "description": "Identifier for the funder under specific scheme",
+                          "type": "string"
+                        },
+                        "url": {
+                          "description": "URL for the funder under specific scheme",
+                          "type": "string",
+                          "default": "https://ror.org/021nxhr62"
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "name",
+                  "alternateName",
+                  "identifiers"
+                ]
+              },
+              "url": {
+                "description": "URL for the grant/award",
+                "type": "string",
+                "format": "uri",
+                "readOnly": true,
+                "default": "https://ror.org/021nxhr62"
+              }
+            },
+            "required": [
+              "identifier",
+              "funder",
+              "url"
+            ]
+          },
+          { 
+            "type": "object",
+            "title": "Other",
+            "properties": {
+              "identifier": {
+                "type": "string"
+              },
+              "funder": {
+                "title": "Funder",
+                "description": "A person or organization that provides money for a particular purpose",
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "alternateName": {
+                    "type": "string"
+                  },
+                  "identifiers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "scheme",
+                        "schemeURI",
+                        "identifier",
+                        "url"
+                      ],
+                      "properties": {
+                        "scheme": {
+                          "description": "Persistant identifier scheme",
+                          "type": "string"
+                        },
+                        "schemeURI": {
+                            "description": "URL of the scheme",
+                            "type": "string"
+                        },
+                        "identifier": {
+                            "description": "Identifier for the funder under specific scheme",
+                            "type": "string"
+                        },
+                        "url": {
+                            "description": "URL for the funder under specific scheme",
+                            "type": "string"
+                        }
+                      },
+                      "title": "Identifier"
+                    }
+                  }
+                },
+                "required": [
+                  "name",
+                  "alternateName",
+                  "identifiers"
+                ]
+              },
+              "url": {
+                "description": "URL for the grant/award",
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "required": [
+              "identifier",
+              "funder",
+              "url"
+            ]
+          } 
+        ],
+        "errorMessage": {
+          "anyOf": "selected item is incomplete"
+        }
       }
     },
     "license": {
       "$ref": "#/definitions/License"
     }
   },
-  "title": "Record",
+  "required": [
+    "datePublished",
+    "title",
+    "description",
+    "keywords",
+    "spatialCoverage",
+    "additionalTypes",
+    "community",
+    "type",
+    "status"
+  ],
   "definitions": {
     "Affiliation": {
       "type": "object",
@@ -87,93 +460,110 @@
     },
     "Contributor": {
       "type": "object",
+      "title": "Co-Author",
       "properties": {
-        "familyName": {
+        "type": {
+          "type": "string",
+          "readOnly": true,
+          "const": "coAuthor",
+          "default": "coAuthor",
+          "options": { "hidden": true }
+        },
+        "givenName": {
+          "title": "First Name",
           "type": "string"
         },
         "additionalName": {
+          "title": "Middle Name",
           "type": "string"
         },
-        "givenName": {
+        "familyName": {
+          "title": "Last Name",
           "type": "string"
         },
         "email": {
-          "type": "string"
-        },
-        "type": {
           "type": "string",
-          "enum": [
-            "leadAuthor",
-            "coAuthor"
-          ]
-        },
-        "position": {
-          "type": "integer",
-          "format": "int32"
+          "format": "email"
         },
         "identifiers": {
           "type": "array",
-          "items": {
-            "$ref": "#/definitions/Identifier"
-          }
+          "items": { "$ref": "#/definitions/AuthorIdentifier" }
         },
         "affiliation": {
           "$ref": "#/definitions/Affiliation"
         }
       },
-      "title": "Contributor"
+      "required": [
+        "familyName",
+        "givenName"
+      ]
+    },
+    "LeadAuthor": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "readOnly": true,
+          "default": "leadAuthor",
+          "const": "leadAuthor",
+          "options": { "hidden": true }
+        },
+        "givenName": {
+          "title": "First Name",
+          "type": "string"
+        },
+        "additionalName": {
+          "title": "Middle Name",
+          "type": "string"
+        },
+        "familyName": {
+          "title": "Last Name",
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "identifiers": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AuthorIdentifier" }
+        },
+        "affiliation": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "identifiers": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Identifier"
+              }
+            }
+          }
+        }
+      },
+      "title": "Lead Author",
+      "required": [
+        "familyName",
+        "givenName",
+        "email"
+      ]
     },
     "Cordinate": {
       "type": "object",
       "properties": {
         "lat": {
-          "type": "number",
-          "format": "double"
+          "type": "number"
         },
         "lon": {
-          "type": "number",
-          "format": "double"
+          "type": "number"
         },
         "alt": {
-          "type": "number",
-          "format": "double"
+          "type": "number"
         }
       },
       "title": "Cordinate"
-    },
-    "Creator": {
-      "type": "object",
-      "properties": {
-        "familyName": {
-          "type": "string"
-        },
-        "additionalName": {
-          "type": "string"
-        },
-        "givenName": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string",
-          "enum": [
-            "owner",
-            "maintainer"
-          ]
-        },
-        "identifiers": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Identifier"
-          }
-        },
-        "affiliation": {
-          "$ref": "#/definitions/Affiliation"
-        }
-      },
-      "title": "Creator"
     },
     "Feature": {
       "type": "object",
@@ -198,42 +588,6 @@
         }
       },
       "title": "FileResponse"
-    },
-    "Funder": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "alternateName": {
-          "type": "string"
-        },
-        "identifiers": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Identifier"
-          }
-        }
-      },
-      "title": "Funder"
-    },
-    "Funding": {
-      "type": "object",
-      "properties": {
-        "identifer": {
-          "type": "string"
-        },
-        "identifier": {
-          "type": "string"
-        },
-        "funder": {
-          "$ref": "#/definitions/Funder"
-        },
-        "url": {
-          "type": "string"
-        }
-      },
-      "title": "Funding"
     },
     "Geometry": {
       "type": "object",
@@ -273,23 +627,248 @@
       },
       "title": "Identifier"
     },
-    "License": {
+    "AuthorIdentifier": {
+      "title": "Identifier",
       "type": "object",
       "properties": {
-        "name": {
-          "type": "string"
+        "scheme": {
+          "type": "string",
+          "default": "ORCID",
+          "const": "ORCID",
+          "readOnly": true,
+          "options": { "hidden": true }
         },
-        "alternateName": {
-          "type": "string"
+        "schemeURI": {
+          "type": "string",
+          "default": "https://orcid.org/",
+          "const": "https://orcid.org/",
+          "readOnly": true,
+          "options": { "hidden": true }
         },
-        "identifiers": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Identifier"
+        "identifier": {
+          "title": "ORCID",
+          "type": "string",
+          "pattern": "/(\\d{4}-){3}\\d{3}(\\d|X)/",
+          "options": {
+            "placeholder": "e.g. '0000-0001-2345-6789'"
+          },
+          "errorMessage": {
+            "pattern": "must match the ORCID pattern. e.g. '0000-0001-2345-6789'"
           }
         }
-      },
-      "title": "License"
+      }
+    },
+    "License": {
+      "title": "License",
+      "type": "object",
+      "options": { "dropdown": true },
+      "oneOf": [
+        {
+          "title": "CC-BY-NC-SA-3.0",
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "Creative Commons Attribution-NonCommercial-Share Alike 3.0 United States"
+            },
+            "alternateName": {
+              "type": "string",
+              "default": "CC-BY-NC-SA-3.0",
+              "const": "CC-BY-NC-SA-3.0",
+              "options": { "hidden": true }
+            },
+            "identifiers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "title": "Identifier",
+                "properties": {
+                  "scheme": {
+                    "type": "string",
+                    "default": "SPDX"
+                  },
+                  "schemeURI": {
+                    "type": "string",
+                    "default": "https://spdx.org/licenses/"
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "default": "CC-BY-NC-SA-3.0"
+                  },
+                  "url": {
+                  "type": "string",
+                  "default": "https://spdx.org/licenses/CC-BY-NC-SA-3.0",
+                  "format": "uri"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "CC-BY-4.0",
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "Creative Commons Attribution 4.0 International"
+            },
+            "alternateName": {
+              "type": "string",
+              "default": "CC-BY-4.0",
+              "const": "CC-BY-4.0",
+              "options": { "hidden": true }
+            },
+            "identifiers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "title": "Identifier",
+                "properties": {
+                  "scheme": {
+                    "type": "string",
+                    "default": "SPDX"
+                  },
+                  "schemeURI": {
+                    "type": "string",
+                    "default": "https://spdx.org/licenses/"
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "default": "CC-BY-4.0"
+                  },
+                  "url": {
+                  "type": "string",
+                  "default": "https://spdx.org/licenses/CC-BY-4.0",
+                  "format": "uri"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "CC-BY-SA-4.0",
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "Creative Commons Attribution-ShareAlike 4.0 International"
+            },
+            "alternateName": {
+              "type": "string",
+              "default": "CC-BY-SA-4.0",
+              "const": "CC-BY-SA-4.0",
+              "options": { "hidden": true }
+            },
+            "identifiers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "title": "Identifier",
+                "properties": {
+                  "scheme": {
+                    "type": "string",
+                    "default": "SPDX"
+                  },
+                  "schemeURI": {
+                    "type": "string",
+                    "default": "https://spdx.org/licenses/"
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "default": "CC-BY-SA-4.0"
+                  },
+                  "url": {
+                  "type": "string",
+                  "default": "https://spdx.org/licenses/CC-BY-SA-4.0",
+                  "format": "uri"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "CC-BY-NC-SA-4.0",
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
+            },
+            "alternateName": {
+              "type": "string",
+              "default": "CC-BY-NC-SA-4.0",
+              "const": "CC-BY-NC-SA-4.0",
+              "options": { "hidden": true }
+            },
+            "identifiers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "title": "Identifier",
+                "properties": {
+                  "scheme": {
+                    "type": "string",
+                    "default": "SPDX"
+                  },
+                  "schemeURI": {
+                    "type": "string",
+                    "default": "https://spdx.org/licenses/"
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "default": "CC-BY-NC-SA-4.0"
+                  },
+                  "url": {
+                  "type": "string",
+                  "default": "https://spdx.org/licenses/CC-BY-NC-SA-4.0",
+                  "format": "uri"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "CC0-1.0",
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "Creative Commons No Rights Reserved"
+            },
+            "alternateName": {
+              "type": "string",
+              "default": "CC0-1.0",
+              "const": "CC0-1.0",
+              "options": { "hidden": true }
+            },
+            "identifiers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "title": "Identifier",
+                "properties": {
+                  "scheme": {
+                    "type": "string",
+                    "default": "SPDX"
+                  },
+                  "schemeURI": {
+                    "type": "string",
+                    "default": "https://spdx.org/licenses/"
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "default": "CC0-1.0"
+                  },
+                  "url": {
+                  "type": "string",
+                  "default": "https://spdx.org/licenses/CC0-1.0",
+                  "format": "uri"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "RecordFile": {
       "type": "object",
@@ -307,8 +886,7 @@
           "type": "string"
         },
         "position": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "serverName": {
           "type": "string"
@@ -376,25 +954,28 @@
       "title": "RelatedResource"
     },
     "SpatialCoverage": {
+      "title": "Spatial Coverage Information",
       "type": "object",
       "properties": {
         "coverage": {
-          "type": "string"
+          "title": "Spatial Coverage",
+          "type": "string",
+          "enum": [
+            "Global",
+            "Regional (Continents, Oceans)",
+            "Space/Planetary"
+          ]
         },
         "keywords": {
+          "title": "Geographic Keywords",
           "type": "array",
           "items": {
             "type": "string"
-          }
-        },
-        "features": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Feature"
-          }
+          },
+          "description": "Provide appropriate geographic keywords for searches. (e.g. Pacific Ocean, Aleutian Islands)"
         }
       },
-      "title": "SpatialCoverage"
+      "required": ["coverage"]
     }
   }
 }

@@ -120,8 +120,8 @@ oauth.register(
     name='earthchem',
     authorize_url=settings.earthchem_authorize_url,
     token_endpoint=settings.earthchem_token_url,
+    client_kwargs={'scope': 'openid', 'response_type': 'code'},
     access_token_params={
-        'grant_type': 'client_credentials',
         'client_id': settings.earthchem_client_id,
         'client_secret': settings.earthchem_client_secret,
     },
