@@ -165,7 +165,7 @@
     "spatialCoverage": {
       "title": "Spatial coverage",
       "description": "The place(s) that are the focus of the resource. The geospatial area that the resource describes, the spatial topic of a resource, the spatial applicability of a resource, or jurisdiction under with a resource is relevant.",
-      "oneOf": [
+      "anyOf": [
         {
           "title": "Point Coverage Metadata",
           "description": "Geographic coverage metadata for a resource or aggregation expressed as a point location",
