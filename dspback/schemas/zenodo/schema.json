@@ -202,7 +202,7 @@
       "title": "License",
       "type": "string",
       "description": "License for embargoed/open access content.",
-      "oneOf": [
+      "anyOf": [
         { "const": "CC-BY-4.0", "title": "Creative Commons Attribution 4.0" },
         { "const": "CC-BY-SA-4.0", "title": "Creative Commons Attribution Share-Alike 4.0" },
         { "const": "CC-BY-NC-4.0", "title": "Creative Commons Attribution-NonCommercial 4.0" },

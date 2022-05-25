@@ -66,7 +66,7 @@
     "rights": {
       "title": "Rights",
       "description": "An object containing information about rights held in an over a resource",
-      "oneOf": [
+      "anyOf": [
         {
           "title": "Choose a License",
           "description": "An object containing information about rights held in an over a resource",
@@ -125,7 +125,7 @@
     "spatial_coverage": {
       "title": "Spatial coverage",
       "description": "An object containing information about the spatial topic of a resource, the spatial applicability of a resource, or jurisdiction under with a resource is relevant",
-      "oneOf": [
+      "anyOf": [
         {
           "title": "Point Coverage Metadata",
           "description": "A class used to represent geographic coverage metadata for a resource or aggregation expressed as a\npoint location",

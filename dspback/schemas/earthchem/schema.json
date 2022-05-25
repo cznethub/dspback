@@ -39,7 +39,7 @@
       "items": {
         "title": "Related Information",
         "options": { "flat": true, "dropdown": true },
-        "oneOf": [
+        "anyOf": [
           {
             "type": "object",
             "title": "Publication DOI",
@@ -662,7 +662,7 @@
       "title": "License",
       "type": "object",
       "options": { "dropdown": true },
-      "oneOf": [
+      "anyOf": [
         {
           "title": "CC-BY-NC-SA-3.0",
           "properties": {
