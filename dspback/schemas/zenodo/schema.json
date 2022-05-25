@@ -202,6 +202,7 @@
       "title": "License",
       "type": "string",
       "description": "License for embargoed/open access content.",
+      "options": { "hasAutoComplete": true, "placeholder": "Start typing to auto complete..." },
       "oneOf": [
         { "const": "AAL", "title": "Attribution Assurance Licenses"},
         { "const": "AFL-3.0", "title": "Academic Free License 3.0"},
