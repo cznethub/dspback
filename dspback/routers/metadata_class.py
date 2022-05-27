@@ -348,7 +348,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
         identifier = response.json()["id"]
-        json_metadata = await self.get_metadata_repository(identifier)
+        json_metadata = await self.update_metadata(metadata, identifier)
 
         return JSONResponse(json_metadata, status_code=201)
 
@@ -356,7 +356,17 @@ class EarthChemMetadataRoutes(MetadataRoutes):
     async def update_metadata(self, metadata: request_model_update, identifier) -> response_model:
         existing_metadata = await self.get_metadata_repository(identifier)
         incoming_metadata = metadata.json(skip_defaults=True, exclude_unset=True)
-        merged_metadata = {**existing_metadata, **json.loads(incoming_metadata)}
+        json_metadata = json.loads(incoming_metadata)
+
+        merged_metadata = {**existing_metadata, **json_metadata}
+        # join leadAuthor and creators
+        if "leadAuthor" in merged_metadata:
+            lead_author = merged_metadata["leadAuthor"]
+            del merged_metadata["leadAuthor"]
+            creators = merged_metadata["creators"]
+            creators.insert(0, lead_author)
+            merged_metadata["creators"] = creators
+
         response = requests.put(
             self.update_url % identifier,
             json=merged_metadata,
@@ -378,7 +388,15 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
+        # split first creator to leadAuthor
         json_metadata = json.loads(response.text)
+        if "creators" in json_metadata:
+            all_creators = json_metadata["creators"]
+            if len(all_creators) > 0:
+                lead_author = all_creators.pop(0)
+                json_metadata["leadAuthor"] = lead_author
+                json_metadata["creators"] = all_creators
+
         return json_metadata
 
     @router.get('/metadata/earthchem/{identifier}', tags=["EarthChem"])
