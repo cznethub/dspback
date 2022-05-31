@@ -148,7 +148,20 @@
       "title": "Embargo date",
       "type": "string",
       "format": "date",
-      "description": "Embargo date of record (ISO8601 formatted date) - YYYY-MM-DD."
+      "description": "Embargo date of record (ISO8601 formatted date)",
+      "options": { "placeholder": "YYYY-MM-DD" },
+      "if": {
+        "properties": {
+          "access_right": {
+            "const": "embargoed"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "embargo_date"
+        ]
+      }
     },
     "notes": {
       "title": "Funding Agency Metadata",
@@ -366,39 +379,40 @@
             "title": "Relationship type",
             "type": "string",
             "description": "The type of relationship between this item and the related item.",
-            "enum": [
-              "isCitedBy",
-              "cites",
-              "isSupplementTo",
-              "isSupplementedBy",
-              "isContinuedBy",
-              "continues",
-              "isDescribedBy",
-              "describes",
-              "hasMetadata",
-              "isMetadataFor",
-              "isNewVersionOf",
-              "isPreviousVersionOf",
-              "isPartOf",
-              "hasPart",
-              "isReferencedBy",
-              "references",
-              "isDocumentedBy",
-              "documents",
-              "isCompiledBy",
-              "compiles",
-              "isVariantFormOf",
-              "isOrignialFormOf",
-              "isIdenticalTo",
-              "isReviewedBy",
-              "reviews",
-              "isDerivedFrom",
-              "isSourceOf",
-              "requires",
-              "isRequiredBy",
-              "isObsoletedBy",
-              "obsoletes",
-              "isPublishedIn"
+            "options": { "hasAutoComplete": true, "placeholder": "Start typing to autocomplete..." },
+            "oneOf": [
+              { "const": "isCitedBy", "title": "cites this upload"},
+              { "const": "cites", "title": "is cited by this upload"},
+              { "const": "isSupplementTo", "title": "is supplemented by this upload"},
+              { "const": "isSupplementedBy", "title": "is a supplement to this upload"},
+              { "const": "isContinuedBy", "title": "continues this upload"},
+              { "const": "continues", "title": "is continued by this upload"},
+              { "const": "isDescribedBy", "title": "describes this upload"},
+              { "const": "describes", "title": "is described by this upload"},
+              { "const": "hasMetadata", "title": "has additional metadata from this upload"},
+              { "const": "isMetadataFor", "title": "is additional metadata for this upload"},
+              { "const": "isNewVersionOf", "title": "is previous version of this upload"},
+              { "const": "isPreviousVersionOf", "title": "is new version of this upload"},
+              { "const": "isPartOf", "title": "has this upload as part"},
+              { "const": "hasPart", "title": "is part of this upload"},
+              { "const": "isReferencedBy", "title": "references this upload"},
+              { "const": "references", "title": "is referenced by this upload"},
+              { "const": "isDocumentedBy", "title": "documents this upload"},
+              { "const": "documents", "title": "is documented by this upload"},
+              { "const": "isCompiledBy", "title": "compiled/created this upload"},
+              { "const": "compiles", "title": "is compiled/created by this upload"},
+              { "const": "isVariantFormOf", "title": "is a variant or different form of this upload"},
+              { "const": "isOrignialFormOf", "title": "is an original form of this upload"},
+              { "const": "isIdenticalTo", "title": "is identical to this upload"},
+              { "const": "isReviewedBy", "title": "reviews this upload"},
+              { "const": "reviews", "title": "is reviewed by this upload"},
+              { "const": "isDerivedFrom", "title": "is the source this upload is derived from"},
+              { "const": "isSourceOf", "title": "has this upload as its source"},
+              { "const": "requires", "title": "is required by this upload"},
+              { "const": "isRequiredBy", "title": "requires this upload"},
+              { "const": "isObsoletedBy", "title": "replaces this upload"},
+              { "const": "obsoletes", "title": "is replaced by this upload"},
+              { "const": "isPublishedIn", "title": "published this upload"}
             ]
           }
         },
@@ -489,6 +503,8 @@
     "title",
     "description",
     "keywords",
-    "notes"
+    "notes",
+    "access_right",
+    "license"
   ]
 }
