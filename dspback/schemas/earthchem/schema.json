@@ -43,6 +43,7 @@
           {
             "type": "object",
             "title": "Publication DOI",
+            "description": "Select a related identifier from the dropdown",
             "properties": {
               "scheme": {
                 "type": "string",
@@ -79,6 +80,7 @@
           {
             "type": "object",
             "title": "IGSN",
+            "description": "Select a related identifier from the dropdown",
             "properties": {
               "scheme": {
                 "type": "string",
@@ -113,6 +115,7 @@
           {
             "type": "object",
             "title": "Smithsonian Volcano Number",
+            "description": "Select a related identifier from the dropdown",
             "properties": {
               "scheme": {
                 "type": "string",
@@ -146,6 +149,7 @@
           {
             "type": "object",
             "title": "Cruise DOI",
+            "description": "Select a related identifier from the dropdown",
             "properties": {
               "scheme": {
                 "type": "string",
@@ -488,9 +492,6 @@
         "identifiers": {
           "type": "array",
           "items": { "$ref": "#/definitions/AuthorIdentifier" }
-        },
-        "affiliation": {
-          "$ref": "#/definitions/Affiliation"
         }
       },
       "required": [
@@ -527,20 +528,6 @@
         "identifiers": {
           "type": "array",
           "items": { "$ref": "#/definitions/AuthorIdentifier" }
-        },
-        "affiliation": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "identifiers": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Identifier"
-              }
-            }
-          }
         }
       },
       "title": "Lead Author",
@@ -661,15 +648,11 @@
     "License": {
       "title": "License",
       "type": "object",
-      "options": { "dropdown": true },
+      "options": { "dropdown": true, "flat": true },
       "anyOf": [
         {
           "title": "CC-BY-NC-SA-3.0",
           "properties": {
-            "name": {
-              "type": "string",
-              "default": "Creative Commons Attribution-NonCommercial-Share Alike 3.0 United States"
-            },
             "alternateName": {
               "type": "string",
               "default": "CC-BY-NC-SA-3.0",
@@ -681,10 +664,6 @@
         {
           "title": "CC-BY-4.0",
           "properties": {
-            "name": {
-              "type": "string",
-              "default": "Creative Commons Attribution 4.0 International"
-            },
             "alternateName": {
               "type": "string",
               "default": "CC-BY-4.0",
@@ -696,10 +675,6 @@
         {
           "title": "CC-BY-SA-4.0",
           "properties": {
-            "name": {
-              "type": "string",
-              "default": "Creative Commons Attribution-ShareAlike 4.0 International"
-            },
             "alternateName": {
               "type": "string",
               "default": "CC-BY-SA-4.0",
@@ -711,10 +686,6 @@
         {
           "title": "CC-BY-NC-SA-4.0",
           "properties": {
-            "name": {
-              "type": "string",
-              "default": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
-            },
             "alternateName": {
               "type": "string",
               "default": "CC-BY-NC-SA-4.0",
@@ -726,10 +697,6 @@
         {
           "title": "CC0-1.0",
           "properties": {
-            "name": {
-              "type": "string",
-              "default": "Creative Commons No Rights Reserved"
-            },
             "alternateName": {
               "type": "string",
               "default": "CC0-1.0",
