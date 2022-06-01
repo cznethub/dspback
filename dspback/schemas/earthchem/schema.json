@@ -38,12 +38,12 @@
       "type": "array",
       "items": {
         "title": "Related Information",
-        "description": "Select a related identifier from the dropdown",
         "options": { "flat": true, "dropdown": true },
         "anyOf": [
           {
             "type": "object",
             "title": "Publication DOI",
+            "description": "Select a related identifier from the dropdown",
             "properties": {
               "scheme": {
                 "type": "string",
@@ -80,6 +80,7 @@
           {
             "type": "object",
             "title": "IGSN",
+            "description": "Select a related identifier from the dropdown",
             "properties": {
               "scheme": {
                 "type": "string",
@@ -114,6 +115,7 @@
           {
             "type": "object",
             "title": "Smithsonian Volcano Number",
+            "description": "Select a related identifier from the dropdown",
             "properties": {
               "scheme": {
                 "type": "string",
@@ -147,6 +149,7 @@
           {
             "type": "object",
             "title": "Cruise DOI",
+            "description": "Select a related identifier from the dropdown",
             "properties": {
               "scheme": {
                 "type": "string",
