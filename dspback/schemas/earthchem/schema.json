@@ -186,7 +186,7 @@
     "leadAuthor": {
       "$ref": "#/definitions/LeadAuthor"
     },
-    "creators": {
+    "contributors": {
       "title": "Co-Authors",
       "type": "array",
       "maxItems": 3,
@@ -466,6 +466,13 @@
       "type": "object",
       "title": "Co-Author",
       "properties": {
+        "type": {
+          "type": "string",
+          "readOnly": true,
+          "const": "coAuthor",
+          "default": "coAuthor",
+          "options": { "hidden": true }
+        },
         "givenName": {
           "title": "First Name",
           "type": "string"
@@ -495,6 +502,13 @@
     "LeadAuthor": {
       "type": "object",
       "properties": {
+        "type": {
+          "type": "string",
+          "readOnly": true,
+          "default": "leadAuthor",
+          "const": "leadAuthor",
+          "options": { "hidden": true }
+        },
         "givenName": {
           "title": "First Name",
           "type": "string"

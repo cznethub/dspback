@@ -87,6 +87,7 @@
             },
             {
               "type": "Control",
+              "options": { "useTableLayout": true },
               "scope": "#/properties/identifiers"
             }
           ]
@@ -95,7 +96,7 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/creators",
+      "scope": "#/properties/contributors",
       "options": {
         "showSortButtons": true,
         "restrict": true,
@@ -127,6 +128,7 @@
             },
             {
               "type": "Control",
+              "options": { "useTableLayout": true },
               "scope": "#/properties/identifiers"
             }
           ]
