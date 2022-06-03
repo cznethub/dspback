@@ -5,6 +5,7 @@ import requests
 from fastapi import Depends, HTTPException
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
+from minio import Minio
 from requests import Session
 from starlette.responses import JSONResponse
 
@@ -440,6 +441,16 @@ class ExternalMetadataRoutes(MetadataRoutes):
     async def create_metadata_repository(self, metadata: request_model):
         metadata.identifier = str(uuid.uuid4())
         metadata_json = json.loads(metadata.json())
+        client = Minio(
+            "play.min.io",
+            access_key="Q3AM3UQ867SPQQA43P2F",
+            secret_key="zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG",
+        )
+        client.make_bucket(metadata.identifier)
+        fp = open('test.txt', 'w')
+        fp.write(metadata.json(indent=2))
+        fp.close()
+        client.fput_object(metadata.identifier, ".hs/aggregations.json", 'test.txt')
         metadata_json = await self.submit(metadata.identifier, metadata_json)
         return JSONResponse(metadata_json, status_code=201)
 
@@ -452,6 +463,15 @@ class ExternalMetadataRoutes(MetadataRoutes):
         description="update an external record along with the submission record.",
     )
     async def update_metadata(self, metadata: request_model, identifier):
+        client = Minio(
+            "play.min.io",
+            access_key="Q3AM3UQ867SPQQA43P2F",
+            secret_key="zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG",
+        )
+        fp = open('test.txt', 'w')
+        fp.write(metadata.json(indent=2))
+        fp.close()
+        client.fput_object(metadata.identifier, ".hs/aggregations.json", 'test.txt')
         return await self.submit(identifier, metadata.dict())
 
     @router.get(
@@ -463,10 +483,14 @@ class ExternalMetadataRoutes(MetadataRoutes):
         description="Get an external record along with the submission record.",
     )
     async def get_metadata_repository(self, identifier):
-        submission = self.user.submission(self.db, identifier)
-        metadata_json_str = submission.metadata_json
-        metadata_json = json.loads(metadata_json_str)
-        return metadata_json
+        client = Minio(
+            "play.min.io",
+            access_key="Q3AM3UQ867SPQQA43P2F",
+            secret_key="zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG",
+        )
+        client.fget_object(identifier, ".hs/aggregations.json", 'test.txt')
+        with open('test.txt', 'r') as f:
+            return json.loads(f.read())
 
     @router.delete(
         '/metadata/external/{identifier}',
