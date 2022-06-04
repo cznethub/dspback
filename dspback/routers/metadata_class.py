@@ -105,7 +105,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         from hsclient import HydroShare
         from dspback.config import Settings, get_settings
         settings: Settings = get_settings()
-        hs = HydroShare(client_id=settings.hydroshare_client_id, token={"access_token": self.access_token, "token_type": "Bearer"})
+        hs = HydroShare(host="beta.hydroshare.org", client_id=settings.hydroshare_client_id, token={"access_token": self.access_token, "token_type": "Bearer"})
         res = hs.resource(resource_id=identifier)
         aggregations, files = parse_aggregations_and_files(res, {}, {}, identifier)
 
@@ -139,6 +139,22 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         if identifier not in mem_db:
             await self._retrieve_metadata_from_repository(identifier)
         return mem_db[identifier]
+
+    @router.get(
+        '/metadata/hydroshare',
+        tags=["HydroShare"],
+        summary="Get a HydroShare my-resource",
+        description="Retrieves the metadata for the HydroShare resource.",
+    )
+    async def get_my_resources(self):
+        from hsclient import HydroShare
+        from dspback.config import Settings, get_settings
+        settings: Settings = get_settings()
+        hs = HydroShare(host="beta.hydroshare.org", client_id=settings.hydroshare_client_id, token={"access_token": self.access_token, "token_type": "Bearer"})
+        user_info = hs.my_user_info()
+        user_id = user_info["email"]
+        my_resources = [res for res in hs.search(owner=user_id)]
+        return my_resources
 
 
 @cbv(router)
