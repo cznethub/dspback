@@ -73,6 +73,11 @@ class MetadataRoutes:
 
 def parse_aggregations_and_files(agg, agg_dict, files_dict, id):
     md = agg.metadata.dict()
+    if "additional_metadata" in md:
+        # TODO add the key/value list to the hsmodels schema.
+        # add the response models back to the routes once hsmodels is updated.
+        as_dict = md["additional_metadata"]
+        md["additional_metadata"] = [{"key": key, "value": value} for key, value in as_dict.items()]
 
     files = {}
     for file in agg.files():
