@@ -344,8 +344,15 @@
         },
         "orcid": {
           "title": "ORCID",
+          "description": "ORCID identifier for creator.",
           "type": "string",
-          "description": "ORCID identifier for creator."
+          "pattern": "(\\d{4}-){3}\\d{4}",
+          "options": {
+            "placeholder": "e.g. '0000-0001-2345-6789'"
+          },
+          "errorMessage": {
+            "pattern": "must match the ORCID pattern. e.g. '0000-0001-2345-6789'"
+          }
         }
       },
       "required": [
@@ -378,8 +385,15 @@
         },
         "orcid": {
           "title": "ORCID",
+          "description": "ORCID identifier for contributor.",
           "type": "string",
-          "description": "ORCID identifier for creator."
+          "pattern": "(\\d{4}-){3}\\d{4}",
+          "options": {
+            "placeholder": "e.g. '0000-0001-2345-6789'"
+          },
+          "errorMessage": {
+            "pattern": "must match the ORCID pattern. e.g. '0000-0001-2345-6789'"
+          }
         }
       },
       "required": [

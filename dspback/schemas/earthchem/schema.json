@@ -288,59 +288,28 @@
             "title": "NSF",
             "properties": {
               "identifier": {
-                "type": "string"
+                "type": "string",
+                "title": "Award Number"
               },
               "funder": {
                 "title": "Funder",
                 "description": "A person or organization that provides money for a particular purpose",
                 "type": "object",
+                "options": { "hidden": true },
+                "default": { "name": "National Science Foundation", "alternateName": "NSF" },
+                "const": { "name": "National Science Foundation", "alternateName": "NSF" },
+                "readOnly": true,
                 "properties": {
                   "name": {
-                    "type": "string",
-                    "readOnly": true,
-                    "default": "National Science Foundation"
+                    "type": "string"
                   },
                   "alternateName": {
-                    "type": "string",
-                    "readOnly": true,
-                    "default": "NSF"
-                  },
-                  "identifiers": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "required": [
-                        "scheme",
-                        "schemeURI",
-                        "identifier",
-                        "url"
-                      ],
-                      "properties": {
-                        "scheme": {
-                          "description": "Persistant identifier scheme",
-                          "type": "string"
-                        },
-                        "schemeURI": {
-                          "description": "URL of the scheme",
-                          "type": "string"
-                        },
-                        "identifier": {
-                          "description": "Identifier for the funder under specific scheme",
-                          "type": "string"
-                        },
-                        "url": {
-                          "description": "URL for the funder under specific scheme",
-                          "type": "string",
-                          "default": "https://ror.org/021nxhr62"
-                        }
-                      }
-                    }
+                    "type": "string"
                   }
                 },
                 "required": [
                   "name",
-                  "alternateName",
-                  "identifiers"
+                  "alternateName"
                 ]
               },
               "url": {
@@ -348,7 +317,9 @@
                 "type": "string",
                 "format": "uri",
                 "readOnly": true,
-                "default": "https://ror.org/021nxhr62"
+                "default": "https://ror.org/021nxhr62",
+                "const": "https://ror.org/021nxhr62",
+                "options": { "hidden": true }
               }
             },
             "required": [
