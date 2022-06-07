@@ -26,6 +26,7 @@
       "type": "Control",
       "scope": "#/properties/creators",
       "options": {
+        "elementLabelProp": ["name"],
         "detail": {
           "type": "VerticalLayout",
           "elements": [
@@ -76,6 +77,7 @@
       "type": "Control",
       "scope": "#/properties/contributors",
       "options": {
+        "elementLabelProp": ["name"],
         "detail": {
           "type": "VerticalLayout",
           "elements": [
@@ -172,6 +174,7 @@
       "type": "Control",
       "scope": "#/properties/awards",
       "options": {
+        "elementLabelProp": ["funding_agency_name"],
         "detail": {
           "type": "VerticalLayout",
           "elements": [

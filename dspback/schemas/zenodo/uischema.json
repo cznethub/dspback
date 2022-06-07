@@ -48,11 +48,17 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/creators"
+      "scope": "#/properties/creators",
+      "options": {
+        "elementLabelProp": ["name"]
+      }
     },
     {
       "type": "Control",
-      "scope": "#/properties/contributors"
+      "scope": "#/properties/contributors",
+      "options": {
+        "elementLabelProp": ["name"]
+      }
     },
     {
       "type": "Group",

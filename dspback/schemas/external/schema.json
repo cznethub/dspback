@@ -96,28 +96,22 @@
         "type": "object",
         "properties": {
           "type": {
-            "title": "Relation type",
-            "description": "The type of relationship with the related resource",
-            "allOf": [
-              {
-                "title": "Relation Type",
-                "description": "The type of relationship that exists between the describe resource and a related resource.",
-                "enum": [
-                  "The content of this resource can be executed by",
-                  "The content of this resource was created by a related App or software program",
-                  "This resource is described by",
-                  "This resource conforms to established standard described by",
-                  "This resource has another resource in another format",
-                  "This resource is a different format of",
-                  "This resource is required by",
-                  "This resource requires",
-                  "This resource is referenced by",
-                  "The content of this resource references",
-                  "The content of this resource is derived from"
-                ],
-                "type": "string"
-              }
-            ]
+            "title": "Relation Type",
+            "description": "The type of relationship that exists between the describe resource and a related resource.",
+            "enum": [
+              "The content of this resource can be executed by",
+              "The content of this resource was created by a related App or software program",
+              "This resource is described by",
+              "This resource conforms to established standard described by",
+              "This resource has another resource in another format",
+              "This resource is a different format of",
+              "This resource is required by",
+              "This resource requires",
+              "This resource is referenced by",
+              "The content of this resource references",
+              "The content of this resource is derived from"
+            ],
+            "type": "string"
           },
           "value": {
             "title": "Value",
