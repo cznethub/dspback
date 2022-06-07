@@ -51,6 +51,7 @@
       "type": "Control",
       "scope": "#/properties/creators",
       "options": {
+        "elementLabelProp": ["name"],
         "detail": {
           "type": "VerticalLayout",
           "elements": [
@@ -88,6 +89,7 @@
       "type": "Control",
       "scope": "#/properties/contributors",
       "options": {
+        "elementLabelProp": ["name"],
         "detail": {
           "type": "VerticalLayout",
           "elements": [
@@ -137,7 +139,10 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/funders"
+      "scope": "#/properties/funders",
+      "options": {
+        "elementLabelProp": ["fundingAgency"]
+      }
     },
     {
       "type": "Control",
@@ -149,7 +154,10 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/notes"
+      "scope": "#/properties/notes",
+      "options": {
+        "multi": true
+      }
     }
   ]
 }

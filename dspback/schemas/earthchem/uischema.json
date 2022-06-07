@@ -87,7 +87,8 @@
             },
             {
               "type": "Control",
-              "scope": "#/properties/identifiers"
+              "scope": "#/properties/identifiers",
+              "options": { "useTableLayout": true }
             }
           ]
         }
@@ -99,7 +100,7 @@
       "options": {
         "showSortButtons": true,
         "restrict": true,
-        "elementLabelProp": "givenName",
+        "elementLabelProp": ["givenName", "additionalName", "familyName"],
         "detail": {
           "type": "VerticalLayout",
           "elements": [
@@ -127,7 +128,8 @@
             },
             {
               "type": "Control",
-              "scope": "#/properties/identifiers"
+              "scope": "#/properties/identifiers",
+              "options": { "useTableLayout": true }
             }
           ]
         }
