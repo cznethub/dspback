@@ -54,7 +54,7 @@ async def get_access_token(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     expiration_buffer = timedelta(seconds=settings.access_token_expiration_buffer_seconds)
     now = datetime.utcnow()
-    if repository_token.expires_at > now - expiration_buffer:
+    if repository_token.expires_at < int((now - expiration_buffer).timestamp()):
         delete_repository_access_token(db, repository, user)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return repository_token

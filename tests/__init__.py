@@ -1,6 +1,7 @@
 import json
 import os
 import secrets
+from datetime import datetime, timedelta
 from unittest.mock import patch
 
 import pytest
@@ -32,7 +33,7 @@ def authorize_response():
         'WyAf34ZI0ej8WyTPuRpQ0FFXplw1-KE1HO6qCcW137EW7gVjnzqI3cZuIw8BjQfr9fDx5kxSE6kzzYioEymOsTg5HGCPd9A9dT'
         'kaheGByOu9Ae188A4r0QEQQvtnfBNjv7sM4goQRHLmSL1cIkWEXgomNDZvMTXWx6Nwp0riT8wJ26qEbYwo3LSqpqFGlItx5j7N'
         'LSGfZ1DKb96HRlmuxbqHydLMQfAPrUMyqL3Kg',
-        'expires_at': 2258195007,
+        'expires_at': int((timedelta(seconds=70) + datetime.utcnow()).timestamp()),
     }
 
 
