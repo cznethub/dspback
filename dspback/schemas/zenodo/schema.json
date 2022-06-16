@@ -181,12 +181,12 @@
           "description": "A string containing the name of the funding agency or organization",
           "type": "string"
         },
-        "title": {
+        "award_title": {
           "title": "Award title",
           "description": "A string containing the title of the project or award",
           "type": "string"
         },
-        "number": {
+        "award_number": {
           "title": "Award number",
           "description": "A string containing the award number or other identifier",
           "type": "string"
