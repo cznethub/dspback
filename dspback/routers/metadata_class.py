@@ -172,12 +172,12 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         description="Deletes the HydroShare resource along with the submission record.",
     )
     async def delete_metadata_repository(self, identifier):
+        delete_submission(self.db, self.repository_type, identifier, self.user)
+
         response = requests.delete(self.delete_url % identifier, params={"access_token": self.access_token})
 
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
-
-        delete_submission(self.db, self.repository_type, identifier, self.user)
 
     @router.put(
         '/submit/hydroshare/{identifier}',

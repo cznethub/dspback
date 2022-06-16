@@ -6,13 +6,13 @@ from fastapi.testclient import TestClient
 
 from dspback.dependencies import url_for
 from dspback.main import app
-from tests import authorize_response, prefix
+from tests import authorize_response
 
 client = TestClient(app)
 
 
-def test_home_not_logged_in():
-    response = client.get(prefix)
+def test_submissions_not_logged_in():
+    response = client.get(url_for(client, "get_urls", repository="hydroshare"))
     assert response.status_code == 403
     assert response.json() == {"detail": "Not authenticated"}
 
@@ -42,11 +42,11 @@ def test_logout(authorize_response):
     with patch.object(StarletteRemoteApp, 'authorize_access_token', side_effect=[authorize_response]):
         login_response = client.get(url_for(client, 'auth'), allow_redirects=False)
 
-    logged_in_response = client.get(url_for(client, 'home'), allow_redirects=False)
+    logged_in_response = client.get(url_for(client, "get_urls", repository="hydroshare"), allow_redirects=False)
     assert len(logged_in_response.text) is 30
 
     logout_response = client.get(url_for(client, 'logout'), allow_redirects=False)
     assert 'Authorization=""' not in logout_response.headers["set-cookie"]
 
-    logged_out_response = client.get(url_for(client, 'home'), allow_redirects=False)
+    logged_out_response = client.get(url_for(client, "get_urls", repository="hydroshare"), allow_redirects=False)
     assert logged_out_response.status_code == 403
