@@ -283,13 +283,19 @@
           "title": "Phone",
           "description": "A string containing a phone number for the creator",
           "maxLength": 25,
-          "type": "string"
+          "type": "string",
+          "options": {
+            "placeholder": "Phone: e.g., (435) 797-2946"
+          }
         },
         "address": {
           "title": "Address",
           "description": "A string containing an address for the creator",
           "maxLength": 250,
-          "type": "string"
+          "type": "string",
+          "options": {
+            "placeholder": "e.g., 8200 Old Main Hill, Logan, UT 84322-8200"
+          }
         },
         "organization": {
           "title": "Organization",
@@ -327,21 +333,34 @@
         "name": {
           "title": "Name",
           "description": "A string containing the name of the contributor",
-          "type": "string"
+          "type": "string",
+          "maxLength": 100,
+          "options": {
+            "placeholder": "e.g. 'Horsburgh, Jeffery S.'"
+          }
         },
         "phone": {
           "title": "Phone",
           "description": "A string containing a phone number for the contributor",
-          "type": "string"
+          "maxLength": 25,
+          "type": "string",
+          "options": {
+            "placeholder": "Phone: e.g., (435) 797-2946"
+          }
         },
         "address": {
           "title": "Address",
           "description": "A string containing an address for the contributor",
-          "type": "string"
+          "maxLength": 250,
+          "type": "string",
+          "options": {
+            "placeholder": "e.g., 8200 Old Main Hill, Logan, UT 84322-8200"
+          }
         },
         "organization": {
           "title": "Organization",
           "description": "A string containing the name of the organization with which the contributor is affiliated",
+          "maxLength": 200,
           "type": "string",
           "options": {
             "placeholder": "e.g. 'Utah State University'"
