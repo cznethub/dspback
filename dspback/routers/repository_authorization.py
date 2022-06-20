@@ -56,7 +56,10 @@ async def get_access_token(
     db: Session = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ):
-    repository_token = await get_current_repository_token(request, repository, user, db, settings)
+    try:
+        repository_token = await get_current_repository_token(request, repository, user, db, settings)
+    except HTTPException as http_exception:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=http_exception.detail)
     return {"access_token": repository_token.access_token}
 
 

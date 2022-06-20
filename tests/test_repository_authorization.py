@@ -34,7 +34,7 @@ def test_auth_repository(user_cookie, authorize_response):
 
 def test_get_access_token_not_found(user_cookie):
     response = client.get(prefix + "/access_token/zenodo?access_token=" + user_cookie, allow_redirects=False)
-    assert response.status_code == 403
+    assert response.status_code == 404
 
 
 def test_get_access_token(user_cookie, authorize_response):
@@ -51,4 +51,4 @@ def test_get_access_token_expired(user_cookie, authorize_response_expired):
         response = client.get(prefix + "/auth/zenodo?access_token=" + user_cookie, allow_redirects=False)
 
     response = client.get(prefix + "/access_token/zenodo?access_token=" + user_cookie, allow_redirects=False)
-    assert response.status_code == 403
+    assert response.status_code == 404
