@@ -11,8 +11,9 @@ from sqlalchemy.orm import Session
 from starlette import status
 from starlette.status import HTTP_403_FORBIDDEN
 
-from dspback.config import get_settings
+from dspback.config import Settings, get_settings, oauth
 from dspback.database.models import RepositoryTokenTable, UserTable
+from dspback.database.procedures import delete_repository_access_token
 from dspback.pydantic_schemas import ORCIDResponse, RepositoryToken, RepositoryType, TokenData
 
 
@@ -140,12 +141,11 @@ async def create_or_update_repository_token(db, user: UserTable, repository, tok
 
 
 def create_repository_token(repository: str, db: Session, user: UserTable, repository_response) -> RepositoryTokenTable:
-    # zenodo does not have a refresh_token apparently
     db_repository = RepositoryTokenTable(
         type=repository,
         access_token=repository_response['access_token'],
         user_id=user.id,
-        # refresh_token=repository_response['access_token'],
+        refresh_token=repository_response.get('refresh_token', None),
         expires_in=repository_response.get('expires_in', None),
         expires_at=repository_response.get('expires_at', None),
     )
@@ -159,10 +159,9 @@ def update_repository_token(
     db: Session, db_repository: RepositoryTokenTable, repository_response
 ) -> RepositoryTokenTable:
     db_repository.access_token = repository_response['access_token']
-    # db_repository.refresh_token = repository_response['refresh_token']
+    db_repository.refresh_token = repository_response.get('refresh_token', None)
     db_repository.expires_in = repository_response.get('expires_in', None)
     db_repository.expires_at = repository_response.get('expires_at', None)
-    # db_repository.refresh_token = repository_response['refresh_token']
     db.add(db_repository)
     db.commit()
     db.refresh(db_repository)
@@ -213,3 +212,29 @@ async def get_current_user(
     if not user.access_token or user.access_token != token:
         raise credentials_exception
     return user
+
+
+async def get_current_repository_token(
+    request: Request,
+    repository: RepositoryType,
+    user: UserTable = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    settings: Settings = Depends(get_settings),
+) -> RepositoryToken:
+    repository_token: RepositoryToken = user.repository_token(db, repository)
+    if not repository_token:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    expiration_buffer: int = settings.access_token_expiration_buffer_seconds
+    now = int(datetime.utcnow().timestamp())
+
+    if now > repository_token.expires_at:
+        delete_repository_access_token(db, repository, user)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if now > repository_token.expires_at - expiration_buffer:
+        if repository_token.refresh_token:
+            client = getattr(oauth, repository)
+            repository_token = await client.authorize_access_token(
+                request, grant_type='refresh_token', refresh_token=repository_token.refresh_token
+            )
+            repository_token = await create_or_update_repository_token(db, user, repository, repository_token)
+    return repository_token

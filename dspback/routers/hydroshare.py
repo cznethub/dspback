@@ -1,7 +1,7 @@
 import json
 
 import requests
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
 from starlette.responses import JSONResponse
@@ -29,10 +29,11 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         summary="Create a HydroShare resource",
         description="Validates the incoming metadata, creates a new HydroShare resource and creates a submission record.",
     )
-    async def create_metadata_repository(self, metadata: request_model):
+    async def create_metadata_repository(self, request: Request, metadata: request_model):
+        access_token = await self.access_token(request)
         response = requests.post(
             self.create_url,
-            params={"access_token": self.access_token},
+            params={"access_token": access_token},
             headers={"Content-Type": "application/json"},
             timeout=15.0,
         )
@@ -54,16 +55,17 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         summary="Update a HydroShare resource",
         description="Validates the incoming metadata and updates the HydroShare resource associated with the provided identifier.",
     )
-    async def update_metadata(self, metadata: request_model, identifier):
+    async def update_metadata(self, request: Request, metadata: request_model, identifier):
         from dspback.schemas.hydroshare.model import License
 
         if isinstance(metadata.rights, License):
             metadata.rights = metadata.rights.as_rights()
+        access_token = await self.access_token(request)
         response = requests.put(
             self.update_url % identifier,
             data=metadata.json(skip_defaults=True),
             headers={"Content-Type": "application/json"},
-            params={"access_token": self.access_token},
+            params={"access_token": access_token},
         )
 
         if response.status_code >= 300:
@@ -72,8 +74,9 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         json_metadata = await self.submit(identifier)
         return json_metadata
 
-    async def _retrieve_metadata_from_repository(self, identifier):
-        response = requests.get(self.read_url % identifier, params={"access_token": self.access_token})
+    async def _retrieve_metadata_from_repository(self, request: Request, identifier):
+        access_token = await self.access_token(request)
+        response = requests.get(self.read_url % identifier, params={"access_token": access_token})
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
@@ -101,8 +104,8 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         summary="Get a HydroShare resource",
         description="Retrieves the metadata for the HydroShare resource.",
     )
-    async def get_metadata_repository(self, identifier):
-        json_metadata = await self._retrieve_metadata_from_repository(identifier)
+    async def get_metadata_repository(self, request: Request, identifier):
+        json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
         await self.submit(identifier=identifier, json_metadata=json_metadata)
         return json_metadata
 
@@ -112,10 +115,11 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         summary="Delete a HydroShare resource",
         description="Deletes the HydroShare resource along with the submission record.",
     )
-    async def delete_metadata_repository(self, identifier):
+    async def delete_metadata_repository(self, request: Request, identifier):
         delete_submission(self.db, self.repository_type, identifier, self.user)
 
-        response = requests.delete(self.delete_url % identifier, params={"access_token": self.access_token})
+        access_token = await self.access_token(request)
+        response = requests.delete(self.delete_url % identifier, params={"access_token": access_token})
 
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
