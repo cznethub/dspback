@@ -1,6 +1,7 @@
 import json
 import uuid
 
+from fastapi import Request
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
 from starlette.responses import JSONResponse
@@ -28,10 +29,10 @@ class ExternalMetadataRoutes(MetadataRoutes):
         summary="Create an external record",
         description="Create an external record along with the submission record.",
     )
-    async def create_metadata_repository(self, metadata: request_model):
+    async def create_metadata_repository(self, request: Request, metadata: request_model):
         metadata.identifier = str(uuid.uuid4())
         metadata_json = json.loads(metadata.json())
-        metadata_json = await self.submit(metadata.identifier, metadata_json)
+        metadata_json = await self.submit(request, metadata.identifier, metadata_json)
         return JSONResponse(metadata_json, status_code=201)
 
     @router.put(
@@ -42,8 +43,8 @@ class ExternalMetadataRoutes(MetadataRoutes):
         summary="Update an external record",
         description="update an external record along with the submission record.",
     )
-    async def update_metadata(self, metadata: request_model, identifier):
-        return await self.submit(identifier, metadata.dict())
+    async def update_metadata(self, request: Request, metadata: request_model, identifier):
+        return await self.submit(request, identifier, metadata.dict())
 
     @router.get(
         '/metadata/external/{identifier}',

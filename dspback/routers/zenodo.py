@@ -160,7 +160,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
     )
     async def get_metadata_repository(self, request: Request, identifier):
         json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
-        await self.submit(identifier=identifier, json_metadata=json_metadata)
+        await self.submit(request, identifier=identifier, json_metadata=json_metadata)
         json_metadata = from_zenodo_format(json_metadata)
 
         return json_metadata

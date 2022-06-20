@@ -40,7 +40,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
         identifier = response.json()["id"]
-        json_metadata = await self.update_metadata(metadata, identifier)
+        json_metadata = await self.update_metadata(request, metadata, identifier)
 
         return JSONResponse(json_metadata, status_code=201)
 
@@ -96,7 +96,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
     @router.get('/metadata/earthchem/{identifier}', tags=["EarthChem"])
     async def get_metadata_repository(self, request: Request, identifier) -> response_model:
         json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
-        await self.submit(identifier=identifier, json_metadata=json_metadata)
+        await self.submit(request, identifier=identifier, json_metadata=json_metadata)
         return json_metadata
 
     @router.delete('/metadata/earthchem/{identifier}', tags=["EarthChem"])

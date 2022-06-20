@@ -43,7 +43,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
 
         identifier = response.json()["resource_id"]
         # hydroshare doesn't accept all of the metadata on create
-        json_metadata = await self.update_metadata(metadata, identifier)
+        json_metadata = await self.update_metadata(request, metadata, identifier)
 
         return JSONResponse(json_metadata, status_code=201)
 
@@ -71,7 +71,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
-        json_metadata = await self.submit(identifier)
+        json_metadata = await self.submit(request, identifier)
         return json_metadata
 
     async def _retrieve_metadata_from_repository(self, request: Request, identifier):
@@ -106,7 +106,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
     )
     async def get_metadata_repository(self, request: Request, identifier):
         json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
-        await self.submit(identifier=identifier, json_metadata=json_metadata)
+        await self.submit(request, identifier=identifier, json_metadata=json_metadata)
         return json_metadata
 
     @router.delete(

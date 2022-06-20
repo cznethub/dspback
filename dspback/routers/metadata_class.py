@@ -19,9 +19,9 @@ class MetadataRoutes:
     response_model = None
     repository_type = None
 
-    async def submit(self, identifier, json_metadata=None):
+    async def submit(self, request, identifier, json_metadata=None):
         if json_metadata is None:
-            json_metadata = await self._retrieve_metadata_from_repository(identifier)
+            json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
         submit_record(self.db, self.repository_type, identifier, self.user, json_metadata)
         return json_metadata
 
