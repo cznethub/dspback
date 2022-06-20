@@ -223,13 +223,13 @@ async def get_current_repository_token(
 ) -> RepositoryToken:
     repository_token: RepositoryToken = user.repository_token(db, repository)
     if not repository_token:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"User has not authorized with {repository}")
     expiration_buffer: int = settings.access_token_expiration_buffer_seconds
     now = int(datetime.utcnow().timestamp())
 
     if now > repository_token.expires_at:
         delete_repository_access_token(db, repository, user)
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"User token for {repository} has expired")
     if now > repository_token.expires_at - expiration_buffer:
         if repository_token.refresh_token:
             client = getattr(oauth, repository)
