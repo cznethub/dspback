@@ -1,10 +1,10 @@
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 from fastapi_restful.inferring_router import InferringRouter
 from requests import Session
 
-from dspback.config import repository_config
-from dspback.database.models import RepositoryTokenTable, UserTable
-from dspback.dependencies import get_current_user, get_db
+from dspback.config import Settings, get_settings, repository_config
+from dspback.database.models import UserTable
+from dspback.dependencies import get_current_repository_token, get_current_user, get_db
 from dspback.routers.submissions import submit_record
 
 router = InferringRouter()
@@ -13,25 +13,23 @@ router = InferringRouter()
 class MetadataRoutes:
     db: Session = Depends(get_db)
     user: UserTable = Depends(get_current_user)
+    settings: Settings = Depends(get_settings)
 
     request_model = None
     response_model = None
     repository_type = None
 
-    @property
-    def access_token(self):
-        repository_token: RepositoryTokenTable = self.user.repository_token(self.db, self.repository_type)
-        if not repository_token:
-            raise HTTPException(
-                status_code=403, detail=f"User has not authorized permissions with {self.repository_type}"
-            )
-        return repository_token.access_token
-
-    async def submit(self, identifier, json_metadata=None):
+    async def submit(self, request, identifier, json_metadata=None):
         if json_metadata is None:
-            json_metadata = await self._retrieve_metadata_from_repository(identifier)
+            json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
         submit_record(self.db, self.repository_type, identifier, self.user, json_metadata)
         return json_metadata
+
+    async def access_token(self, request):
+        repository_token = await get_current_repository_token(
+            request, self.repository_type, self.user, self.db, self.settings
+        )
+        return repository_token.access_token
 
     def __init__(self):
         if self.request_model is None:

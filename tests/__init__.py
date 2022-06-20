@@ -33,7 +33,7 @@ def authorize_response():
         'WyAf34ZI0ej8WyTPuRpQ0FFXplw1-KE1HO6qCcW137EW7gVjnzqI3cZuIw8BjQfr9fDx5kxSE6kzzYioEymOsTg5HGCPd9A9dT'
         'kaheGByOu9Ae188A4r0QEQQvtnfBNjv7sM4goQRHLmSL1cIkWEXgomNDZvMTXWx6Nwp0riT8wJ26qEbYwo3LSqpqFGlItx5j7N'
         'LSGfZ1DKb96HRlmuxbqHydLMQfAPrUMyqL3Kg',
-        'expires_at': int((timedelta(seconds=-59) + datetime.utcnow()).timestamp()),
+        'expires_at': int(60 * 60 + datetime.utcnow().timestamp()),
     }
 
 
@@ -56,7 +56,7 @@ def authorize_response_expired():
         'WyAf34ZI0ej8WyTPuRpQ0FFXplw1-KE1HO6qCcW137EW7gVjnzqI3cZuIw8BjQfr9fDx5kxSE6kzzYioEymOsTg5HGCPd9A9dT'
         'kaheGByOu9Ae188A4r0QEQQvtnfBNjv7sM4goQRHLmSL1cIkWEXgomNDZvMTXWx6Nwp0riT8wJ26qEbYwo3LSqpqFGlItx5j7N'
         'LSGfZ1DKb96HRlmuxbqHydLMQfAPrUMyqL3Kg',
-        'expires_at': int((timedelta(seconds=-61) + datetime.utcnow()).timestamp()),
+        'expires_at': int(datetime.utcnow().timestamp() - 61 * 60),
     }
 
 

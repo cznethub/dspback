@@ -1,7 +1,7 @@
 import json
 
 import requests
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
 from starlette.responses import JSONResponse
@@ -23,13 +23,14 @@ class EarthChemMetadataRoutes(MetadataRoutes):
     repository_type = RepositoryType.EARTHCHEM
 
     @router.post('/metadata/earthchem', tags=["EarthChem"])
-    async def create_metadata_repository(self, metadata: request_model) -> response_model:
+    async def create_metadata_repository(self, request: Request, metadata: request_model) -> response_model:
+        access_token = await self.access_token(request)
         response = requests.post(
             self.create_url,
             json=json.loads(metadata.json(exclude_none=True)),
             headers={
                 "Content-Type": "application/json",
-                "Authorization": "Bearer " + str(self.access_token),
+                "Authorization": "Bearer " + str(access_token),
                 "accept": "application/json",
             },
             timeout=15.0,
@@ -39,13 +40,13 @@ class EarthChemMetadataRoutes(MetadataRoutes):
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
         identifier = response.json()["id"]
-        json_metadata = await self.update_metadata(metadata, identifier)
+        json_metadata = await self.update_metadata(request, metadata, identifier)
 
         return JSONResponse(json_metadata, status_code=201)
 
     @router.put('/metadata/earthchem/{identifier}', tags=["EarthChem"])
-    async def update_metadata(self, metadata: request_model_update, identifier) -> response_model:
-        existing_metadata = await self.get_metadata_repository(identifier)
+    async def update_metadata(self, request: Request, metadata: request_model_update, identifier) -> response_model:
+        existing_metadata = await self.get_metadata_repository(request, identifier)
         incoming_metadata = metadata.json(skip_defaults=True, exclude_unset=True)
         json_metadata = json.loads(incoming_metadata)
 
@@ -58,22 +59,24 @@ class EarthChemMetadataRoutes(MetadataRoutes):
             creators.insert(0, lead_author)
             merged_metadata["creators"] = creators
 
+        access_token = await self.access_token(request)
         response = requests.put(
             self.update_url % identifier,
             json=merged_metadata,
-            headers={"Content-Type": "application/json", "Authorization": "Bearer " + str(self.access_token)},
+            headers={"Content-Type": "application/json", "Authorization": "Bearer " + str(access_token)},
         )
 
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
         # await self.submit(identifier)
-        return await self.get_metadata_repository(identifier)
+        return await self.get_metadata_repository(request, identifier)
 
-    async def _retrieve_metadata_from_repository(self, identifier):
+    async def _retrieve_metadata_from_repository(self, request: Request, identifier):
+        access_token = await self.access_token(request)
         response = requests.get(
             self.read_url % identifier,
-            headers={"accept": "application/json", "Authorization": "Bearer " + str(self.access_token)},
+            headers={"accept": "application/json", "Authorization": "Bearer " + str(access_token)},
         )
 
         if response.status_code >= 300:
@@ -91,18 +94,19 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         return json_metadata
 
     @router.get('/metadata/earthchem/{identifier}', tags=["EarthChem"])
-    async def get_metadata_repository(self, identifier) -> response_model:
-        json_metadata = await self._retrieve_metadata_from_repository(identifier)
-        await self.submit(identifier=identifier, json_metadata=json_metadata)
+    async def get_metadata_repository(self, request: Request, identifier) -> response_model:
+        json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
+        await self.submit(request, identifier=identifier, json_metadata=json_metadata)
         return json_metadata
 
     @router.delete('/metadata/earthchem/{identifier}', tags=["EarthChem"])
-    async def delete_metadata_repository(self, identifier):
+    async def delete_metadata_repository(self, request: Request, identifier):
         delete_submission(self.db, self.repository_type, identifier, self.user)
 
+        access_token = await self.access_token(request)
         response = requests.delete(
             self.delete_url % str(identifier),
-            headers={"accept": "application/json", "Authorization": "Bearer " + str(self.access_token)},
+            headers={"accept": "application/json", "Authorization": "Bearer " + str(access_token)},
         )
         if response.status_code >= 300:
             raise HTTPException(status_code=response.status_code, detail=response.text)
