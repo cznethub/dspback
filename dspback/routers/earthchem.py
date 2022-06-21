@@ -1,12 +1,13 @@
 import json
 
 import requests
-from fastapi import HTTPException, Request
+from fastapi import Request
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
 from starlette.responses import JSONResponse
 
 from dspback.database.procedures import delete_submission
+from dspback.dependencies import RepositoryException
 from dspback.pydantic_schemas import RepositoryType
 from dspback.routers.metadata_class import MetadataRoutes
 from dspback.schemas.earthchem.model import Record
@@ -37,7 +38,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         )
 
         if response.status_code >= 300:
-            raise HTTPException(status_code=response.status_code, detail=response.text)
+            raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         identifier = response.json()["id"]
         json_metadata = await self.update_metadata(request, metadata, identifier)
@@ -67,7 +68,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         )
 
         if response.status_code >= 300:
-            raise HTTPException(status_code=response.status_code, detail=response.text)
+            raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         # await self.submit(identifier)
         return await self.get_metadata_repository(request, identifier)
@@ -80,7 +81,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         )
 
         if response.status_code >= 300:
-            raise HTTPException(status_code=response.status_code, detail=response.text)
+            raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         # split first creator to leadAuthor
         json_metadata = json.loads(response.text)
@@ -109,7 +110,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
             headers={"accept": "application/json", "Authorization": "Bearer " + str(access_token)},
         )
         if response.status_code >= 300:
-            raise HTTPException(status_code=response.status_code, detail=response.text)
+            raise RepositoryException(status_code=response.status_code, detail=response.text)
 
     @router.put('/submit/earthchem/{identifier}', name="submit", tags=["EarthChem"])
     async def submit_repository_record(self, identifier: str):

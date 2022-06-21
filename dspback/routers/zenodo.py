@@ -1,12 +1,13 @@
 import json
 
 import requests
-from fastapi import HTTPException, Request
+from fastapi import Request
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
 from starlette.responses import JSONResponse
 
 from dspback.database.procedures import delete_submission
+from dspback.dependencies import RepositoryException
 from dspback.pydantic_schemas import RepositoryType, SubmissionBase
 from dspback.routers.metadata_class import MetadataRoutes
 from dspback.schemas.zenodo.model import Notes, ZenodoDatasetsSchemaForCzNetV100
@@ -106,7 +107,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         )
 
         if response.status_code >= 300:
-            raise HTTPException(status_code=response.status_code, detail=response.text)
+            raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         identifier = response.json()["record_id"]
         json_metadata = await self.get_metadata_repository(request, identifier)
@@ -135,7 +136,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         )
 
         if response.status_code >= 300:
-            raise HTTPException(status_code=response.status_code, detail=response.text)
+            raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         # await self.submit(identifier)
         return await self.get_metadata_repository(request, identifier)
@@ -145,7 +146,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         response = requests.get(self.read_url % identifier, params={"access_token": access_token})
 
         if response.status_code >= 300:
-            raise HTTPException(status_code=response.status_code, detail=response.text)
+            raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         json_metadata = json.loads(response.text)
         return json_metadata
@@ -176,7 +177,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         access_token = await self.access_token(request)
         response = requests.delete(self.delete_url % identifier, params={"access_token": access_token})
         if response.status_code >= 300:
-            raise HTTPException(status_code=response.status_code, detail=response.text)
+            raise RepositoryException(status_code=response.status_code, detail=response.text)
 
     @router.put(
         '/submit/zenodo/{identifier}',
