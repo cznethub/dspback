@@ -69,6 +69,7 @@ class Settings(BaseSettings):
     jwt_secret_key: str
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 12 * 60
+    access_token_expiration_buffer_seconds: int = 30 * 60
 
     session_secret_key: str
 
