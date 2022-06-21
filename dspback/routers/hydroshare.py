@@ -1,12 +1,13 @@
 import json
 
 import requests
-from fastapi import HTTPException, Request
+from fastapi import Request
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
 from starlette.responses import JSONResponse
 
 from dspback.database.procedures import delete_submission
+from dspback.dependencies import RepositoryException
 from dspback.pydantic_schemas import RepositoryType, SubmissionBase
 from dspback.routers.metadata_class import MetadataRoutes
 from dspback.schemas.hydroshare.model import ResourceMetadata
@@ -39,7 +40,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         )
 
         if response.status_code >= 300:
-            raise HTTPException(status_code=response.status_code, detail=response.text)
+            raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         identifier = response.json()["resource_id"]
         # hydroshare doesn't accept all of the metadata on create
@@ -69,7 +70,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         )
 
         if response.status_code >= 300:
-            raise HTTPException(status_code=response.status_code, detail=response.text)
+            raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         json_metadata = await self.submit(request, identifier)
         return json_metadata
@@ -78,7 +79,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         access_token = await self.access_token(request)
         response = requests.get(self.read_url % identifier, params={"access_token": access_token})
         if response.status_code >= 300:
-            raise HTTPException(status_code=response.status_code, detail=response.text)
+            raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         json_metadata = json.loads(response.text)
         if "additional_metadata" in json_metadata:
@@ -122,7 +123,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         response = requests.delete(self.delete_url % identifier, params={"access_token": access_token})
 
         if response.status_code >= 300:
-            raise HTTPException(status_code=response.status_code, detail=response.text)
+            raise RepositoryException(status_code=response.status_code, detail=response.text)
 
     @router.put(
         '/submit/hydroshare/{identifier}',

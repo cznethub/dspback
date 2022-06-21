@@ -3,9 +3,11 @@ from fastapi import FastAPI, Request, Response
 from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.responses import PlainTextResponse
 
 from dspback.config import get_settings
 from dspback.database.models import SessionLocal
+from dspback.dependencies import RepositoryException
 from dspback.routers import (
     authentication,
     earthchem,
@@ -30,6 +32,11 @@ app.include_router(zenodo.router, prefix="/api")
 app.include_router(earthchem.router, prefix="/api")
 app.include_router(external.router, prefix="/api")
 app.include_router(submissions.router, prefix="/api", tags=["Submissions"])
+
+
+@app.exception_handler(RepositoryException)
+async def http_exception_handler(request, exc):
+    return PlainTextResponse(f"Repository exception response[{str(exc.detail)}]", status_code=exc.status_code)
 
 
 @app.middleware("http")
