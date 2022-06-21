@@ -17,6 +17,11 @@ from dspback.pydantic_schemas import ORCIDResponse, User
 router = APIRouter()
 
 
+@router.get('/')
+def home(user: UserTable = Depends(get_current_user)):
+    return f"{user.name} is logged in"
+
+
 @router.get('/login')
 async def login(request: Request, window_close: bool = False, settings: Settings = Depends(get_settings)):
     redirect_uri = url_for(request, 'auth')
