@@ -1,7 +1,6 @@
 {
   "title": "Zenodo Datasets Schema for CZ Net v1.0.0",
   "type": "object",
-  "additionalProperties": false,
   "properties": {
     "access_conditions": {
       "title": "Access conditions",
@@ -157,7 +156,7 @@
       "type": "string",
       "format": "date",
       "description": "Embargo date of record (ISO8601 formatted date)",
-      "options": { "placeholder": "YYYY-MM-DD" },
+      "options": { "placeholder": "YYYY-MM-DD", "min": { "amount": 1, "unit": "day" } },
       "if": {
         "properties": {
           "access_right": {

@@ -3,7 +3,6 @@
   "title": "Generic Dataset Schema for CZ Net Data Submission Portal v1.0.0",
   "description": "Metadata for a dataset object submitted to a repository that is not supported by the CZ Hub Data Submission Portal",
   "type": "object",
-  "additionalProperties": false,
   "properties": {
     "name": {
       "title": "Name or title",
@@ -296,19 +295,22 @@
     "dateCreated": {
       "title": "Date created",
       "type": "string",
-      "format": "date-time",
+      "format": "date",
+      "options": { "placeholder": "YYYY-MM-DD" },
       "description": "The date on which the resource was originally created (ISO8601 formatted date) - YYYY-MM-DD."
     },
     "dateModified": {
       "title": "Date modified",
       "type": "string",
-      "format": "date-time",
+      "format": "date",
+      "options": { "placeholder": "YYYY-MM-DD" },
       "description": "The date on which the resource was last modified (ISO8601 formatted date) - YYYY-MM-DD."
     },
     "datePublished": {
       "title": "Date published",
       "type": "string",
-      "format": "date-time",
+      "format": "date",
+      "options": { "placeholder": "YYYY-MM-DD" },
       "description": "The date on which the resource was permanently published (ISO8601 formatted date) - YYYY-MM-DD."
     }
   },
