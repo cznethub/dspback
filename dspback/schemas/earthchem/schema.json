@@ -321,6 +321,276 @@
                 "required": [
                   "identifier"
                 ]
+              },
+              {
+                "type": "object",
+                "title": "Alfred P. Sloan Foundation",
+                "properties": {
+                  "identifier": {
+                    "type": "string",
+                    "title": "Award Number"
+                  },
+                  "funder": {
+                    "type": "object",
+                    "options": { "hidden": true },
+                    "default": { "alternateName": "SLOAN" },
+                    "const": { "alternateName": "SLOAN" },
+                    "properties": {
+                      "alternateName": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "url": {
+                    "type": "string",
+                    "default": "https://ror.org/052csg198",
+                    "const": "https://ror.org/052csg198",
+                    "options": { "hidden": true }
+                  }
+                },
+                "required": [
+                  "identifier"
+                ]
+              },
+              {
+                "type": "object",
+                "title": "U.S. Department of Energy",
+                "properties": {
+                  "identifier": {
+                    "type": "string",
+                    "title": "Award Number"
+                  },
+                  "funder": {
+                    "type": "object",
+                    "options": { "hidden": true },
+                    "default": { "alternateName": "DOE" },
+                    "const": { "alternateName": "DOE" },
+                    "properties": {
+                      "alternateName": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "url": {
+                    "type": "string",
+                    "default": "https://ror.org/01bj3aw27",
+                    "const": "https://ror.org/01bj3aw27",
+                    "options": { "hidden": true }
+                  }
+                },
+                "required": [
+                  "identifier"
+                ]
+              },
+              {
+                "type": "object",
+                "title": "National Aeronautics and Space Administration",
+                "properties": {
+                  "identifier": {
+                    "type": "string",
+                    "title": "Award Number"
+                  },
+                  "funder": {
+                    "type": "object",
+                    "options": { "hidden": true },
+                    "default": { "alternateName": "NASA" },
+                    "const": { "alternateName": "NASA" },
+                    "properties": {
+                      "alternateName": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "url": {
+                    "type": "string",
+                    "default": "https://ror.org/027ka1x80",
+                    "const": "https://ror.org/027ka1x80",
+                    "options": { "hidden": true }
+                  }
+                },
+                "required": [
+                  "identifier"
+                ]
+              },
+              {
+                "type": "object",
+                "title": "European Research Council",
+                "properties": {
+                  "identifier": {
+                    "type": "string",
+                    "title": "Award Number"
+                  },
+                  "funder": {
+                    "type": "object",
+                    "options": { "hidden": true },
+                    "default": { "alternateName": "ERC" },
+                    "const": { "alternateName": "ERC" },
+                    "properties": {
+                      "alternateName": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "url": {
+                    "type": "string",
+                    "default": "https://ror.org/0472cxd90",
+                    "const": "https://ror.org/0472cxd90",
+                    "options": { "hidden": true }
+                  }
+                },
+                "required": [
+                  "identifier"
+                ]
+              },
+              {
+                "type": "object",
+                "title": "Deutsche Forschungsgemeinschaft",
+                "properties": {
+                  "identifier": {
+                    "type": "string",
+                    "title": "Award Number"
+                  },
+                  "funder": {
+                    "type": "object",
+                    "options": { "hidden": true },
+                    "default": { "alternateName": "DFG" },
+                    "const": { "alternateName": "DFG" },
+                    "properties": {
+                      "alternateName": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "url": {
+                    "type": "string",
+                    "default": "https://ror.org/018mejw64",
+                    "const": "https://ror.org/018mejw64",
+                    "options": { "hidden": true }
+                  }
+                },
+                "required": [
+                  "identifier"
+                ]
+              },
+              {
+                "type": "object",
+                "title": "National Natural Science Foundation of China",
+                "properties": {
+                  "identifier": {
+                    "type": "string",
+                    "title": "Award Number"
+                  },
+                  "funder": {
+                    "type": "object",
+                    "options": { "hidden": true },
+                    "default": { "alternateName": "NSFC" },
+                    "const": { "alternateName": "NSFC" },
+                    "properties": {
+                      "alternateName": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "url": {
+                    "type": "string",
+                    "default": "https://ror.org/01h0zpd94",
+                    "const": "https://ror.org/01h0zpd94",
+                    "options": { "hidden": true }
+                  }
+                },
+                "required": [
+                  "identifier"
+                ]
+              },
+              {
+                "type": "object",
+                "title": "Australian Research Council",
+                "properties": {
+                  "identifier": {
+                    "type": "string",
+                    "title": "Award Number"
+                  },
+                  "funder": {
+                    "type": "object",
+                    "options": { "hidden": true },
+                    "default": { "alternateName": "ARC" },
+                    "const": { "alternateName": "ARC" },
+                    "properties": {
+                      "alternateName": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "url": {
+                    "type": "string",
+                    "default": "https://ror.org/05mmh0f86",
+                    "const": "https://ror.org/05mmh0f86",
+                    "options": { "hidden": true }
+                  }
+                },
+                "required": [
+                  "identifier"
+                ]
+              },
+              {
+                "type": "object",
+                "title": "Russian Science Foundation",
+                "properties": {
+                  "identifier": {
+                    "type": "string",
+                    "title": "Award Number"
+                  },
+                  "funder": {
+                    "type": "object",
+                    "options": { "hidden": true },
+                    "default": { "alternateName": "RSCF" },
+                    "const": { "alternateName": "RSCF" },
+                    "properties": {
+                      "alternateName": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "url": {
+                    "type": "string",
+                    "default": "https://ror.org/03y2gwe85",
+                    "const": "https://ror.org/03y2gwe85",
+                    "options": { "hidden": true }
+                  }
+                },
+                "required": [
+                  "identifier"
+                ]
+              },
+              {
+                "type": "object",
+                "title": "Natural Environment Research Council",
+                "properties": {
+                  "identifier": {
+                    "type": "string",
+                    "title": "Award Number"
+                  },
+                  "funder": {
+                    "type": "object",
+                    "options": { "hidden": true },
+                    "default": { "alternateName": "NERC" },
+                    "const": { "alternateName": "NERC" },
+                    "properties": {
+                      "alternateName": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "url": {
+                    "type": "string",
+                    "default": "https://ror.org/02b5d8509",
+                    "const": "https://ror.org/02b5d8509",
+                    "options": { "hidden": true }
+                  }
+                },
+                "required": [
+                  "identifier"
+                ]
               }
             ]
           },
