@@ -284,48 +284,44 @@
         "options": { "flat": true },
         "anyOf": [
           {
-            "type": "object",
-            "title": "NSF",
-            "properties": {
-              "identifier": {
-                "type": "string",
-                "title": "Award Number"
-              },
-              "funder": {
-                "title": "Funder",
-                "description": "A person or organization that provides money for a particular purpose",
+            "title": "Select one",
+            "options": { 
+              "dropdown": true,
+              "flat": true,
+              "title": "Funder",
+              "description": "Name of the agency or organization that funded the creation of the resource"
+            },
+            "anyOf": [
+              {
                 "type": "object",
-                "options": { "hidden": true },
-                "default": { "name": "National Science Foundation", "alternateName": "NSF" },
-                "const": { "name": "National Science Foundation", "alternateName": "NSF" },
-                "readOnly": true,
+                "title": "National Science Foundation",
                 "properties": {
-                  "name": {
-                    "type": "string"
+                  "identifier": {
+                    "type": "string",
+                    "title": "Award Number"
                   },
-                  "alternateName": {
-                    "type": "string"
+                  "funder": {
+                    "type": "object",
+                    "options": { "hidden": true },
+                    "default": { "alternateName": "NSF" },
+                    "const": { "alternateName": "NSF" },
+                    "properties": {
+                      "alternateName": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "url": {
+                    "type": "string",
+                    "default": "https://ror.org/021nxhr62",
+                    "const": "https://ror.org/021nxhr62",
+                    "options": { "hidden": true }
                   }
                 },
                 "required": [
-                  "name",
-                  "alternateName"
+                  "identifier"
                 ]
-              },
-              "url": {
-                "description": "URL for the grant/award",
-                "type": "string",
-                "format": "uri",
-                "readOnly": true,
-                "default": "https://ror.org/021nxhr62",
-                "const": "https://ror.org/021nxhr62",
-                "options": { "hidden": true }
               }
-            },
-            "required": [
-              "identifier",
-              "funder",
-              "url"
             ]
           },
           { 
@@ -333,67 +329,30 @@
             "title": "Other",
             "properties": {
               "identifier": {
-                "type": "string"
+                "type": "string",
+                "title": "Funding Source",
+                "description": "Please enter other funding sources in the format of: Funding Source Name (012345)"
               },
               "funder": {
                 "title": "Funder",
                 "description": "A person or organization that provides money for a particular purpose",
                 "type": "object",
+                "const": { "alternateName": "Other" },
+                "default": { "alternateName": "Other" },
+                "options": { "hidden": true },
                 "properties": {
-                  "name": {
-                    "type": "string"
-                  },
                   "alternateName": {
                     "type": "string"
-                  },
-                  "identifiers": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "required": [
-                        "scheme",
-                        "schemeURI",
-                        "identifier",
-                        "url"
-                      ],
-                      "properties": {
-                        "scheme": {
-                          "description": "Persistant identifier scheme",
-                          "type": "string"
-                        },
-                        "schemeURI": {
-                            "description": "URL of the scheme",
-                            "type": "string"
-                        },
-                        "identifier": {
-                            "description": "Identifier for the funder under specific scheme",
-                            "type": "string"
-                        },
-                        "url": {
-                            "description": "URL for the funder under specific scheme",
-                            "type": "string"
-                        }
-                      },
-                      "title": "Identifier"
-                    }
                   }
                 },
                 "required": [
-                  "name",
-                  "alternateName",
-                  "identifiers"
+                  "alternateName"
                 ]
-              },
-              "url": {
-                "description": "URL for the grant/award",
-                "type": "string",
-                "format": "uri"
               }
             },
             "required": [
               "identifier",
-              "funder",
-              "url"
+              "funder"
             ]
           } 
         ],
