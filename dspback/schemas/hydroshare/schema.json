@@ -111,7 +111,10 @@
             "url"
           ]
         }
-      ]
+      ],
+      "errorMessage": {
+        "anyOf": "selected item is incomplete"
+      }
     },
     "awards": {
       "title": "Funding agency information",
@@ -234,7 +237,10 @@
             "westlimit"
           ]
         }
-      ]
+      ],
+      "errorMessage": {
+        "anyOf": "selected item is incomplete"
+      }
     },
     "period_coverage": {
       "title": "Temporal coverage",

@@ -177,7 +177,10 @@
               }
             }
           }
-        ]
+        ],
+        "errorMessage": {
+          "anyOf": "selected item is incomplete"
+        }
       }
     },
     "leadAuthor": {
@@ -855,7 +858,10 @@
             }
           }
         }
-      ]
+      ],
+      "errorMessage": {
+        "anyOf": "selected item is incomplete"
+      }
     },
     "RecordFile": {
       "type": "object",

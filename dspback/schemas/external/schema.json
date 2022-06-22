@@ -267,7 +267,10 @@
             "westlimit"
           ]
         }
-      ]
+      ],
+      "errorMessage": {
+        "anyOf": "selected item is incomplete"
+      }
     },
     "provider": {
       "title": "Provider",
