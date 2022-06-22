@@ -39,6 +39,7 @@
       "items": {
         "title": "Related Information",
         "options": { "flat": true, "dropdown": true },
+        "required": ["identifier"],
         "anyOf": [
           {
             "type": "object",
@@ -74,8 +75,7 @@
                 "readOnly": true,
                 "options": { "hidden": true }
               }
-            },
-            "required": ["identifier"]
+            }
           },
           {
             "type": "object",
@@ -109,8 +109,7 @@
                 "readOnly": true,
                 "options": { "hidden": true }
               }
-            },
-            "required": ["identifier"]
+            }
           },
           {
             "type": "object",
@@ -143,8 +142,7 @@
                 "readOnly": true,
                 "options": { "hidden": true }
               }
-            },
-            "required": ["identifier"]
+            }
           },
           {
             "type": "object",
@@ -177,8 +175,7 @@
                 "readOnly": true,
                 "options": { "hidden": true }
               }
-            },
-            "required": ["identifier"]
+            }
           }
         ]
       }
