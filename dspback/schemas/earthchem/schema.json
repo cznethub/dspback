@@ -282,6 +282,10 @@
       "items": {
         "title": "Funding Source",
         "options": { "flat": true },
+        "required": [
+          "identifier",
+          "funder"
+        ],
         "anyOf": [
           {
             "title": "Select one",
@@ -317,10 +321,7 @@
                     "const": "https://ror.org/021nxhr62",
                     "options": { "hidden": true }
                   }
-                },
-                "required": [
-                  "identifier"
-                ]
+                }
               },
               {
                 "type": "object",
@@ -347,10 +348,7 @@
                     "const": "https://ror.org/052csg198",
                     "options": { "hidden": true }
                   }
-                },
-                "required": [
-                  "identifier"
-                ]
+                }
               },
               {
                 "type": "object",
@@ -377,10 +375,7 @@
                     "const": "https://ror.org/01bj3aw27",
                     "options": { "hidden": true }
                   }
-                },
-                "required": [
-                  "identifier"
-                ]
+                }
               },
               {
                 "type": "object",
@@ -407,10 +402,7 @@
                     "const": "https://ror.org/027ka1x80",
                     "options": { "hidden": true }
                   }
-                },
-                "required": [
-                  "identifier"
-                ]
+                }
               },
               {
                 "type": "object",
@@ -437,10 +429,7 @@
                     "const": "https://ror.org/0472cxd90",
                     "options": { "hidden": true }
                   }
-                },
-                "required": [
-                  "identifier"
-                ]
+                }
               },
               {
                 "type": "object",
@@ -467,10 +456,7 @@
                     "const": "https://ror.org/018mejw64",
                     "options": { "hidden": true }
                   }
-                },
-                "required": [
-                  "identifier"
-                ]
+                }
               },
               {
                 "type": "object",
@@ -497,10 +483,7 @@
                     "const": "https://ror.org/01h0zpd94",
                     "options": { "hidden": true }
                   }
-                },
-                "required": [
-                  "identifier"
-                ]
+                }
               },
               {
                 "type": "object",
@@ -527,10 +510,7 @@
                     "const": "https://ror.org/05mmh0f86",
                     "options": { "hidden": true }
                   }
-                },
-                "required": [
-                  "identifier"
-                ]
+                }
               },
               {
                 "type": "object",
@@ -557,10 +537,7 @@
                     "const": "https://ror.org/03y2gwe85",
                     "options": { "hidden": true }
                   }
-                },
-                "required": [
-                  "identifier"
-                ]
+                }
               },
               {
                 "type": "object",
@@ -587,10 +564,7 @@
                     "const": "https://ror.org/02b5d8509",
                     "options": { "hidden": true }
                   }
-                },
-                "required": [
-                  "identifier"
-                ]
+                }
               }
             ]
           },
@@ -614,16 +588,9 @@
                   "alternateName": {
                     "type": "string"
                   }
-                },
-                "required": [
-                  "alternateName"
-                ]
+                }
               }
-            },
-            "required": [
-              "identifier",
-              "funder"
-            ]
+            }
           } 
         ],
         "errorMessage": {
