@@ -295,23 +295,23 @@
     "dateCreated": {
       "title": "Date created",
       "type": "string",
-      "format": "date",
-      "options": { "placeholder": "YYYY-MM-DD" },
-      "description": "The date on which the resource was originally created (ISO8601 formatted date) - YYYY-MM-DD."
+      "format": "date-time",
+      "options": { "placeholder": "YYYY-MM-DDTHH:MM" },
+      "description": "The date on which the resource was originally created (ISO8601 formatted date) - YYYY-MM-DDTHH:MM."
     },
     "dateModified": {
       "title": "Date modified",
       "type": "string",
-      "format": "date",
-      "options": { "placeholder": "YYYY-MM-DD" },
-      "description": "The date on which the resource was last modified (ISO8601 formatted date) - YYYY-MM-DD."
+      "format": "date-time",
+      "options": { "placeholder": "YYYY-MM-DDTHH:MM" },
+      "description": "The date on which the resource was last modified (ISO8601 formatted date) - YYYY-MM-DDTHH:MM."
     },
     "datePublished": {
       "title": "Date published",
       "type": "string",
-      "format": "date",
-      "options": { "placeholder": "YYYY-MM-DD" },
-      "description": "The date on which the resource was permanently published (ISO8601 formatted date) - YYYY-MM-DD."
+      "format": "date-time",
+      "options": { "placeholder": "YYYY-MM-DDTHH:MM" },
+      "description": "The date on which the resource was permanently published (ISO8601 formatted date) - YYYY-MM-DDTHH:MM."
     }
   },
   "definitions": {
