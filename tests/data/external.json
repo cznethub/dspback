@@ -10,7 +10,7 @@
       "name": "string",
       "organization": "string",
       "email": "user@example.com",
-      "orcid": "string"
+      "orcid": "0000-0001-2345-6789"
     }
   ],
   "contributors": [
@@ -18,7 +18,7 @@
       "name": "string",
       "organization": "string",
       "email": "user@example.com",
-      "orcid": "string"
+      "orcid": "0000-0001-2345-6789"
     }
   ],
   "license": {
