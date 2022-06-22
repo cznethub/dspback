@@ -10,26 +10,9 @@ from dspback.database.procedures import delete_submission
 from dspback.dependencies import RepositoryException
 from dspback.pydantic_schemas import RepositoryType, SubmissionBase
 from dspback.routers.metadata_class import MetadataRoutes
-from dspback.schemas.zenodo.model import Notes, ZenodoDatasetsSchemaForCzNetV100
+from dspback.schemas.zenodo.model import ZenodoDatasetsSchemaForCzNetV100
 
 router = InferringRouter()
-
-
-def to_notes_format(notes_json):
-    notes = Notes(**notes_json)
-    notes_string = ""
-    if notes.funding_agency_name:
-        notes_string += f"Funding Agency Name: {notes.funding_agency_name}"
-        notes_string += "\n"
-    if notes.award_title:
-        notes_string += f"Award Title: {notes.award_title}"
-        notes_string += "\n"
-    if notes.award_number:
-        notes_string += f"Award Number: {notes.award_number}"
-        notes_string += "\n"
-    if notes.funding_agency_url:
-        notes_string += f"Funding Agency URL: {notes.funding_agency_url}"
-    return notes_string
 
 
 def to_zenodo_format(metadata_json):
@@ -38,34 +21,8 @@ def to_zenodo_format(metadata_json):
     information. Our forms only use properties within the metadata property.
     """
 
-    metadata_json["notes"] = to_notes_format(metadata_json["notes"])
     metadata_json = {"metadata": metadata_json}
     return metadata_json
-
-
-def from_notes_format(notes_string):
-    notes_lines = notes_string.split("\n")
-
-    funding_agency_name = None
-    award_title = None
-    award_number = None
-    funding_agency_url = None
-    for line in notes_lines:
-        if "Funding Agency Name: " in line:
-            funding_agency_name = line.split(": ")[1]
-        if "Award Title: " in line:
-            award_title = line.split(": ")[1]
-        if "Award Number: " in line:
-            award_number = line.split(": ")[1]
-        if "Funding Agency URL: " in line:
-            funding_agency_url = line.split(": ")[1]
-    notes_json = {
-        "funding_agency_name": funding_agency_name,
-        "award_title": award_title,
-        "award_number": award_number,
-        "funding_agency_url": funding_agency_url,
-    }
-    return notes_json
 
 
 def from_zenodo_format(json_metadata):
@@ -74,8 +31,6 @@ def from_zenodo_format(json_metadata):
     information. Our forms only use properties within the metadata property.
     """
     json_metadata = json_metadata["metadata"]
-    if "notes" in json_metadata:
-        json_metadata["notes"] = from_notes_format(json_metadata["notes"])
     return json_metadata
 
 
