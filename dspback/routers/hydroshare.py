@@ -57,10 +57,6 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         description="Validates the incoming metadata and updates the HydroShare resource associated with the provided identifier.",
     )
     async def update_metadata(self, request: Request, metadata: request_model, identifier):
-        from dspback.schemas.hydroshare.model import License
-
-        if isinstance(metadata.rights, License):
-            metadata.rights = metadata.rights.as_rights()
         access_token = await self.access_token(request)
         response = requests.put(
             self.update_url % identifier,
@@ -87,14 +83,6 @@ class HydroShareMetadataRoutes(MetadataRoutes):
             # add the response models back to the routes once hsmodels is updated.
             as_dict = json_metadata["additional_metadata"]
             json_metadata["additional_metadata"] = [{"key": key, "value": value} for key, value in as_dict.items()]
-        if "rights" in json_metadata:
-            rights = json_metadata["rights"]
-            if "statement" in rights:
-                from dspback.schemas.hydroshare.model import License
-
-                license = License.from_statement(rights["statement"])
-                if license:
-                    json_metadata["rights"] = {"license": license}
         return json_metadata
 
     @router.get(
