@@ -150,7 +150,11 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/fundings"
+      "scope": "#/properties/fundings",
+      "options": {
+        "elementLabelProp": "identifier",
+        "childLabelProp": "identifier"
+      }
     },
     {
       "type": "Control",
