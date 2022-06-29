@@ -144,7 +144,8 @@
       "type": "Control",
       "scope": "#/properties/identifiers",
       "options": {
-        "elementLabelProp": "scheme"
+        "elementLabelProp": "scheme",
+        "childLabelProp": "identifier"
       }
     },
     {

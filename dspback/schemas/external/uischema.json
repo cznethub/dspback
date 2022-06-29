@@ -150,7 +150,22 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/provider"
+      "scope": "#/properties/provider",
+      "options": {
+        "detail": {
+          "type": "HorizontalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/name"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/url"
+            }
+          ]
+        }
+      }
     },
     {
       "type": "Control",
