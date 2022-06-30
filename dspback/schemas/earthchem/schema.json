@@ -43,7 +43,7 @@
         "anyOf": [
           {
             "type": "object",
-            "title": "Publication DOI",
+            "title": "(DOI) - Publication DOI",
             "description": "Select a related identifier from the dropdown",
             "properties": {
               "scheme": {
@@ -65,7 +65,7 @@
                 "title": "Publication DOI",
                 "description": "Enter most relevant publication DOI(s). e.g. '10.016/j.epsl.2009.11.018'",
                 "options": {
-                  "placeholder": "e.g. '10.016/j.epsl.2009.11.018''"
+                  "placeholder": "e.g. '10.016/j.epsl.2009.11.018'"
                 }
               },
               "url": {
@@ -79,7 +79,7 @@
           },
           {
             "type": "object",
-            "title": "IGSN",
+            "title": "(IGSN) - International Geo Sample Number",
             "description": "Select a related identifier from the dropdown",
             "properties": {
               "scheme": {
@@ -113,40 +113,7 @@
           },
           {
             "type": "object",
-            "title": "Smithsonian Volcano Number",
-            "description": "Select a related identifier from the dropdown",
-            "properties": {
-              "scheme": {
-                "type": "string",
-                "default": "SVN",
-                "const": "SVN",
-                "readOnly": true,
-                "options": { "hidden": true }
-              },
-              "schemeURI": {
-                "type": "string",
-                "default": "",
-                "const": "",
-                "readOnly": true,
-                "options": { "hidden": true }
-              },
-              "identifier": {
-                "type": "string",
-                "title": "Smithsonian Volcano Number",
-                "description": "Provide volcano numbers corresponding to your sample collection site."
-              },
-              "url": {
-                "type": "string",
-                "default": "",
-                "const": "",
-                "readOnly": true,
-                "options": { "hidden": true }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "title": "Cruise DOI",
+            "title": "(R2R) - Cruise DOI",
             "description": "Select a related identifier from the dropdown",
             "properties": {
               "scheme": {
@@ -167,6 +134,39 @@
                 "type": "string",
                 "title": "Cruise DOI",
                 "description": "Provide Cruise DOIs corresponding to your samples."
+              },
+              "url": {
+                "type": "string",
+                "default": "",
+                "const": "",
+                "readOnly": true,
+                "options": { "hidden": true }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "(SVN) - Smithsonian Volcano Number",
+            "description": "Select a related identifier from the dropdown",
+            "properties": {
+              "scheme": {
+                "type": "string",
+                "default": "SVN",
+                "const": "SVN",
+                "readOnly": true,
+                "options": { "hidden": true }
+              },
+              "schemeURI": {
+                "type": "string",
+                "default": "",
+                "const": "",
+                "readOnly": true,
+                "options": { "hidden": true }
+              },
+              "identifier": {
+                "type": "string",
+                "title": "Smithsonian Volcano Number",
+                "description": "Provide volcano numbers corresponding to your sample collection site."
               },
               "url": {
                 "type": "string",
@@ -661,6 +661,7 @@
     },
     "LeadAuthor": {
       "type": "object",
+      "title": "Lead Author",
       "properties": {
         "givenName": {
           "title": "First Name",
@@ -683,7 +684,6 @@
           "items": { "$ref": "#/definitions/AuthorIdentifier" }
         }
       },
-      "title": "Lead Author",
       "required": [
         "familyName",
         "givenName",
@@ -804,7 +804,7 @@
       "options": { "dropdown": true, "flat": true },
       "anyOf": [
         {
-          "title": "CC-BY-NC-SA-3.0",
+          "title": "(CC-BY-NC-SA-3.0) - Creative Commons Attribution-NonCommercial-Share Alike 3.0 United States",
           "properties": {
             "alternateName": {
               "type": "string",
@@ -815,7 +815,7 @@
           }
         },
         {
-          "title": "CC-BY-4.0",
+          "title": "(CC-BY-4.0) - Creative Commons Attribution 4.0 International",
           "properties": {
             "alternateName": {
               "type": "string",
@@ -826,7 +826,7 @@
           }
         },
         {
-          "title": "CC-BY-SA-4.0",
+          "title": "(CC-BY-SA-4.0) - Creative Commons Attribution-ShareAlike 4.0 International",
           "properties": {
             "alternateName": {
               "type": "string",
@@ -837,7 +837,7 @@
           }
         },
         {
-          "title": "CC-BY-NC-SA-4.0",
+          "title": "(CC-BY-NC-SA-4.0) - Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
           "properties": {
             "alternateName": {
               "type": "string",
@@ -848,7 +848,7 @@
           }
         },
         {
-          "title": "CC0-1.0",
+          "title": "(CC0-1.0) - Creative Commons No Rights Reserved",
           "properties": {
             "alternateName": {
               "type": "string",

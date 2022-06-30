@@ -44,6 +44,7 @@
       "type": "array",
       "description": "Contributors to the resource in order of importance.",
       "uniqueItems": true,
+      "default": [],
       "items": {
         "$ref": "#/definitions/Contributor"
       }
@@ -149,10 +150,31 @@
     "temporalCoverage": {
       "title": "Temporal coverage",
       "description": "The temporal coverage of the resource. The time period that it describes or applies to.",
-      "allOf": [
-        {
-          "$ref": "#/definitions/PeriodCoverage"
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "description": "A string containing a name for the time interval.",
+          "type": "string"
+        },
+        "start": {
+          "title": "Start",
+          "description": "A datetime object containing the instant corresponding to the commencement of the time interval (ISO8601 formatted date) - YYYY-MM-DDTHH:MM.",
+          "type": "string",
+          "format": "date-time",
+          "options": { "placeholder": "YYYY-MM-DDTHH:MM" }
+        },
+        "end": {
+          "title": "End",
+          "description": "A datetime object containing the instant corresponding to the termination of the time interval (ISO8601 formatted date) - YYYY-MM-DDTHH:MM.",
+          "type": "string",
+          "format": "date-time",
+          "options": { "placeholder": "YYYY-MM-DDTHH:MM" }
         }
+      },
+      "required": [
+        "start",
+        "end"
       ]
     },
     "spatialCoverage": {
@@ -275,6 +297,7 @@
     "provider": {
       "title": "Provider",
       "type": "object",
+      "options": { "flat": false },
       "description": "The repository or organization that provides access to the resource.",
       "additionalProperties": false,
       "properties": {
@@ -476,34 +499,6 @@
       "required": [
         "type",
         "value"
-      ]
-    },
-    "PeriodCoverage": {
-      "title": "Period Coverage Metadata",
-      "description": "Temporal coverage metadata for a resource. The time period that it describes or applies to.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "title": "Name",
-          "description": "A string containing a name for the time interval.",
-          "type": "string"
-        },
-        "start": {
-          "title": "Start",
-          "description": "A datetime object containing the instant corresponding to the commencement of the time interval (ISO8601 formatted date) - YYYY-MM-DD.",
-          "type": "string",
-          "format": "date-time"
-        },
-        "end": {
-          "title": "End",
-          "description": "A datetime object containing the instant corresponding to the termination of the time interval (ISO8601 formatted date) - YYYY-MM-DD.",
-          "type": "string",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "start",
-        "end"
       ]
     }
   },

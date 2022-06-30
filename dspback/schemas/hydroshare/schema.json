@@ -70,7 +70,6 @@
         "statement",
         "url"
       ],
-
       "anyOf": [
         {
           "title": "Choose a License",
