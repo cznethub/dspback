@@ -65,7 +65,7 @@
                 "title": "Publication DOI",
                 "description": "Enter most relevant publication DOI(s). e.g. '10.016/j.epsl.2009.11.018'",
                 "options": {
-                  "placeholder": "e.g. '10.016/j.epsl.2009.11.018''"
+                  "placeholder": "e.g. '10.016/j.epsl.2009.11.018'"
                 }
               },
               "url": {
@@ -661,6 +661,7 @@
     },
     "LeadAuthor": {
       "type": "object",
+      "title": "Lead Author",
       "properties": {
         "givenName": {
           "title": "First Name",
@@ -683,7 +684,6 @@
           "items": { "$ref": "#/definitions/AuthorIdentifier" }
         }
       },
-      "title": "Lead Author",
       "required": [
         "familyName",
         "givenName",
