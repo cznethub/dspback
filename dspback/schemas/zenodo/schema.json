@@ -325,15 +325,12 @@
     "references": {
       "title": "References",
       "type": "array",
-      "options": { "delimeter": false },
+      "options": { "delimeter": false, "placeholder": "e.g. 'Cranmer, Kyle et al. (2014). Decouple software associated to arXiv:1401.0080.'" },
       "description": "Raw textual references for related publications and datasets when identifier is not known.",
       "items": {
         "title": "Reference string",
         "type": "string",
-        "description": "A string providing the full reference for the related item.",
-        "options": {
-          "placeholder": "e.g. 'Cranmer, Kyle et al. (2014). Decouple software associated to arXiv:1401.0080.'"
-        }
+        "description": "A string providing the full reference for the related item."
       }
     },
     "related_identifiers": {
