@@ -149,7 +149,8 @@
     "description": {
       "title": "Description/Abstract",
       "type": "string",
-      "description": "Description/abstract for record."
+      "description": "Description/abstract for record.",
+      "options": { "stripHTML": true }
     },
     "embargo_date": {
       "title": "Embargo date",
