@@ -43,6 +43,7 @@
       "type": "array",
       "description": "Contributors in order of importance.",
       "items": {
+        "title": "Contributor",
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -111,6 +112,7 @@
       "type": "array",
       "description": "Creators of record in order of importance.",
       "items": {
+        "title": "Creator",
         "type": "object",
         "additionalProperties": false,
         "properties": {
