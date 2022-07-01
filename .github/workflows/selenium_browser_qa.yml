@@ -56,6 +56,15 @@ jobs:
     #     unzip chromedriver_linux64.zip && chmod +x chromedriver && sudo mv chromedriver /usr/local/bin
     #     chromedriver -version
     #   shell: bash
+
+    - name: Prepare Firefox
+      # uses: browser-actions/setup-firefox@latest
+      run: sudo apt install firefox
+
+      
+    - name: Firefox version
+      run: firefox --version
+
     - name: Geckodriver
       run: sudo apt install firefox-geckodriver
 
@@ -94,7 +103,7 @@ jobs:
       working-directory: QA-AutomationEngine
       # https://dsp-alpha.criticalzone.org/
       run: |
-        ./hydrotest dsp DspHydroshareTestSuite --base https://dsp-alpha.criticalzone.org/ 2>&1 | tee -a output/hydroshare-browser-test-coverage.txt
+        ./hydrotest dsp DspHydroshareTestSuite.test_hs_000001_anon_nav_my_sumissions_shows_orcid --base https://dsp-alpha.criticalzone.org/ 2>&1 | tee -a output/hydroshare-browser-test-coverage.txt
         # ./hydrotest dsp DspExternalTestSuite --browser chrome --base https://localhost 2>&1 | tee -a output/external-browser-test-coverage.txt
         # ./hydrotest dsp DspZenodoTestSuite --browser chrome --base https://localhost 2>&1 | tee -a output/zenodo-browser-test-coverage.txt
         # ./hydrotest dsp DspEarthchemTestSuite --browser chrome --base https://localhost 2>&1 | tee -a output/earthchem-browser-test-coverage.txt
