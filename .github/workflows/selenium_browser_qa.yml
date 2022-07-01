@@ -60,17 +60,6 @@ jobs:
         chromedriver -version
       shell: bash
 
-    # - name: Prepare Firefox
-    #   # uses: browser-actions/setup-firefox@latest
-    #   run: sudo apt install firefox
-
-      
-    # - name: Firefox version
-    #   run: firefox --version
-
-    # - name: Geckodriver
-    #   run: sudo apt install firefox-geckodriver
-
     # - name: Prepare Selenium
     #   uses: nanasess/setup-chromedriver@v1
       # https://github.com/marketplace/actions/setup-chromedriver
@@ -82,34 +71,61 @@ jobs:
     #     chromedriver --url-base=/wd/hub &
     #     # sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & # optional
 
-    # - name: Build containers
-    #   run: make build
+
+
+
+
+    # - name: Prepare Firefox
+    #   # uses: browser-actions/setup-firefox@latest
+    #   run: sudo apt install firefox
+
+    # - name: Firefox version
+    #   run: firefox --version
+
+    # - name: Geckodriver
+    #   run: sudo apt install firefox-geckodriver
+
+
+
+
+
+
+    - name: Build DSPBack
+      run: make build
     
-    # - name: Build containers
-    #   run: make build-dspfront
+    - name: Build DSPFront
+      run: make build-dspfront
 
-    # - name: Startup containers
-    #   run: make up-all-d
+    - name: Startup containers
+      run: make up-all-d
 
-    # - name: Sleep for 10 seconds
-    #   run: sleep 10s
-    #   shell: bash
+    - name: Sleep for 10 seconds
+      run: sleep 10s
+      shell: bash
       
     # - name: Install dependencies
     #   run: make install
 
+
     - name: Create Output Dir
       working-directory: QA-AutomationEngine
       run: mkdir output
-      
+
+
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    
     - name: Run Tests
       working-directory: QA-AutomationEngine
       # https://dsp-alpha.criticalzone.org/
       run: |
-        ./hydrotest dsp DspHydroshareTestSuite.test_hs_000001_anon_nav_my_sumissions_shows_orcid --browser chrome --base https://dsp-alpha.criticalzone.org/ 2>&1 | tee -a output/hydroshare-browser-test-coverage.txt
-        # ./hydrotest dsp DspExternalTestSuite --browser chrome --base https://localhost 2>&1 | tee -a output/external-browser-test-coverage.txt
-        # ./hydrotest dsp DspZenodoTestSuite --browser chrome --base https://localhost 2>&1 | tee -a output/zenodo-browser-test-coverage.txt
-        # ./hydrotest dsp DspEarthchemTestSuite --browser chrome --base https://localhost 2>&1 | tee -a output/earthchem-browser-test-coverage.txt
+        ./hydrotest dsp DspHydroshareTestSuite --browser chrome --base https://localhost 2>&1 | tee -a output/hydroshare-browser-test-coverage.txt
+        ./hydrotest dsp DspExternalTestSuite --browser chrome --base https://localhost 2>&1 | tee -a output/external-browser-test-coverage.txt
+        ./hydrotest dsp DspZenodoTestSuite --browser chrome --base https://localhost 2>&1 | tee -a output/zenodo-browser-test-coverage.txt
+        ./hydrotest dsp DspEarthchemTestSuite --browser chrome --base https://localhost 2>&1 | tee -a output/earthchem-browser-test-coverage.txt
 
     # TODO: does something like this exist for selenium coverage?
     # - name: Comment coverage
