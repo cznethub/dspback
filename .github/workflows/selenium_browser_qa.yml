@@ -26,7 +26,10 @@ jobs:
       with:
         repository: CUAHSI/QA-AutomationEngine
         path: QA-AutomationEngine
-        ref: master
+        # TODO: set this back to master
+        # This is a branch of the QA engine that uses headless and no-sandbox options
+        # https://stackoverflow.com/questions/53073411/selenium-webdriverexceptionchrome-failed-to-start-crashed-as-google-chrome-is
+        ref: sandbox
 
     - name: Set up Python 3.8
       uses: actions/setup-python@v1
