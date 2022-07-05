@@ -69,7 +69,10 @@
           "title": "License URL",
           "type": "string",
           "description": "URL for a page that describes the license for the resource.",
-          "format": "uri"
+          "pattern": "(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})",
+          "errorMessage": {
+            "pattern": "must match format \"url\""
+          }
         }
       },
       "required": [
@@ -139,7 +142,10 @@
     "url": {
       "title": "URL",
       "type": "string",
-      "format": "uri",
+      "pattern": "(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})",
+      "errorMessage": {
+        "pattern": "must match format \"url\""
+      },
       "description": "URL for the landing page that describes the resource and where the content of the resource can be accessed."
     },
     "identifier": {
@@ -310,7 +316,10 @@
           "title": "Provider URL",
           "type": "string",
           "description": "A URL for the repository or organization that provides access to the resource.",
-          "format": "uri"
+          "pattern": "(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})",
+          "errorMessage": {
+            "pattern": "must match format \"url\""
+          }
         }
       },
       "required": [
@@ -448,7 +457,10 @@
           "title": "Award URL",
           "description": "A string containing a URL pointing to a website describing the award or funding agency.",
           "type": "string",
-          "format": "uri"
+          "pattern": "(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})",
+          "errorMessage": {
+            "pattern": "must match format \"url\""
+          }
         }
       },
       "required": [
