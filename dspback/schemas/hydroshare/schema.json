@@ -652,13 +652,15 @@
           "title": "Start",
           "description": "A datetime object containing the instant corresponding to the commencement of the time interval",
           "type": "string",
-          "format": "date-time"
+          "format": "date-time",
+          "options": { "placeholder": "YYYY-MM-DDTHH:MM" }
         },
         "end": {
           "title": "End",
           "description": "A datetime object containing the instant corresponding to the termination of the time interval",
           "type": "string",
-          "format": "date-time"
+          "format": "date-time",
+          "options": { "placeholder": "YYYY-MM-DDTHH:MM" }
         }
       },
       "required": [
