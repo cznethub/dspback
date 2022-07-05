@@ -69,10 +69,7 @@
           "title": "License URL",
           "type": "string",
           "description": "URL for a page that describes the license for the resource.",
-          "pattern": "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$",
-          "errorMessage": {
-            "pattern": "must match format \"url\""
-          }
+          "format": "url"
         }
       },
       "required": [
@@ -142,10 +139,7 @@
     "url": {
       "title": "URL",
       "type": "string",
-      "pattern": "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$",
-      "errorMessage": {
-        "pattern": "must match format \"url\""
-      },
+      "format": "url",
       "description": "URL for the landing page that describes the resource and where the content of the resource can be accessed."
     },
     "identifier": {
@@ -316,10 +310,7 @@
           "title": "Provider URL",
           "type": "string",
           "description": "A URL for the repository or organization that provides access to the resource.",
-          "pattern": "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$",
-          "errorMessage": {
-            "pattern": "must match format \"url\""
-          }
+          "format": "url"
         }
       },
       "required": [
@@ -457,10 +448,7 @@
           "title": "Award URL",
           "description": "A string containing a URL pointing to a website describing the award or funding agency.",
           "type": "string",
-          "pattern": "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$",
-          "errorMessage": {
-            "pattern": "must match format \"url\""
-          }
+          "format": "url"
         }
       },
       "required": [
