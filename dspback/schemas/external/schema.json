@@ -67,9 +67,8 @@
         },
         "url": {
           "title": "License URL",
-          "type": "string",
           "description": "URL for a page that describes the license for the resource.",
-          "format": "url"
+          "$ref": "#/definitions/UrlPattern"
         }
       },
       "required": [
@@ -137,9 +136,8 @@
       "description": "A version tag string for the resource - e.g., v1.0.0. Mostly relevant for software and dataset uploads. Any string will be accepted, but semantically-versioned tag is recommended."
     },
     "url": {
+      "$ref": "#/definitions/UrlPattern",
       "title": "URL",
-      "type": "string",
-      "format": "url",
       "description": "URL for the landing page that describes the resource and where the content of the resource can be accessed."
     },
     "identifier": {
@@ -308,9 +306,8 @@
         },
         "url": {
           "title": "Provider URL",
-          "type": "string",
           "description": "A URL for the repository or organization that provides access to the resource.",
-          "format": "url"
+          "$ref": "#/definitions/UrlPattern"
         }
       },
       "required": [
@@ -447,8 +444,7 @@
         "awardURL": {
           "title": "Award URL",
           "description": "A string containing a URL pointing to a website describing the award or funding agency.",
-          "type": "string",
-          "format": "url"
+          "$ref": "#/definitions/UrlPattern"
         }
       },
       "required": [
@@ -500,6 +496,13 @@
         "type",
         "value"
       ]
+    },
+    "UrlPattern": {
+      "type": "string",
+      "pattern": "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$",
+      "errorMessage": {
+        "pattern": "must match format \"url\""
+      }
     }
   },
   "required": [

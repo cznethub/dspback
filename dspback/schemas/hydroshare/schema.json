@@ -249,8 +249,7 @@
               "description": "An object containing the URL pointing to a description of the license or rights statement",
               "minLength": 1,
               "maxLength": 65536,
-              "format": "url",
-              "type": "string"
+              "$ref": "#/definitions/UrlPattern"
             }
           }
         }
@@ -469,8 +468,7 @@
           "description": "An object containing the URL for website associated with the creator",
           "minLength": 1,
           "maxLength": 2083,
-          "format": "url",
-          "type": "string"
+          "$ref": "#/definitions/UrlPattern"
         }
       }
     },
@@ -529,8 +527,7 @@
           "description": "An object containing the URL for website associated with the contributor",
           "minLength": 1,
           "maxLength": 2083,
-          "format": "url",
-          "type": "string"
+          "$ref": "#/definitions/UrlPattern"
         }
       }
     },
@@ -618,8 +615,7 @@
           "description": "An object containing a URL pointing to a website describing the funding award",
           "minLength": 1,
           "maxLength": 65536,
-          "format": "url",
-          "type": "string"
+          "$ref": "#/definitions/UrlPattern"
         }
       },
       "required": [
@@ -672,14 +668,20 @@
           "description": "An object containing a URL that points to the publisher website",
           "minLength": 1,
           "maxLength": 65536,
-          "format": "url",
-          "type": "string"
+          "$ref": "#/definitions/UrlPattern"
         }
       },
       "required": [
         "name",
         "url"
       ]
+    },
+    "UrlPattern": {
+      "type": "string",
+      "pattern": "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$",
+      "errorMessage": {
+        "pattern": "must match format \"url\""
+      }
     }
   }
 }
