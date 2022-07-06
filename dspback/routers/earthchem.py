@@ -87,6 +87,9 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         json_metadata = json.loads(response.text)
         if "contributors" in json_metadata:
             all_contributors = json_metadata["contributors"]
+            for contributor in json_metadata["contributors"]:
+                if contributor["identifiers"] is None:
+                    contributor["identifiers"] = []
             if len(all_contributors) > 0:
                 lead_author = all_contributors.pop(0)
                 json_metadata["leadAuthor"] = lead_author

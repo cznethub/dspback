@@ -651,7 +651,8 @@
         },
         "identifiers": {
           "type": "array",
-          "items": { "$ref": "#/definitions/AuthorIdentifier" }
+          "items": { "$ref": "#/definitions/AuthorIdentifier" },
+          "default": []
         }
       },
       "required": [
