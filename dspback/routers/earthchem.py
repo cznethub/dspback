@@ -56,7 +56,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         if "leadAuthor" in merged_metadata:
             lead_author = merged_metadata["leadAuthor"]
             del merged_metadata["leadAuthor"]
-            contributors = merged_metadata["contributors"]
+            contributors = merged_metadata.get("contributors", [])
             contributors.insert(0, lead_author)
             merged_metadata["contributors"] = contributors
 
