@@ -186,7 +186,7 @@
     "leadAuthor": {
       "$ref": "#/definitions/LeadAuthor"
     },
-    "creators": {
+    "contributors": {
       "title": "Co-Authors",
       "type": "array",
       "maxItems": 3,
@@ -651,7 +651,8 @@
         },
         "identifiers": {
           "type": "array",
-          "items": { "$ref": "#/definitions/AuthorIdentifier" }
+          "items": { "$ref": "#/definitions/AuthorIdentifier" },
+          "default": []
         }
       },
       "required": [

@@ -93,7 +93,7 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/creators",
+      "scope": "#/properties/contributors",
       "options": {
         "showSortButtons": true,
         "restrict": true,
