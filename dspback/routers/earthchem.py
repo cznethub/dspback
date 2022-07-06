@@ -52,13 +52,13 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         json_metadata = json.loads(incoming_metadata)
 
         merged_metadata = {**existing_metadata, **json_metadata}
-        # join leadAuthor and creators
+        # join leadAuthor and contributors
         if "leadAuthor" in merged_metadata:
             lead_author = merged_metadata["leadAuthor"]
             del merged_metadata["leadAuthor"]
-            creators = merged_metadata["creators"]
-            creators.insert(0, lead_author)
-            merged_metadata["creators"] = creators
+            contributors = merged_metadata["contributors"]
+            contributors.insert(0, lead_author)
+            merged_metadata["contributors"] = contributors
 
         access_token = await self.access_token(request)
         response = requests.put(
@@ -83,14 +83,14 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         if response.status_code >= 300:
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
-        # split first creator to leadAuthor
+        # split first contributors to leadAuthor
         json_metadata = json.loads(response.text)
-        if "creators" in json_metadata:
-            all_creators = json_metadata["creators"]
-            if len(all_creators) > 0:
-                lead_author = all_creators.pop(0)
+        if "contributors" in json_metadata:
+            all_contributors = json_metadata["contributors"]
+            if len(all_contributors) > 0:
+                lead_author = all_contributors.pop(0)
                 json_metadata["leadAuthor"] = lead_author
-                json_metadata["creators"] = all_creators
+                json_metadata["contributors"] = all_contributors
 
         return json_metadata
 
