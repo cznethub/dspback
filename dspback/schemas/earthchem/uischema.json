@@ -137,11 +137,7 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/identifiers",
-      "options": {
-        "elementLabelProp": "scheme",
-        "childLabelProp": "identifier"
-      }
+      "scope": "#/properties/relatedResources"
     },
     {
       "type": "Control",

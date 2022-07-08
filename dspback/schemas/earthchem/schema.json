@@ -33,156 +33,6 @@
       "readOnly": true,
       "options": { "hidden": true }
     },
-    "identifiers": {
-      "title": "Related Information",
-      "type": "array",
-      "items": {
-        "title": "Related Information",
-        "options": { "flat": true, "dropdown": true },
-        "required": ["identifier"],
-        "anyOf": [
-          {
-            "type": "object",
-            "title": "(DOI) - Publication DOI",
-            "description": "Select a related identifier from the dropdown",
-            "properties": {
-              "scheme": {
-                "type": "string",
-                "default": "DOI",
-                "const": "DOI",
-                "readOnly": true,
-                "options": { "hidden": true  }
-              },
-              "schemeURI": {
-                "type": "string",
-                "default": "",
-                "const": "",
-                "readOnly": true,
-                "options": { "hidden": true }
-              },
-              "identifier": {
-                "type": "string",
-                "title": "Publication DOI",
-                "description": "Enter most relevant publication DOI(s). e.g. '10.016/j.epsl.2009.11.018'",
-                "options": {
-                  "placeholder": "e.g. '10.016/j.epsl.2009.11.018'"
-                }
-              },
-              "url": {
-                "type": "string",
-                "default": "",
-                "const": "",
-                "readOnly": true,
-                "options": { "hidden": true }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "title": "(IGSN) - International Geo Sample Number",
-            "description": "Select a related identifier from the dropdown",
-            "properties": {
-              "scheme": {
-                "type": "string",
-                "default": "IGSN",
-                "const": "IGSN",
-                "readOnly": true,
-                "options": { "hidden": true }
-              },
-              "schemeURI": {
-                "description": "URL of the scheme",
-                "type": "string",
-                "default": "",
-                "const": "",
-                "readOnly": true,
-                "options": { "hidden": true }
-              },
-              "identifier": {
-                "type": "string",
-                "title": "IGSN",
-                "description": "Provide IGSNs for your samples separated by commas."
-              },
-              "url": {
-                "type": "string",
-                "default": "",
-                "const": "",
-                "readOnly": true,
-                "options": { "hidden": true }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "title": "(R2R) - Cruise DOI",
-            "description": "Select a related identifier from the dropdown",
-            "properties": {
-              "scheme": {
-                "type": "string",
-                "default": "R2R",
-                "const": "R2R",
-                "readOnly": true,
-                "options": { "hidden": true }
-              },
-              "schemeURI": {
-                "type": "string",
-                "default": "",
-                "const": "",
-                "readOnly": true,
-                "options": { "hidden": true }
-              },
-              "identifier": {
-                "type": "string",
-                "title": "Cruise DOI",
-                "description": "Provide Cruise DOIs corresponding to your samples."
-              },
-              "url": {
-                "type": "string",
-                "default": "",
-                "const": "",
-                "readOnly": true,
-                "options": { "hidden": true }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "title": "(SVN) - Smithsonian Volcano Number",
-            "description": "Select a related identifier from the dropdown",
-            "properties": {
-              "scheme": {
-                "type": "string",
-                "default": "SVN",
-                "const": "SVN",
-                "readOnly": true,
-                "options": { "hidden": true }
-              },
-              "schemeURI": {
-                "type": "string",
-                "default": "",
-                "const": "",
-                "readOnly": true,
-                "options": { "hidden": true }
-              },
-              "identifier": {
-                "type": "string",
-                "title": "Smithsonian Volcano Number",
-                "description": "Provide volcano numbers corresponding to your sample collection site."
-              },
-              "url": {
-                "type": "string",
-                "default": "",
-                "const": "",
-                "readOnly": true,
-                "options": { "hidden": true }
-              }
-            }
-          }
-        ],
-        "errorMessage": {
-          "anyOf": "selected item is incomplete"
-        }
-      }
-    },
     "leadAuthor": {
       "$ref": "#/definitions/LeadAuthor"
     },
@@ -270,6 +120,7 @@
       "$ref": "#/definitions/SpatialCoverage"
     },
     "relatedResources": {
+      "title": "Related Resources",
       "type": "array",
       "items": {
         "$ref": "#/definitions/RelatedResource"
@@ -756,13 +607,7 @@
         "scheme": {
           "type": "string"
         },
-        "schemeURI": {
-          "type": "string"
-        },
         "identifier": {
-          "type": "string"
-        },
-        "url": {
           "type": "string"
         }
       },
@@ -896,56 +741,118 @@
       "title": "RecordFile"
     },
     "RelatedResource": {
+      "title": "Related Resource",
       "type": "object",
-      "properties": {
-        "bibliographicCitation": {
-          "type": "string"
-        },
-        "identifiers": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Identifier"
+      "oneOf": [
+        {
+          "title": "Bibliographic Citation",
+          "type": "object",
+          "properties": {
+            "bibliographicCitation": {
+              "type": "string"
+            }
           }
         },
-        "relation": {
-          "type": "string",
-          "enum": [
-            "isCitedBy",
-            "cites",
-            "isSupplementTo",
-            "isSupplementedBy",
-            "isContinuedBy",
-            "continues",
-            "isDescribedBy",
-            "describes",
-            "hasMetadata",
-            "isMetadataFor",
-            "isNewVersionOf",
-            "isPreviousVersionOf",
-            "isPartOf",
-            "hasPart",
-            "isReferencedBy",
-            "references",
-            "isDocumentedBy",
-            "documents",
-            "isCompiledBy",
-            "compiles",
-            "isVariantFormOf",
-            "isOrignialFormOf",
-            "isIdenticalTo",
-            "isReviewedBy",
-            "reviews",
-            "isDerivedFrom",
-            "isSourceOf",
-            "requires",
-            "isRequiredBy",
-            "isObsoletedBy",
-            "obsoletes",
-            "isPublishedIn"
-          ]
+        {
+          "title": "Identifiers",
+          "type": "object",
+          "properties": {
+            "identifiers": {
+              "title": "Related Information",
+              "type": "array",
+              "items": {
+                "title": "Related Information",
+                "options": { "flat": true, "dropdown": true },
+                "required": ["identifier"],
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "title": "(DOI) - Publication DOI",
+                    "description": "Select a related identifier from the dropdown",
+                    "properties": {
+                      "scheme": {
+                        "type": "string",
+                        "default": "DOI",
+                        "const": "DOI",
+                        "readOnly": true,
+                        "options": { "hidden": true  }
+                      },
+                      "identifier": {
+                        "type": "string",
+                        "title": "Publication DOI",
+                        "description": "Enter most relevant publication DOI(s). e.g. '10.016/j.epsl.2009.11.018'",
+                        "options": {
+                          "placeholder": "e.g. '10.016/j.epsl.2009.11.018'"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "title": "(IGSN) - International Geo Sample Number",
+                    "description": "Select a related identifier from the dropdown",
+                    "properties": {
+                      "scheme": {
+                        "type": "string",
+                        "default": "IGSN",
+                        "const": "IGSN",
+                        "readOnly": true,
+                        "options": { "hidden": true }
+                      },
+                      "identifier": {
+                        "type": "string",
+                        "title": "IGSN",
+                        "description": "Provide IGSNs for your samples separated by commas."
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "title": "(R2R) - Cruise DOI",
+                    "description": "Select a related identifier from the dropdown",
+                    "properties": {
+                      "scheme": {
+                        "type": "string",
+                        "default": "R2R",
+                        "const": "R2R",
+                        "readOnly": true,
+                        "options": { "hidden": true }
+                      },
+                      "identifier": {
+                        "type": "string",
+                        "title": "Cruise DOI",
+                        "description": "Provide Cruise DOIs corresponding to your samples."
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "title": "(SVN) - Smithsonian Volcano Number",
+                    "description": "Select a related identifier from the dropdown",
+                    "properties": {
+                      "scheme": {
+                        "type": "string",
+                        "default": "SVN",
+                        "const": "SVN",
+                        "readOnly": true,
+                        "options": { "hidden": true }
+                      },
+                      "identifier": {
+                        "type": "string",
+                        "title": "Smithsonian Volcano Number",
+                        "description": "Provide volcano numbers corresponding to your sample collection site."
+                      }
+                    }
+                  }
+                ],
+                "errorMessage": {
+                  "anyOf": "selected item is incomplete"
+                }
+              }
+            }
+          }
         }
-      },
-      "title": "RelatedResource"
+      ]
     },
     "SpatialCoverage": {
       "title": "Spatial Coverage Information",
