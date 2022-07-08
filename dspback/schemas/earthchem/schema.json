@@ -743,121 +743,101 @@
     "RelatedResource": {
       "title": "Related Resource",
       "type": "object",
-      "options": { "flat": true },
-      "oneOf": [
-        {
-          "title": "Bibliographic Citation",
-          "type": "object",
-          "required": ["bibliographicCitation"],
-          "properties": {
-            "bibliographicCitation": {
-              "type": "string"
-            }
-          }
-        },
-        {
-          "title": "Identifiers",
-          "type": "object",
-          "required": ["identifiers"],
-          "properties": {
-            "identifiers": {
-              "title": "Related Information",
-              "type": "array",
-              "items": {
-                "title": "Related Information",
-                "options": { "flat": true, "dropdown": true },
-                "required": ["identifier"],
-                "anyOf": [
-                  {
-                    "type": "object",
-                    "title": "(DOI) - Publication DOI",
-                    "description": "Select a related identifier from the dropdown",
-                    "properties": {
-                      "scheme": {
-                        "type": "string",
-                        "default": "DOI",
-                        "const": "DOI",
-                        "readOnly": true,
-                        "options": { "hidden": true  }
-                      },
-                      "identifier": {
-                        "type": "string",
-                        "title": "Publication DOI",
-                        "description": "Enter most relevant publication DOI(s). e.g. '10.016/j.epsl.2009.11.018'",
-                        "options": {
-                          "placeholder": "e.g. '10.016/j.epsl.2009.11.018'"
-                        }
-                      }
-                    }
+      "required": ["identifiers"],
+      "properties": {
+        "identifiers": {
+          "title": "Related Information",
+          "type": "array",
+          "items": {
+            "title": "Related Information",
+            "options": { "flat": true, "dropdown": true },
+            "required": ["identifier"],
+            "anyOf": [
+              {
+                "type": "object",
+                "title": "(DOI) - Publication DOI",
+                "description": "Select a related identifier from the dropdown",
+                "properties": {
+                  "scheme": {
+                    "type": "string",
+                    "default": "DOI",
+                    "const": "DOI",
+                    "readOnly": true,
+                    "options": { "hidden": true  }
                   },
-                  {
-                    "type": "object",
-                    "title": "(IGSN) - International Geo Sample Number",
-                    "description": "Select a related identifier from the dropdown",
-                    "properties": {
-                      "scheme": {
-                        "type": "string",
-                        "default": "IGSN",
-                        "const": "IGSN",
-                        "readOnly": true,
-                        "options": { "hidden": true }
-                      },
-                      "identifier": {
-                        "type": "string",
-                        "title": "IGSN",
-                        "description": "Provide IGSNs for your samples separated by commas."
-                      }
-                    }
-                  },
-                  {
-                    "type": "object",
-                    "title": "(R2R) - Cruise DOI",
-                    "description": "Select a related identifier from the dropdown",
-                    "properties": {
-                      "scheme": {
-                        "type": "string",
-                        "default": "R2R",
-                        "const": "R2R",
-                        "readOnly": true,
-                        "options": { "hidden": true }
-                      },
-                      "identifier": {
-                        "type": "string",
-                        "title": "Cruise DOI",
-                        "description": "Provide Cruise DOIs corresponding to your samples."
-                      }
-                    }
-                  },
-                  {
-                    "type": "object",
-                    "title": "(SVN) - Smithsonian Volcano Number",
-                    "description": "Select a related identifier from the dropdown",
-                    "properties": {
-                      "scheme": {
-                        "type": "string",
-                        "default": "SVN",
-                        "const": "SVN",
-                        "readOnly": true,
-                        "options": { "hidden": true }
-                      },
-                      "identifier": {
-                        "type": "string",
-                        "title": "Smithsonian Volcano Number",
-                        "description": "Provide volcano numbers corresponding to your sample collection site."
-                      }
+                  "identifier": {
+                    "type": "string",
+                    "title": "Publication DOI",
+                    "description": "Enter most relevant publication DOI(s). e.g. '10.016/j.epsl.2009.11.018'",
+                    "options": {
+                      "placeholder": "e.g. '10.016/j.epsl.2009.11.018'"
                     }
                   }
-                ],
-                "errorMessage": {
-                  "anyOf": "selected item is incomplete"
+                }
+              },
+              {
+                "type": "object",
+                "title": "(IGSN) - International Geo Sample Number",
+                "description": "Select a related identifier from the dropdown",
+                "properties": {
+                  "scheme": {
+                    "type": "string",
+                    "default": "IGSN",
+                    "const": "IGSN",
+                    "readOnly": true,
+                    "options": { "hidden": true }
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "title": "IGSN",
+                    "description": "Provide IGSNs for your samples separated by commas."
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "title": "(R2R) - Cruise DOI",
+                "description": "Select a related identifier from the dropdown",
+                "properties": {
+                  "scheme": {
+                    "type": "string",
+                    "default": "R2R",
+                    "const": "R2R",
+                    "readOnly": true,
+                    "options": { "hidden": true }
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "title": "Cruise DOI",
+                    "description": "Provide Cruise DOIs corresponding to your samples."
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "title": "(SVN) - Smithsonian Volcano Number",
+                "description": "Select a related identifier from the dropdown",
+                "properties": {
+                  "scheme": {
+                    "type": "string",
+                    "default": "SVN",
+                    "const": "SVN",
+                    "readOnly": true,
+                    "options": { "hidden": true }
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "title": "Smithsonian Volcano Number",
+                    "description": "Provide volcano numbers corresponding to your sample collection site."
+                  }
                 }
               }
+            ],
+            "errorMessage": {
+              "anyOf": "selected item is incomplete"
             }
           }
         }
-      ],
-      "errorMessage": {
-        "oneOf": "selected item is incomplete"
       }
     },
     "SpatialCoverage": {

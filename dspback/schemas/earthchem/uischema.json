@@ -137,7 +137,17 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/relatedResources"
+      "scope": "#/properties/relatedResources",
+      "options": {
+        "detail": {
+          "type": "Control",
+          "scope": "#/properties/identifiers",
+          "options": {
+            "elementLabelProp": "scheme",
+            "childLabelProp": "identifier"
+          }
+        }
+      }
     },
     {
       "type": "Control",
