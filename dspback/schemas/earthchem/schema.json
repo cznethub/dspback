@@ -744,10 +744,11 @@
       "title": "Related Resource",
       "type": "object",
       "options": { "flat": true },
-      "anyOf": [
+      "oneOf": [
         {
           "title": "Bibliographic Citation",
           "type": "object",
+          "required": ["bibliographicCitation"],
           "properties": {
             "bibliographicCitation": {
               "type": "string"
@@ -757,6 +758,7 @@
         {
           "title": "Identifiers",
           "type": "object",
+          "required": ["identifiers"],
           "properties": {
             "identifiers": {
               "title": "Related Information",
@@ -853,7 +855,10 @@
             }
           }
         }
-      ]
+      ],
+      "errorMessage": {
+        "oneOf": "selected item is incomplete"
+      }
     },
     "SpatialCoverage": {
       "title": "Spatial Coverage Information",
