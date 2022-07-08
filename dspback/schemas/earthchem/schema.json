@@ -743,6 +743,7 @@
     "RelatedResource": {
       "title": "Related Resource",
       "type": "object",
+      "options": { "flat": true },
       "anyOf": [
         {
           "title": "Bibliographic Citation",
