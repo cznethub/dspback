@@ -139,6 +139,8 @@
       "type": "Control",
       "scope": "#/properties/relatedResources",
       "options": {
+        "elementLabelProp": "-",
+        "childLabelProp": "-",
         "detail": {
           "type": "Control",
           "scope": "#/properties/identifiers",
