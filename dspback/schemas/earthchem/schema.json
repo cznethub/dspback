@@ -751,6 +751,7 @@
           "items": {
             "title": "Related Information",
             "options": { "flat": true, "dropdown": true },
+            "maxItems": 1,
             "required": ["identifier"],
             "anyOf": [
               {

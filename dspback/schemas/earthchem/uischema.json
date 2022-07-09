@@ -143,8 +143,9 @@
           "type": "Control",
           "scope": "#/properties/identifiers",
           "options": {
+            "restrict": true,
             "elementLabelProp": "scheme",
-            "childLabelProp": "identifier"
+            "childLabelProp": "scheme"
           }
         }
       }
