@@ -137,10 +137,19 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/identifiers",
+      "scope": "#/properties/relatedResources",
       "options": {
-        "elementLabelProp": "scheme",
-        "childLabelProp": "identifier"
+        "elementLabelProp": "-",
+        "childLabelProp": "-",
+        "detail": {
+          "type": "Control",
+          "scope": "#/properties/identifiers",
+          "options": {
+            "restrict": true,
+            "elementLabelProp": "scheme",
+            "childLabelProp": "scheme"
+          }
+        }
       }
     },
     {
