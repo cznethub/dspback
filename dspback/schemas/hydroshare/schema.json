@@ -245,11 +245,15 @@
               "type": "string"
             },
             "url": {
+              "type": "string",
               "title": "URL",
               "description": "An object containing the URL pointing to a description of the license or rights statement",
               "minLength": 1,
               "maxLength": 65536,
-              "$ref": "#/definitions/UrlPattern"
+              "pattern": "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$",
+              "errorMessage": {
+                "pattern": "must match format \"url\""
+              }
             }
           }
         }
