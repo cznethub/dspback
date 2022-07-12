@@ -34,7 +34,36 @@
       "options": { "hidden": true }
     },
     "leadAuthor": {
-      "$ref": "#/definitions/LeadAuthor"
+      "type": "object",
+      "title": "Lead Author",
+      "properties": {
+        "givenName": {
+          "title": "First Name",
+          "type": "string"
+        },
+        "additionalName": {
+          "title": "Middle Name",
+          "type": "string"
+        },
+        "familyName": {
+          "title": "Last Name",
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "identifiers": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AuthorIdentifier" },
+          "default": []
+        }
+      },
+      "required": [
+        "familyName",
+        "givenName",
+        "email"
+      ]
     },
     "contributors": {
       "title": "Co-Authors",
@@ -458,6 +487,7 @@
     "title",
     "description",
     "keywords",
+    "leadAuthor",
     "spatialCoverage",
     "additionalTypes",
     "community",
@@ -511,37 +541,7 @@
         "givenName"
       ]
     },
-    "LeadAuthor": {
-      "type": "object",
-      "title": "Lead Author",
-      "properties": {
-        "givenName": {
-          "title": "First Name",
-          "type": "string"
-        },
-        "additionalName": {
-          "title": "Middle Name",
-          "type": "string"
-        },
-        "familyName": {
-          "title": "Last Name",
-          "type": "string"
-        },
-        "email": {
-          "type": "string",
-          "format": "email"
-        },
-        "identifiers": {
-          "type": "array",
-          "items": { "$ref": "#/definitions/AuthorIdentifier" }
-        }
-      },
-      "required": [
-        "familyName",
-        "givenName",
-        "email"
-      ]
-    },
+    
     "Cordinate": {
       "type": "object",
       "properties": {
