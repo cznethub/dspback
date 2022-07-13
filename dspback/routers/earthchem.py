@@ -15,6 +15,17 @@ from dspback.schemas.earthchem.model import Record
 router = InferringRouter()
 
 
+def prepare_metadata_for_ecl(json_metadata):
+    # join leadAuthor and contributors
+    if "leadAuthor" in json_metadata:
+        lead_author = json_metadata["leadAuthor"]
+        del json_metadata["leadAuthor"]
+        contributors = json_metadata.get("contributors", [])
+        contributors.insert(0, lead_author)
+        json_metadata["contributors"] = contributors
+    return json_metadata
+
+
 @cbv(router)
 class EarthChemMetadataRoutes(MetadataRoutes):
 
@@ -26,9 +37,10 @@ class EarthChemMetadataRoutes(MetadataRoutes):
     @router.post('/metadata/earthchem', tags=["EarthChem"])
     async def create_metadata_repository(self, request: Request, metadata: request_model) -> response_model:
         access_token = await self.access_token(request)
+        json_metadata = prepare_metadata_for_ecl(json.loads(metadata.json(exclude_none=True)))
         response = requests.post(
             self.create_url,
-            json=json.loads(metadata.json(exclude_none=True)),
+            json=json_metadata,
             headers={
                 "Content-Type": "application/json",
                 "Authorization": "Bearer " + str(access_token),
@@ -41,7 +53,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         identifier = response.json()["id"]
-        json_metadata = await self.update_metadata(request, metadata, identifier)
+        json_metadata = await self.get_metadata_repository(request, identifier)
 
         return JSONResponse(json_metadata, status_code=201)
 
@@ -52,13 +64,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         json_metadata = json.loads(incoming_metadata)
 
         merged_metadata = {**existing_metadata, **json_metadata}
-        # join leadAuthor and contributors
-        if "leadAuthor" in merged_metadata:
-            lead_author = merged_metadata["leadAuthor"]
-            del merged_metadata["leadAuthor"]
-            contributors = merged_metadata.get("contributors", [])
-            contributors.insert(0, lead_author)
-            merged_metadata["contributors"] = contributors
+        merged_metadata = prepare_metadata_for_ecl(merged_metadata)
 
         access_token = await self.access_token(request)
         response = requests.put(

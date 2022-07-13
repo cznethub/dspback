@@ -532,8 +532,7 @@
         },
         "identifiers": {
           "type": "array",
-          "items": { "$ref": "#/definitions/AuthorIdentifier" },
-          "default": []
+          "items": { "$ref": "#/definitions/AuthorIdentifier" }
         }
       },
       "required": [
