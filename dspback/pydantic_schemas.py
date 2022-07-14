@@ -176,20 +176,23 @@ class HydroShareRecord(BaseRecord):
 
 
 class EarthChemRecord(BaseRecord):
-    class Creator(BaseModel):
+    class Contributor(BaseModel):
         givenName: str = None
         familyName: str = None
 
     title: str = None
-    creators: List[Creator] = []
+    contributors: List[Contributor] = []
+    leadAuthor: Contributor = None
 
     def to_submission(self, identifier) -> Submission:
         settings = get_settings()
         view_url = settings.earthchem_view_url
         view_url = view_url % identifier
+        authors = [f"{contributor.familyName}, {contributor.givenName}" for contributor in self.contributors]
+        authors.insert(0, f"{self.leadAuthor.familyName}, {self.leadAuthor.givenName}")
         return Submission(
             title=self.title,
-            authors=[f"{creator.familyName}, {creator.givenName}" for creator in self.creators],
+            authors=authors,
             repo_type=RepositoryType.EARTHCHEM,
             submitted=datetime.utcnow(),
             identifier=identifier,
