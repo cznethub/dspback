@@ -38,14 +38,16 @@
       }
     }
   ],
+  "leadAuthor": {
+    "familyName": "lead",
+    "givenName": "author"
+  },
   "contributors": [
     {
-      "familyName": "string",
+      "familyName": "second",
       "additionalName": "string",
-      "givenName": "string",
+      "givenName": "author",
       "email": "string",
-      "type": "leadAuthor",
-      "position": 0,
       "identifiers": [
         {
           "scheme": "string",
