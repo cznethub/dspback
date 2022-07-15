@@ -3,7 +3,6 @@
   "title": "Generic Dataset Schema for CZ Net Data Submission Portal v1.0.0",
   "description": "Metadata for a dataset object submitted to a repository that is not supported by the CZ Hub Data Submission Portal",
   "type": "object",
-  "additionalProperties": false,
   "properties": {
     "name": {
       "title": "Name or title",
@@ -45,6 +44,7 @@
       "type": "array",
       "description": "Contributors to the resource in order of importance.",
       "uniqueItems": true,
+      "default": [],
       "items": {
         "$ref": "#/definitions/Contributor"
       }
@@ -67,9 +67,8 @@
         },
         "url": {
           "title": "License URL",
-          "type": "string",
           "description": "URL for a page that describes the license for the resource.",
-          "format": "uri"
+          "$ref": "#/definitions/UrlPattern"
         }
       },
       "required": [
@@ -91,7 +90,39 @@
       "type": "array",
       "description": "Raw textual references (e.g., a bibligraphic citation) for publications and datasets related to this resource.",
       "items": {
-        "$ref": "#/definitions/Relation"
+        "title": "Related Resource Metadata",
+        "description": "Metadata associated with a resource related to the resource being described.",
+        "type": "object",
+        "properties": {
+          "type": {
+            "title": "Relation Type",
+            "description": "The type of relationship that exists between the describe resource and a related resource.",
+            "enum": [
+              "The content of this resource can be executed by",
+              "The content of this resource was created by a related App or software program",
+              "This resource is described by",
+              "This resource conforms to established standard described by",
+              "This resource has another resource in another format",
+              "This resource is a different format of",
+              "This resource is required by",
+              "This resource requires",
+              "This resource is referenced by",
+              "The content of this resource references",
+              "The content of this resource is derived from"
+            ],
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "description": "String expressing the Full text citation, URL link for, or description of the related resource",
+            "maxLength": 500,
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "value"
+        ]
       }
     },
     "notes": {
@@ -105,9 +136,8 @@
       "description": "A version tag string for the resource - e.g., v1.0.0. Mostly relevant for software and dataset uploads. Any string will be accepted, but semantically-versioned tag is recommended."
     },
     "url": {
+      "$ref": "#/definitions/UrlPattern",
       "title": "URL",
-      "type": "string",
-      "format": "uri",
       "description": "URL for the landing page that describes the resource and where the content of the resource can be accessed."
     },
     "identifier": {
@@ -118,10 +148,31 @@
     "temporalCoverage": {
       "title": "Temporal coverage",
       "description": "The temporal coverage of the resource. The time period that it describes or applies to.",
-      "allOf": [
-        {
-          "$ref": "#/definitions/PeriodCoverage"
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "description": "A string containing a name for the time interval.",
+          "type": "string"
+        },
+        "start": {
+          "title": "Start",
+          "description": "A datetime object containing the instant corresponding to the commencement of the time interval (ISO8601 formatted date) - YYYY-MM-DDTHH:MM.",
+          "type": "string",
+          "format": "date-time",
+          "options": { "placeholder": "YYYY-MM-DDTHH:MM" }
+        },
+        "end": {
+          "title": "End",
+          "description": "A datetime object containing the instant corresponding to the termination of the time interval (ISO8601 formatted date) - YYYY-MM-DDTHH:MM.",
+          "type": "string",
+          "format": "date-time",
+          "options": { "placeholder": "YYYY-MM-DDTHH:MM" }
         }
+      },
+      "required": [
+        "start",
+        "end"
       ]
     },
     "spatialCoverage": {
@@ -129,16 +180,122 @@
       "description": "The place(s) that are the focus of the resource. The geospatial area that the resource describes, the spatial topic of a resource, the spatial applicability of a resource, or jurisdiction under with a resource is relevant.",
       "anyOf": [
         {
-          "$ref": "#/definitions/PointCoverage"
+          "title": "Point Coverage Metadata",
+          "description": "Geographic coverage metadata for a resource or aggregation expressed as a point location",
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "description": "A string containing a name for the place associated with the geographic coverage.",
+              "type": "string"
+            },
+            "east": {
+              "title": "East",
+              "description": "The coordinate of the point location measured in the east direction (between -180 and 180)",
+              "exclusiveMinimum": -180,
+              "exclusiveMaximum": 180,
+              "type": "number"
+            },
+            "north": {
+              "title": "North",
+              "description": " The coordinate of the point location measured in the north direction (between -90 and 90)",
+              "exclusiveMinimum": -90,
+              "exclusiveMaximum": 90,
+              "type": "number"
+            },
+            "units": {
+              "title": "Units",
+              "description": "The units applying to the unlabelled numeric values of north and east.",
+              "type": "string",
+              "default": "Decimal degrees",
+              "const": "Decimal degrees",
+              "readOnly": true
+            },
+            "projection": {
+              "title": "Projection",
+              "description": "The name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
+              "type": "string",
+              "default": "WGS 84 EPSG:4326",
+              "const": "WGS 84 EPSG:4326",
+              "readOnly": true
+            }
+          },
+          "required": [
+            "east",
+            "north"
+          ]
         },
         {
-          "$ref": "#/definitions/BoxCoverage"
+          "title": "Box Coverage Metadata",
+          "description": "Geographic coverage metadata for a resource expressed as a latitude-longitude bounding box.",
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "description": "A string containing a name for the place associated with the geographic coverage.",
+              "type": "string"
+            },
+            "northlimit": {
+              "title": "North limit",
+              "description": "A floating point value containing the constant coordinate for the northernmost face or edge of the bounding box (between -90 and 90)",
+              "exclusiveMinimum": -90,
+              "exclusiveMaximum": 90,
+              "type": "number"
+            },
+            "eastlimit": {
+              "title": "East limit",
+              "description": "A floating point value containing the constant coordinate for the easternmost face or edge of the bounding box (between -180 and 180)",
+              "exclusiveMinimum": -180,
+              "exclusiveMaximum": 180,
+              "type": "number"
+            },
+            "southlimit": {
+              "title": "South limit",
+              "description": "A floating point value containing the constant coordinate for the southernmost face or edge of the bounding box (between -90 and 90)",
+              "exclusiveMinimum": -90,
+              "exclusiveMaximum": 90,
+              "type": "number"
+            },
+            "westlimit": {
+              "title": "West limit",
+              "description": "A floating point value containing the constant coordinate for the westernmost face or edge of the bounding box (between -180 and 180)",
+              "exclusiveMinimum": -180,
+              "exclusiveMaximum": 180,
+              "type": "number"
+            },
+            "units": {
+              "title": "Units",
+              "description": "A string containing the units applying to the unlabelled numeric values of northlimit, eastlimit, southlimit, and westlimit.",
+              "type": "string",
+              "default": "Decimal degrees",
+              "const": "Decimal degrees",
+              "readOnly": true
+            },
+            "projection": {
+              "title": "Projection",
+              "description": "A string containing the name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
+              "type": "string",
+              "default": "WGS 84 EPSG:4326",
+              "const": "WGS 84 EPSG:4326",
+              "readOnly": true
+            }
+          },
+          "required": [
+            "northlimit",
+            "eastlimit",
+            "southlimit",
+            "westlimit"
+          ]
         }
-      ]
+      ],
+      "errorMessage": {
+        "anyOf": "selected item is incomplete"
+      }
     },
     "provider": {
       "title": "Provider",
       "type": "object",
+      "options": { "flat": false },
       "description": "The repository or organization that provides access to the resource.",
       "additionalProperties": false,
       "properties": {
@@ -149,9 +306,8 @@
         },
         "url": {
           "title": "Provider URL",
-          "type": "string",
           "description": "A URL for the repository or organization that provides access to the resource.",
-          "format": "uri"
+          "$ref": "#/definitions/UrlPattern"
         }
       },
       "required": [
@@ -163,19 +319,22 @@
       "title": "Date created",
       "type": "string",
       "format": "date-time",
-      "description": "The date on which the resource was originally created (ISO8601 formatted date) - YYYY-MM-DD."
+      "options": { "placeholder": "YYYY-MM-DDTHH:MM" },
+      "description": "The date on which the resource was originally created (ISO8601 formatted date) - YYYY-MM-DDTHH:MM."
     },
     "dateModified": {
       "title": "Date modified",
       "type": "string",
       "format": "date-time",
-      "description": "The date on which the resource was last modified (ISO8601 formatted date) - YYYY-MM-DD."
+      "options": { "placeholder": "YYYY-MM-DDTHH:MM" },
+      "description": "The date on which the resource was last modified (ISO8601 formatted date) - YYYY-MM-DDTHH:MM."
     },
     "datePublished": {
       "title": "Date published",
       "type": "string",
       "format": "date-time",
-      "description": "The date on which the resource was permanently published (ISO8601 formatted date) - YYYY-MM-DD."
+      "options": { "placeholder": "YYYY-MM-DDTHH:MM" },
+      "description": "The date on which the resource was permanently published (ISO8601 formatted date) - YYYY-MM-DDTHH:MM."
     }
   },
   "definitions": {
@@ -204,8 +363,15 @@
         },
         "orcid": {
           "title": "ORCID",
+          "description": "ORCID identifier for creator.",
           "type": "string",
-          "description": "ORCID identifier for creator."
+          "pattern": "(\\d{4}-){3}\\d{4}",
+          "options": {
+            "placeholder": "e.g. '0000-0001-2345-6789'"
+          },
+          "errorMessage": {
+            "pattern": "must match the ORCID pattern. e.g. '0000-0001-2345-6789'"
+          }
         }
       },
       "required": [
@@ -238,8 +404,15 @@
         },
         "orcid": {
           "title": "ORCID",
+          "description": "ORCID identifier for contributor.",
           "type": "string",
-          "description": "ORCID identifier for creator."
+          "pattern": "(\\d{4}-){3}\\d{4}",
+          "options": {
+            "placeholder": "e.g. '0000-0001-2345-6789'"
+          },
+          "errorMessage": {
+            "pattern": "must match the ORCID pattern. e.g. '0000-0001-2345-6789'"
+          }
         }
       },
       "required": [
@@ -271,8 +444,7 @@
         "awardURL": {
           "title": "Award URL",
           "description": "A string containing a URL pointing to a website describing the award or funding agency.",
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/definitions/UrlPattern"
         }
       },
       "required": [
@@ -325,141 +497,12 @@
         "value"
       ]
     },
-    "PeriodCoverage": {
-      "title": "Period Coverage Metadata",
-      "description": "Temporal coverage metadata for a resource. The time period that it describes or applies to.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "title": "Name",
-          "description": "A string containing a name for the time interval.",
-          "type": "string"
-        },
-        "start": {
-          "title": "Start",
-          "description": "A datetime object containing the instant corresponding to the commencement of the time interval (ISO8601 formatted date) - YYYY-MM-DD.",
-          "type": "string",
-          "format": "date-time"
-        },
-        "end": {
-          "title": "End",
-          "description": "A datetime object containing the instant corresponding to the termination of the time interval (ISO8601 formatted date) - YYYY-MM-DD.",
-          "type": "string",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "start",
-        "end"
-      ]
-    },
-    "PointCoverage": {
-      "title": "Point Coverage Metadata",
-      "description": "Geographic coverage metadata for a resource or aggregation expressed as a point location",
-      "type": "object",
-      "properties": {
-        "name": {
-          "title": "Name",
-          "description": "A string containing a name for the place associated with the geographic coverage.",
-          "type": "string"
-        },
-        "east": {
-          "title": "East",
-          "description": "The coordinate of the point location measured in the east direction (between -180 and 180)",
-          "exclusiveMinimum": -180,
-          "exclusiveMaximum": 180,
-          "type": "number"
-        },
-        "north": {
-          "title": "North",
-          "description": " The coordinate of the point location measured in the north direction (between -90 and 90)",
-          "exclusiveMinimum": -90,
-          "exclusiveMaximum": 90,
-          "type": "number"
-        },
-        "units": {
-          "title": "Units",
-          "description": "The units applying to the unlabelled numeric values of north and east.",
-          "type": "string",
-          "default": "Decimal degrees",
-          "const": "Decimal degrees",
-          "readOnly": true
-        },
-        "projection": {
-          "title": "Projection",
-          "description": "The name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
-          "type": "string",
-          "default": "WGS 84 EPSG:4326",
-          "const": "WGS 84 EPSG:4326",
-          "readOnly": true
-        }
-      },
-      "required": [
-        "east",
-        "north"
-      ]
-    },
-    "BoxCoverage": {
-      "title": "Box Coverage Metadata",
-      "description": "Geographic coverage metadata for a resource expressed as a latitude-longitude bounding box.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "title": "Name",
-          "description": "A string containing a name for the place associated with the geographic coverage.",
-          "type": "string"
-        },
-        "northlimit": {
-          "title": "North limit",
-          "description": "A floating point value containing the constant coordinate for the northernmost face or edge of the bounding box (between -90 and 90)",
-          "exclusiveMinimum": -90,
-          "exclusiveMaximum": 90,
-          "type": "number"
-        },
-        "eastlimit": {
-          "title": "East limit",
-          "description": "A floating point value containing the constant coordinate for the easternmost face or edge of the bounding box (between -180 and 180)",
-          "exclusiveMinimum": -180,
-          "exclusiveMaximum": 180,
-          "type": "number"
-        },
-        "southlimit": {
-          "title": "South limit",
-          "description": "A floating point value containing the constant coordinate for the southernmost face or edge of the bounding box (between -90 and 90)",
-          "exclusiveMinimum": -90,
-          "exclusiveMaximum": 90,
-          "type": "number"
-        },
-        "westlimit": {
-          "title": "West limit",
-          "description": "A floating point value containing the constant coordinate for the westernmost face or edge of the bounding box (between -180 and 180)",
-          "exclusiveMinimum": -180,
-          "exclusiveMaximum": 180,
-          "type": "number"
-        },
-        "units": {
-          "title": "Units",
-          "description": "A string containing the units applying to the unlabelled numeric values of northlimit, eastlimit, southlimit, and westlimit.",
-          "type": "string",
-          "default": "Decimal degrees",
-          "const": "Decimal degrees",
-          "readOnly": true
-        },
-        "projection": {
-          "title": "Projection",
-          "description": "A string containing the name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
-          "type": "string",
-          "default": "WGS 84 EPSG:4326",
-          "const": "WGS 84 EPSG:4326",
-          "readOnly": true
-        }
-      },
-      "required": [
-        "northlimit",
-        "eastlimit",
-        "southlimit",
-        "westlimit"
-      ]
+    "UrlPattern": {
+      "type": "string",
+      "pattern": "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$",
+      "errorMessage": {
+        "pattern": "must match format \"url\""
+      }
     }
   },
   "required": [

@@ -17,9 +17,9 @@ from dspback.pydantic_schemas import ORCIDResponse, User
 router = APIRouter()
 
 
-@router.get('/', response_model=User)
+@router.get('/')
 def home(user: UserTable = Depends(get_current_user)):
-    return User.from_orm(user)
+    return f"{user.name} is logged in"
 
 
 @router.get('/login')
@@ -27,7 +27,8 @@ async def login(request: Request, window_close: bool = False, settings: Settings
     redirect_uri = url_for(request, 'auth')
     if 'X-Forwarded-Proto' in request.headers:
         redirect_uri = redirect_uri.replace('http:', request.headers['X-Forwarded-Proto'] + ':')
-    return await oauth.orcid.authorize_redirect(request, redirect_uri + f"?window_close={window_close}")
+    response = await oauth.orcid.authorize_redirect(request, redirect_uri + f"?window_close={window_close}")
+    return response
 
 
 @router.get('/logout')

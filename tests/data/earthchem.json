@@ -1,0 +1,147 @@
+{
+  "title": "string",
+  "description": "string",
+  "community": "string",
+  "identifiers": [
+    {
+      "scheme": "string",
+      "schemeURI": "string",
+      "identifier": "string",
+      "url": "string"
+    }
+  ],
+  "creators": [
+    {
+      "familyName": "string",
+      "additionalName": "string",
+      "givenName": "string",
+      "email": "string",
+      "type": "owner",
+      "identifiers": [
+        {
+          "scheme": "string",
+          "schemeURI": "string",
+          "identifier": "string",
+          "url": "string"
+        }
+      ],
+      "affiliation": {
+        "name": "string",
+        "identifiers": [
+          {
+            "scheme": "string",
+            "schemeURI": "string",
+            "identifier": "string",
+            "url": "string"
+          }
+        ]
+      }
+    }
+  ],
+  "leadAuthor": {
+    "familyName": "lead",
+    "givenName": "author"
+  },
+  "contributors": [
+    {
+      "familyName": "second",
+      "additionalName": "string",
+      "givenName": "author",
+      "email": "string",
+      "identifiers": [
+        {
+          "scheme": "string",
+          "schemeURI": "string",
+          "identifier": "string",
+          "url": "string"
+        }
+      ],
+      "affiliation": {
+        "name": "string",
+        "identifiers": [
+          {
+            "scheme": "string",
+            "schemeURI": "string",
+            "identifier": "string",
+            "url": "string"
+          }
+        ]
+      }
+    }
+  ],
+  "type": "string",
+  "status": "string",
+  "additionalTypes": [
+    "string"
+  ],
+  "keywords": [
+    "string"
+  ],
+  "language": "string",
+  "spatialCoverage": {
+    "coverage": "string",
+    "keywords": [
+      "string"
+    ],
+    "features": [
+      {
+        "type": "string",
+        "geometry": {
+          "type": "Point",
+          "cordinates": [
+            {
+              "lat": 0,
+              "lon": 0,
+              "alt": 0
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "relatedResources": [
+    {
+      "bibliographicCitation": "string",
+      "identifiers": [
+        {
+          "scheme": "string",
+          "schemeURI": "string",
+          "identifier": "string",
+          "url": "string"
+        }
+      ],
+      "relation": "isCitedBy"
+    }
+  ],
+  "fundings": [
+    {
+      "identifer": "string",
+      "identifier": "string",
+      "funder": {
+        "name": "string",
+        "alternateName": "string",
+        "identifiers": [
+          {
+            "scheme": "string",
+            "schemeURI": "string",
+            "identifier": "string",
+            "url": "string"
+          }
+        ]
+      },
+      "url": "string"
+    }
+  ],
+  "license": {
+    "name": "string",
+    "alternateName": "string",
+    "identifiers": [
+      {
+        "scheme": "string",
+        "schemeURI": "string",
+        "identifier": "string",
+        "url": "string"
+      }
+    ]
+  }
+}

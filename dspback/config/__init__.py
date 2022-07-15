@@ -47,6 +47,20 @@ class Settings(BaseSettings):
     zenodo_move_or_rename_url: HttpUrl
     zenodo_health_url: HttpUrl
 
+    earthchem_client_id: str
+    earthchem_client_secret: str
+    earthchem_authorize_url: HttpUrl
+    earthchem_token_url: HttpUrl
+    earthchem_create_url: HttpUrl
+    earthchem_update_url: HttpUrl
+    earthchem_read_url: HttpUrl
+    earthchem_delete_url: HttpUrl
+    earthchem_file_create_url: HttpUrl
+    earthchem_file_delete_url: HttpUrl
+    earthchem_file_read_url: HttpUrl
+    earthchem_view_url: HttpUrl
+    earthchem_health_url: HttpUrl
+
     database_username: str
     database_password: str
     database_name: str
@@ -56,6 +70,7 @@ class Settings(BaseSettings):
     jwt_secret_key: str
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 12 * 60
+    access_token_expiration_buffer_seconds: int = 30 * 60
 
     session_secret_key: str
 
@@ -103,6 +118,17 @@ oauth.register(
     },
 )
 
+oauth.register(
+    name='earthchem',
+    authorize_url=settings.earthchem_authorize_url,
+    token_endpoint=settings.earthchem_token_url,
+    client_kwargs={'scope': 'openid', 'response_type': 'code'},
+    access_token_params={
+        'client_id': settings.earthchem_client_id,
+        'client_secret': settings.earthchem_client_secret,
+    },
+)
+
 repository_config = {
     "zenodo": {
         "create": settings.zenodo_create_url,
@@ -138,6 +164,21 @@ repository_config = {
         "schema_defaults": "/api/schema/hydroshare/defaults.json",
         "access_token": "/api/access_token/hydroshare",
         "authorize_url": "/api/authorize/hydroshare",
+    },
+    "earthchem": {
+        "create": settings.earthchem_create_url,
+        "update": settings.earthchem_update_url,
+        "read": settings.earthchem_read_url,
+        "delete": settings.earthchem_delete_url,
+        "file_create": settings.earthchem_file_create_url,
+        "file_delete": settings.earthchem_file_delete_url,
+        "file_read": settings.earthchem_file_read_url,
+        "view_url": settings.earthchem_view_url,
+        "schema": "/api/schema/earthchem/schema.json",
+        "uischema": "/api/schema/earthchem/uischema.json",
+        "schema_defaults": "/api/schema/earthchem/defaults.json",
+        "access_token": "/api/access_token/earthchem",
+        "authorize_url": "/api/authorize/earthchem",
     },
     "external": {
         "create": None,
