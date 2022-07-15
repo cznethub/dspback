@@ -801,8 +801,8 @@
                 "properties": {
                   "scheme": {
                     "type": "string",
-                    "default": "R2R",
-                    "const": "R2R",
+                    "default": "OCDOI",
+                    "const": "OCDOI",
                     "readOnly": true,
                     "options": { "hidden": true }
                   },
@@ -820,8 +820,8 @@
                 "properties": {
                   "scheme": {
                     "type": "string",
-                    "default": "SVN",
-                    "const": "SVN",
+                    "default": "VNum",
+                    "const": "VNum",
                     "readOnly": true,
                     "options": { "hidden": true }
                   },
