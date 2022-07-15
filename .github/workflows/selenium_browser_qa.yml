@@ -2,9 +2,12 @@ name: Selenium Browser QA Tests
 
 on:
   push:
-    branches: [develop]
+    # TODO: enable on develop push/PR once QA tests run reliably from GH workflow
+    branches: [disable-selenium]
+    # branches: [develop]
   pull_request:
-    branches: [develop]
+    branches: [disable-selenium]
+    # branches: [develop]
   workflow_dispatch:
 
 jobs:
