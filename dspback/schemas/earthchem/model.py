@@ -253,7 +253,7 @@ class Identifier2(BaseModel):
 
 
 class Identifier3(BaseModel):
-    scheme: Optional[str] = 'R2R'
+    scheme: Optional[str] = 'OCDOI'
     identifier: Optional[str] = Field(
         None,
         description='Provide Cruise DOIs corresponding to your samples.',
@@ -262,7 +262,7 @@ class Identifier3(BaseModel):
 
 
 class Identifier4(BaseModel):
-    scheme: Optional[str] = 'SVN'
+    scheme: Optional[str] = 'VNum'
     identifier: Optional[str] = Field(
         None,
         description='Provide volcano numbers corresponding to your sample collection site.',
