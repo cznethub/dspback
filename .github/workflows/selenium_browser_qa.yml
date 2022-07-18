@@ -98,6 +98,13 @@ jobs:
         run: mkdir output
 
       - name: Run Tests
+          env:
+          HS_USERNAME: ${{ secrets.HS_USERNAME }}
+          HS_PASSWORD: ${{ secrets.HS_PASSWORD }}
+          CZ_USERNAME: ${{ secrets.CZ_USERNAME }}
+          CZ_PASSWORD: ${{ secrets.CZ_PASSWORD }}
+          CZ_EARTHCHEM_USERNAME: ${{ secrets.CZ_EARTHCHEM_USERNAME }}
+          CZ_EARTHCHEM_PASSWORD: ${{ secrets.CZ_EARTHCHEM_PASSWORD }}
         working-directory: QA-AutomationEngine
         # https://dsp-alpha.criticalzone.org/ as another potential target...
         run: |
