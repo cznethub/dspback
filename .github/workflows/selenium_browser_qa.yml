@@ -98,7 +98,7 @@ jobs:
         run: mkdir output
 
       - name: Run Tests
-          env:
+        env:
           HS_USERNAME: ${{ secrets.HS_USERNAME }}
           HS_PASSWORD: ${{ secrets.HS_PASSWORD }}
           CZ_USERNAME: ${{ secrets.CZ_USERNAME }}
