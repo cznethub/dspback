@@ -8,8 +8,10 @@ on:
     branches: [selenium]
   workflow_dispatch:
     inputs:
-        qa-engine-tag:
-          description: 'Ref from QA engine (Optional)'
+      qa-engine-tag:
+        description: 'Ref from QA engine (Optional)'
+      dsp-front-ref:
+        description: 'Ref from DSPBACK (Optional)'
 
 jobs:
   build-test:
@@ -87,8 +89,22 @@ jobs:
       - name: Build DSPBack
         run: make build
 
-      - name: Build DSPFront
+      - name: Build DSPFront latest
+        if: github.event.inputs.dsp-front-ref == ''
         run: make build-dspfront
+
+      - name: Clone DSPFront, ref = ${{ github.event.inputs.dsp-front-ref }}
+        uses: actions/checkout@v2
+        if: github.event.inputs.dsp-front-ref != ''
+        with:
+          repository: cznethub/dspfront
+          path: dspfront
+          ref: ${{ github.event.inputs.dsp-front-ref }}
+      
+      - name: Build DSPFront, ref = ${{ github.event.inputs.dsp-front-ref }}
+        if: github.event.inputs.dsp-front-ref != ''
+        run: |
+          docker build -t dspfront dspfront
 
       - name: Startup containers
         run: make up-all-d
