@@ -12,6 +12,9 @@ on:
         description: 'Ref from QA engine (Optional)'
       dsp-front-ref:
         description: 'Ref from DSPBACK (Optional)'
+      use-gh-env:
+        type: boolean
+        description: Use dspback .env file stored in GH secrets (vs default in dspback repo)
 
 jobs:
   build-test:
@@ -87,6 +90,7 @@ jobs:
       #   run: sudo apt install firefox-geckodriver
 
       - name: Retrieve base64 from secrets and decode to .env file
+        if: github.event.inputs.use-gh-env == 'true'
         env:
           DSP_TEST_ENV_BASE64: ${{ secrets.DSP_TEST_ENV_BASE64 }}
         run: |
