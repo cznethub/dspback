@@ -347,6 +347,12 @@
           "description": "Publication year (YYYY)."
         }
       ]
+    },
+    "status": {
+      "title": "Data collection is ongoing",
+      "type":  "boolean",
+      "description": "Indicate whether data collection is ongoing for this dataset",
+      "default": false
     }
   },
   "definitions": {
