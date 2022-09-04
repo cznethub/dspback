@@ -331,10 +331,28 @@
     },
     "datePublished": {
       "title": "Date published",
-      "type": "string",
-      "format": "date-time",
-      "options": { "placeholder": "YYYY-MM-DDTHH:MM" },
-      "description": "The date on which the resource was permanently published (ISO8601 formatted date) - YYYY-MM-DDTHH:MM."
+      "description": "The date on which the resource was permanently published or first became available online. Where the full date is not available, provide the year.",
+      "anyOf": [
+        {
+          "title": "Date",
+          "type": "string",
+          "format": "date-time",
+          "options": { "placeholder": "YYYY-MM-DDTHH:MM" },
+          "description": "ISO8601 formatted date (YYYY-MM-DDTHH:MM)."
+        },
+        {
+          "title": "Year",
+          "type": "integer",
+          "options": { "placeholder": "YYYY" },
+          "description": "Publication year (YYYY)."
+        }
+      ]
+    },
+    "status": {
+      "title": "Data collection is ongoing",
+      "type":  "boolean",
+      "description": "Indicate whether data collection is ongoing for this dataset",
+      "default": false
     }
   },
   "definitions": {
