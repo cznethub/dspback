@@ -127,7 +127,39 @@
     {
       "type": "Control",
       "label": "Spatial coverage",
-      "scope": "#/properties/spatial_coverage"
+      "scope": "#/properties/spatial_coverage",
+      "optioms": {
+        "detail": {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/name"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/units"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/projection"
+                }
+              ]
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/east"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/north"
+            }
+          ]
+        }
+      }
     },
     {
       "type": "Control",
