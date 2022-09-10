@@ -279,6 +279,41 @@
           "title": "Point Coverage Metadata",
           "description": "A class used to represent geographic coverage metadata for a resource or aggregation expressed as a\npoint location",
           "type": "object",
+          "options": { 
+            "detail": {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/name"
+                },
+                {
+                  "type": "MapLayout",
+                  "options": {
+                    "map": { "type": "point", "north": "north", "east": "east" }
+                  },
+                  "elements": [
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/east"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/north"
+                    }
+                  ]
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/units"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/projection"
+                }
+              ]
+            }
+          },
           "properties": {
             "name": {
               "title": "Name",
@@ -325,6 +360,50 @@
           "title": "Box Coverage Metadata",
           "description": "A class used to represent geographic coverage metadata for a resource or aggregation expressed as a\nlatitude-longitude bounding box",
           "type": "object",
+          "options": {
+            "detail": {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/name"
+                },
+                {
+                  "type": "MapLayout",
+                  "options": {
+                    "map": { "type": "box", "northlimit": "northlimit", "eastlimit": "eastlimit", "southlimit": "southlimit", "westlimit": "westlimit" }
+                  },
+                  "elements": [
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/northlimit"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/eastlimit"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/southlimit"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/westlimit"
+                    }
+                  ]
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/units"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/projection"
+                }
+                
+              ]
+            }
+          },
           "properties": {
             "name": {
               "title": "Name",
