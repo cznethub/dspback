@@ -104,12 +104,13 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         summary="Delete a HydroShare resource",
         description="Deletes the HydroShare resource along with the submission record.",
     )
-    async def delete_metadata_repository(self, request: Request, identifier):
-        access_token = await self.access_token(request)
-        response = requests.delete(self.delete_url % identifier, params={"access_token": access_token})
+    async def delete_metadata_repository(self, request: Request, identifier, repository_delete=False):
+        if repository_delete:
+            access_token = await self.access_token(request)
+            response = requests.delete(self.delete_url % identifier, params={"access_token": access_token})
 
-        if response.status_code == 403:
-            raise RepositoryException(status_code=response.status_code, detail=response.text)
+            if response.status_code == 403:
+                raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         delete_submission(self.db, self.repository_type, identifier, self.user)
 
