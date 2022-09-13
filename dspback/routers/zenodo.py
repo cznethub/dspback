@@ -125,13 +125,14 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         '/metadata/zenodo/{identifier}',
         tags=["Zenodo"],
         summary="Delete a Zenodo record",
-        description="Deletes the Zenodo record along with the submission record.",
+        description="Deletes the Zenodo submission record. To also delete the record on Zenodo, include the repository_delete=True query parameter.",
     )
-    async def delete_metadata_repository(self, request: Request, identifier):
-        access_token = await self.access_token(request)
-        response = requests.delete(self.delete_url % identifier, params={"access_token": access_token})
-        if response.status_code == 403:
-            raise RepositoryException(status_code=response.status_code, detail=response.text)
+    async def delete_metadata_repository(self, request: Request, identifier, repository_delete=False):
+        if repository_delete:
+            access_token = await self.access_token(request)
+            response = requests.delete(self.delete_url % identifier, params={"access_token": access_token})
+            if response.status_code == 403:
+                raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         delete_submission(self.db, self.repository_type, identifier, self.user)
 

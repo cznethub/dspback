@@ -102,7 +102,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         '/metadata/hydroshare/{identifier}',
         tags=["HydroShare"],
         summary="Delete a HydroShare resource",
-        description="Deletes the HydroShare resource along with the submission record.",
+        description="Deletes the submission record. To also delete the record in HydroShare, include the repository_delete=True query parameter.",
     )
     async def delete_metadata_repository(self, request: Request, identifier, repository_delete=False):
         if repository_delete:

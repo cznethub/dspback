@@ -109,15 +109,21 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         await self.submit(request, identifier=identifier, json_metadata=json_metadata)
         return json_metadata
 
-    @router.delete('/metadata/earthchem/{identifier}', tags=["EarthChem"])
-    async def delete_metadata_repository(self, request: Request, identifier):
-        access_token = await self.access_token(request)
-        response = requests.delete(
-            self.delete_url % str(identifier),
-            headers={"accept": "application/json", "Authorization": "Bearer " + str(access_token)},
-        )
-        if response.status_code == 403:
-            raise RepositoryException(status_code=response.status_code, detail=response.text)
+    @router.delete(
+        '/metadata/earthchem/{identifier}',
+        tags=["EarthChem"],
+        summary="Delete an EarthChem record",
+        description="Deletes the submission record. To also delete the record in EarthChem, include the repository_delete=True query parameter.",
+    )
+    async def delete_metadata_repository(self, request: Request, identifier, repository_delete=False):
+        if repository_delete:
+            access_token = await self.access_token(request)
+            response = requests.delete(
+                self.delete_url % str(identifier),
+                headers={"accept": "application/json", "Authorization": "Bearer " + str(access_token)},
+            )
+            if response.status_code == 403:
+                raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         delete_submission(self.db, self.repository_type, identifier, self.user)
 
