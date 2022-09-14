@@ -125,3 +125,13 @@ class EarthChemMetadataRoutes(MetadataRoutes):
     async def submit_repository_record(self, identifier: str):
         json_metadata = await self.submit(identifier)
         return json_metadata
+
+    @router.get(
+        '/json/earthchem/{identifier}',
+        tags=["EarthChem"],
+        summary="Get an EarthChem record without validation",
+        description="Retrieves the metadata for the EarthChem record without validation.",
+    )
+    async def get_metadata_repository(self, request: Request, identifier) -> response_model:
+        json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
+        return json_metadata
