@@ -34,7 +34,14 @@ class EarthChemMetadataRoutes(MetadataRoutes):
     response_model = Record
     repository_type = RepositoryType.EARTHCHEM
 
-    @router.post('/metadata/earthchem', tags=["EarthChem"])
+    @router.post(
+        '/metadata/earthchem',
+        response_model_exclude_unset=True,
+        response_model=response_model,
+        tags=["EarthChem"],
+        summary="Create an EarthChem record",
+        description="Validates the incoming metadata, creates a new EarthChem record and creates a submission record.",
+    )
     async def create_metadata_repository(self, request: Request, metadata: request_model) -> response_model:
         access_token = await self.access_token(request)
         json_metadata = prepare_metadata_for_ecl(json.loads(metadata.json(exclude_none=True)))
@@ -57,7 +64,14 @@ class EarthChemMetadataRoutes(MetadataRoutes):
 
         return JSONResponse(json_metadata, status_code=201)
 
-    @router.put('/metadata/earthchem/{identifier}', tags=["EarthChem"])
+    @router.put(
+        '/metadata/earthchem/{identifier}',
+        response_model_exclude_unset=True,
+        response_model=response_model,
+        tags=["EarthChem"],
+        summary="Update an EarthChem record",
+        description="Validates the incoming metadata and updates the EarthChem resource associated with the provided identifier.",
+    )
     async def update_metadata(self, request: Request, metadata: request_model_update, identifier) -> response_model:
         existing_metadata = await self.get_metadata_repository(request, identifier)
         incoming_metadata = metadata.json(skip_defaults=True, exclude_unset=True)
@@ -103,7 +117,14 @@ class EarthChemMetadataRoutes(MetadataRoutes):
 
         return json_metadata
 
-    @router.get('/metadata/earthchem/{identifier}', tags=["EarthChem"])
+    @router.get(
+        '/metadata/earthchem/{identifier}',
+        response_model_exclude_unset=True,
+        response_model=response_model,
+        tags=["EarthChem"],
+        summary="Get an EarthChem record",
+        description="Retrieves the metadata for the EarthChem record.",
+    )
     async def get_metadata_repository(self, request: Request, identifier) -> response_model:
         json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
         await self.submit(request, identifier=identifier, json_metadata=json_metadata)
@@ -121,7 +142,15 @@ class EarthChemMetadataRoutes(MetadataRoutes):
 
         delete_submission(self.db, self.repository_type, identifier, self.user)
 
-    @router.put('/submit/earthchem/{identifier}', name="submit", tags=["EarthChem"])
+    @router.put(
+        '/submit/earthchem/{identifier}',
+        name="submit",
+        response_model_exclude_unset=True,
+        response_model=response_model,
+        tags=["EarthChem"],
+        summary="Register an EarthChem record",
+        description="Creates a submission record of the EarthChem record.",
+    )
     async def submit_repository_record(self, identifier: str):
         json_metadata = await self.submit(identifier)
         return json_metadata
