@@ -125,3 +125,13 @@ class HydroShareMetadataRoutes(MetadataRoutes):
     async def submit_repository_record(self, identifier: str):
         json_metadata = await self.submit(identifier)
         return json_metadata
+
+    @router.get(
+        '/json/hydroshare/{identifier}',
+        tags=["HydroShare"],
+        summary="Get a HydroShare resource without validation",
+        description="Retrieves the metadata for the HydroShare resource without validation.",
+    )
+    async def get_metadata_json_repository(self, request: Request, identifier):
+        json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
+        return json_metadata

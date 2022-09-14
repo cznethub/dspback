@@ -146,3 +146,15 @@ class ZenodoMetadataRoutes(MetadataRoutes):
     async def submit_repository_record(self, identifier: str):
         json_metadata = await self.submit(identifier)
         return json_metadata["metadata"]
+
+    @router.get(
+        '/json/zenodo/{identifier}',
+        tags=["Zenodo"],
+        summary="Get a Zenodo record without validation",
+        description="Retrieves the metadata for the Zenodo record without validation.",
+    )
+    async def get_metadata_repository(self, request: Request, identifier):
+        json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
+        json_metadata = from_zenodo_format(json_metadata)
+
+        return json_metadata
