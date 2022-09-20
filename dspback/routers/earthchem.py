@@ -130,7 +130,12 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         await self.submit(request, identifier=identifier, json_metadata=json_metadata)
         return json_metadata
 
-    @router.delete('/metadata/earthchem/{identifier}', tags=["EarthChem"])
+    @router.delete(
+        '/metadata/earthchem/{identifier}',
+        tags=["EarthChem"],
+        summary="Delete an EarthChem record",
+        description="Deletes the EarthChem record along with the submission record.",
+    )
     async def delete_metadata_repository(self, request: Request, identifier):
         access_token = await self.access_token(request)
         response = requests.delete(
@@ -161,6 +166,6 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         summary="Get an EarthChem record without validation",
         description="Retrieves the metadata for the EarthChem record without validation.",
     )
-    async def get_metadata_repository(self, request: Request, identifier) -> response_model:
+    async def get_json_metadata_repository(self, request: Request, identifier) -> response_model:
         json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
         return json_metadata
