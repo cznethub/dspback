@@ -24,7 +24,7 @@ httpx==0.23.0
 idna==3.3
 iniconfig==1.1.1
 itsdangerous==2.1.1
-Mako==1.2.0
+Mako==1.2.2
 MarkupSafe==2.1.0
 numpy==1.22.3
 oauthlib==3.2.0
