@@ -24,8 +24,9 @@ services:
     image: dspback
     container_name: dsp_dev_dspback
     volumes:
-      - ./dspback:/dspback
+      - ./:/dspback
       - ./tests:/tests
+    entrypoint: bash dev-entrypoint.sh
     build:
       context: ./
       dockerfile: Dockerfile-dev

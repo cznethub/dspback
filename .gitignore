@@ -6,3 +6,4 @@ db-data
 .idea/
 .coverage
 htmlcov/
+dspback/schemas/*/model.py

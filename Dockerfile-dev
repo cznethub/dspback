@@ -1,13 +1,13 @@
 FROM python:3.9-slim-buster
 
+WORKDIR /dspback
+
 COPY requirements.txt requirements.txt
 COPY requirements-dev.txt requirements-dev.txt
 COPY .env .env
 
 RUN pip install -r requirements.txt
 RUN pip install -r requirements-dev.txt
-
-EXPOSE 5002
 
 ENV PYTHONPATH "${PYTHONPATH}:/"
 
