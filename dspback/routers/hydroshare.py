@@ -132,6 +132,6 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         summary="Get a HydroShare resource without validation",
         description="Retrieves the metadata for the HydroShare resource without validation.",
     )
-    async def get_metadata_json_repository(self, request: Request, identifier):
+    async def get_json_metadata_repository(self, request: Request, identifier):
         json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
         return json_metadata
