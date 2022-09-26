@@ -702,7 +702,9 @@
         }
       },
       "required": [
-        "funding_agency_name"
+        "funding_agency_name",
+        "number",
+        "title"
       ]
     },
     "PeriodCoverage": {
