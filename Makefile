@@ -51,7 +51,7 @@ down:
 
 .PHONY: build
 build:
-	docker-compose --env-file ../.env build
+	docker-compose --env-file .env build
 
 .PHONY: build-dspfront
 build-dspfront:
