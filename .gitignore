@@ -7,3 +7,4 @@ db-data
 .coverage
 htmlcov/
 dspback/schemas/*/model.py
+.env

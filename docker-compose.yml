@@ -5,6 +5,8 @@ services:
   dspfront:
     image: dspfront
     container_name: dsp_dev_dspfront
+    volumes:
+      - ./../.env:/dspfront/.env
     ports:
       - 5001:5001
     restart: unless-stopped
@@ -26,6 +28,7 @@ services:
     volumes:
       - ./:/dspback
       - ./tests:/tests
+      - ./../.env:/dspback/.env
     entrypoint: bash dev-entrypoint.sh
     build:
       context: ./
