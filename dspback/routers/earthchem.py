@@ -144,7 +144,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
             self.delete_url % str(identifier),
             headers={"accept": "application/json", "Authorization": "Bearer " + str(access_token)},
         )
-        if response.status_code == 403:
+        if response.status_code >= 300:
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
     @router.put(
