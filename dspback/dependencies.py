@@ -227,7 +227,7 @@ async def get_current_user(
         credentials_exception.detail = f"No user found for orcid {token_data.orcid}"
         raise credentials_exception
     if not user.access_token:
-        credentials_exception.detail = "User access token is missing"
+        credentials_exception.detail = "Access token is missing"
         raise credentials_exception
     if user.access_token != token:
         credentials_exception.detail = "Access token is invalid"
