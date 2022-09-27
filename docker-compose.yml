@@ -28,7 +28,6 @@ services:
     volumes:
       - ./:/dspback
       - ./tests:/tests
-      - ./../.env:/dspback/.env
     entrypoint: bash dev-entrypoint.sh
     build:
       context: ./

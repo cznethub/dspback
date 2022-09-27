@@ -25,25 +25,29 @@ test-cov:
 test-cov-gh-action:
 	docker exec dsp_dev_dspback pytest tests --cov=dspback --cache-clear > pytest-coverage.txt
 
+.PHONY: default-env
+default-env:
+	wget -N https://raw.githubusercontent.com/cznethub/dsp/develop/.env
+
 .PHONY: up
 up:
-	docker-compose --env-file ../.env up dspback database
+	docker-compose --env-file .env up dspback database
 
 .PHONY: up-d
 up-d:
-	docker-compose --env-file ../.env up -d dspback database
+	docker-compose --env-file .env up -d dspback database
 
 .PHONY: up-all
 up-all:
-	docker-compose --env-file ../.env up
+	docker-compose --env-file .env up
 
 .PHONY: up-all-d
 up-all-d:
-	docker-compose --env-file ../.env up -d
+	docker-compose --env-file .env up -d
 
 .PHONY: down
 down:
-	docker-compose --env-file ../.env down
+	docker-compose --env-file .env down
 
 .PHONY: build
 build:
