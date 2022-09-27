@@ -137,15 +137,15 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         description="Deletes the EarthChem record along with the submission record.",
     )
     async def delete_metadata_repository(self, request: Request, identifier):
+        delete_submission(self.db, self.repository_type, identifier, self.user)
+
         access_token = await self.access_token(request)
         response = requests.delete(
             self.delete_url % str(identifier),
             headers={"accept": "application/json", "Authorization": "Bearer " + str(access_token)},
         )
-        if response.status_code == 403:
+        if response.status_code >= 300:
             raise RepositoryException(status_code=response.status_code, detail=response.text)
-
-        delete_submission(self.db, self.repository_type, identifier, self.user)
 
     @router.put(
         '/submit/earthchem/{identifier}',
