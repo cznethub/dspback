@@ -105,13 +105,13 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         description="Deletes the HydroShare resource along with the submission record.",
     )
     async def delete_metadata_repository(self, request: Request, identifier):
+        delete_submission(self.db, self.repository_type, identifier, self.user)
+
         access_token = await self.access_token(request)
         response = requests.delete(self.delete_url % identifier, params={"access_token": access_token})
 
-        if response.status_code == 403:
+        if response.status_code >= 300:
             raise RepositoryException(status_code=response.status_code, detail=response.text)
-
-        delete_submission(self.db, self.repository_type, identifier, self.user)
 
     @router.put(
         '/submit/hydroshare/{identifier}',
@@ -124,4 +124,14 @@ class HydroShareMetadataRoutes(MetadataRoutes):
     )
     async def submit_repository_record(self, identifier: str):
         json_metadata = await self.submit(identifier)
+        return json_metadata
+
+    @router.get(
+        '/json/hydroshare/{identifier}',
+        tags=["HydroShare"],
+        summary="Get a HydroShare resource without validation",
+        description="Retrieves the metadata for the HydroShare resource without validation.",
+    )
+    async def get_json_metadata_repository(self, request: Request, identifier):
+        json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
         return json_metadata

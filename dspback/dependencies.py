@@ -213,17 +213,24 @@ async def get_current_user(
         payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
         token_data = TokenData(**payload)
         if token_data.orcid is None:
+            credentials_exception.detail = "Token is missing the orcid"
             raise credentials_exception
         if token_data.expiration < datetime.utcnow().timestamp():
             # TODO register token in db for requested expiration
             credentials_exception.detail = "Token is expired"
             raise credentials_exception
-    except JWTError:
+    except JWTError as e:
+        credentials_exception.detail = f"Exception occurred while decoding token [{str(e)}]"
         raise credentials_exception
     user: UserTable = get_user_table(db, orcid=token_data.orcid)
     if user is None:
+        credentials_exception.detail = f"No user found for orcid {token_data.orcid}"
         raise credentials_exception
-    if not user.access_token or user.access_token != token:
+    if not user.access_token:
+        credentials_exception.detail = "Access token is missing"
+        raise credentials_exception
+    if user.access_token != token:
+        credentials_exception.detail = "Access token is invalid"
         raise credentials_exception
     return user
 

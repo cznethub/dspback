@@ -128,12 +128,12 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         description="Deletes the Zenodo record along with the submission record.",
     )
     async def delete_metadata_repository(self, request: Request, identifier):
+        delete_submission(self.db, self.repository_type, identifier, self.user)
+
         access_token = await self.access_token(request)
         response = requests.delete(self.delete_url % identifier, params={"access_token": access_token})
-        if response.status_code == 403:
+        if response.status_code >= 300:
             raise RepositoryException(status_code=response.status_code, detail=response.text)
-
-        delete_submission(self.db, self.repository_type, identifier, self.user)
 
     @router.put(
         '/submit/zenodo/{identifier}',
@@ -146,3 +146,15 @@ class ZenodoMetadataRoutes(MetadataRoutes):
     async def submit_repository_record(self, identifier: str):
         json_metadata = await self.submit(identifier)
         return json_metadata["metadata"]
+
+    @router.get(
+        '/json/zenodo/{identifier}',
+        tags=["Zenodo"],
+        summary="Get a Zenodo record without validation",
+        description="Retrieves the metadata for the Zenodo record without validation.",
+    )
+    async def get_json_metadata_repository(self, request: Request, identifier):
+        json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
+        json_metadata = from_zenodo_format(json_metadata)
+
+        return json_metadata

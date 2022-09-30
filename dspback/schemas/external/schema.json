@@ -183,6 +183,41 @@
           "title": "Point Coverage Metadata",
           "description": "Geographic coverage metadata for a resource or aggregation expressed as a point location",
           "type": "object",
+          "options": { 
+            "detail": {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/name"
+                },
+                {
+                  "type": "MapLayout",
+                  "options": {
+                    "map": { "type": "point", "north": "north", "east": "east" }
+                  },
+                  "elements": [
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/east"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/north"
+                    }
+                  ]
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/units"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/projection"
+                }
+              ]
+            }
+          },
           "properties": {
             "name": {
               "title": "Name",
@@ -229,6 +264,50 @@
           "title": "Box Coverage Metadata",
           "description": "Geographic coverage metadata for a resource expressed as a latitude-longitude bounding box.",
           "type": "object",
+          "options": {
+            "detail": {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/name"
+                },
+                {
+                  "type": "MapLayout",
+                  "options": {
+                    "map": { "type": "box", "northlimit": "northlimit", "eastlimit": "eastlimit", "southlimit": "southlimit", "westlimit": "westlimit" }
+                  },
+                  "elements": [
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/northlimit"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/eastlimit"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/southlimit"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/westlimit"
+                    }
+                  ]
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/units"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/projection"
+                }
+                
+              ]
+            }
+          },
           "properties": {
             "name": {
               "title": "Name",
@@ -331,10 +410,28 @@
     },
     "datePublished": {
       "title": "Date published",
-      "type": "string",
-      "format": "date-time",
-      "options": { "placeholder": "YYYY-MM-DDTHH:MM" },
-      "description": "The date on which the resource was permanently published (ISO8601 formatted date) - YYYY-MM-DDTHH:MM."
+      "description": "The date on which the resource was permanently published or first became available online. Where the full date is not available, provide the year.",
+      "anyOf": [
+        {
+          "title": "Year",
+          "type": "integer",
+          "options": { "placeholder": "YYYY" },
+          "description": "Publication year (YYYY)."
+        },
+        {
+          "title": "Date",
+          "type": "string",
+          "format": "date-time",
+          "options": { "placeholder": "YYYY-MM-DDTHH:MM" },
+          "description": "ISO8601 formatted date (YYYY-MM-DDTHH:MM)."
+        }
+      ]
+    },
+    "status": {
+      "title": "Data collection is ongoing",
+      "type":  "boolean",
+      "description": "Indicate whether data collection is ongoing for this dataset",
+      "default": false
     }
   },
   "definitions": {

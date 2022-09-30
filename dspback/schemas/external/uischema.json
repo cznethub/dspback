@@ -17,16 +17,30 @@
           "type": "HorizontalLayout",
           "elements": [
             {
-              "type": "Control",
-              "scope": "#/properties/dateCreated"
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/dateCreated"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/dateModified"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/status"
+                }
+              ]
             },
             {
-              "type": "Control",
-              "scope": "#/properties/dateModified"
-            },
-            {
-              "type": "Control",
-              "scope": "#/properties/datePublished"
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/datePublished"
+                }
+              ]
             }
           ]
         },
