@@ -16,6 +16,7 @@ from dspback.routers import (
     repository_authorization,
     submissions,
     zenodo,
+    reporting,
 )
 
 app = FastAPI()
@@ -32,6 +33,7 @@ app.include_router(zenodo.router, prefix="/api")
 app.include_router(earthchem.router, prefix="/api")
 app.include_router(external.router, prefix="/api")
 app.include_router(submissions.router, prefix="/api", tags=["Submissions"])
+app.include_router(reporting.router, prefix="/api", tags=["Reporting"])
 
 
 @app.exception_handler(RepositoryException)

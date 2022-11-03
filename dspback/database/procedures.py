@@ -1,7 +1,28 @@
+import sqlalchemy
 from sqlalchemy.orm import Session
 
 from dspback.database.models import AuthorTable, RepositorySubmissionTable, UserTable
 from dspback.pydantic_schemas import RepositoryToken, RepositoryType, Submission
+
+
+def submissions_report_json(db: Session):
+    result_json = {}
+    query = sqlalchemy.select([
+        RepositorySubmissionTable.repo_type,
+        sqlalchemy.func.count(RepositorySubmissionTable.repo_type)
+    ]).group_by(RepositorySubmissionTable.repo_type)
+
+    result = db.execute(query).fetchall()
+    results = {}
+    for i in result:
+        results[i[0]] = i[1]
+
+    result_json["submission_counts_by_repo"] = results
+    query = sqlalchemy.select([sqlalchemy.func.count()]).select_from(RepositorySubmissionTable)
+    total_submissions = db.execute(query).scalar()
+
+    result_json["total_submissions"] = total_submissions
+    return result_json
 
 
 def create_or_update_submission(
