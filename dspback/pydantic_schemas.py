@@ -1,10 +1,9 @@
-import base64
-import json
+import uuid
 from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, HttpUrl, root_validator, validator
+from pydantic import BaseModel, Field, HttpUrl, root_validator, validator, Json, UUID4
 
 from dspback.config import get_settings
 
@@ -51,19 +50,13 @@ class ORCIDResponse(BaseModel):
     expires_at: str
 
 
-class RepositoryTokenBase(BaseModel):
+class RepositoryToken(BaseModel):
+    id: str = Field(default_factory=uuid.uuid4, alias="_id")
     type: RepositoryType = None
     access_token: str = None
     refresh_token: Optional[str] = None
     expires_in: str = None
     expires_at: str = None
-
-
-class RepositoryToken(RepositoryTokenBase):
-    class Config:
-        orm_mode = True
-
-    id: int = None
 
 
 class SubmissionBase(BaseModel):
@@ -73,6 +66,7 @@ class SubmissionBase(BaseModel):
     identifier: str = None
     submitted: datetime = datetime.utcnow()
     url: HttpUrl = None
+    metadata_json: Json = {}
 
     @validator('authors', pre=True)
     def extract_author_names(cls, values):
@@ -86,10 +80,7 @@ class SubmissionBase(BaseModel):
 
 
 class Submission(SubmissionBase):
-    class Config:
-        orm_mode = True
-
-    id: int = None
+    id: str = Field(default_factory=uuid.uuid4, alias="_id")
 
 
 class UserBase(BaseModel):
@@ -101,15 +92,12 @@ class UserBase(BaseModel):
     refresh_token: str = None
     expires_in: int = None
     expires_at: int = None
-    repository_tokens: List[RepositoryToken] = []
-    submissions: List[Submission] = []
+    repository_tokens: List[UUID4] = []
+    submission_ids: List[UUID4] = []
 
 
 class User(UserBase):
-    class Config:
-        orm_mode = True
-
-    id: Optional[int] = None
+    id: str = Field(default_factory=uuid.uuid4, alias="_id")
 
     def repository_token(self, repo_type: RepositoryType) -> RepositoryToken:
         return next(filter(lambda repo: repo.type == repo_type, self.repository_tokens), None)

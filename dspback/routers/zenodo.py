@@ -128,7 +128,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         description="Deletes the Zenodo record along with the submission record.",
     )
     async def delete_metadata_repository(self, request: Request, identifier):
-        delete_submission(self.db, self.repository_type, identifier, self.user)
+        await delete_submission(self.db, self.repository_type, identifier, self.user)
 
         access_token = await self.access_token(request)
         response = requests.delete(self.delete_url % identifier, params={"access_token": access_token})

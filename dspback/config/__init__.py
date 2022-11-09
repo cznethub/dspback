@@ -8,6 +8,9 @@ dotenv_file = ".env"
 
 
 class Settings(BaseSettings):
+    db_url: str
+    db_name: str
+
     orcid_client_id: str
     orcid_client_secret: str
     orcid_authorize_url: HttpUrl
@@ -78,7 +81,8 @@ class Settings(BaseSettings):
 
     @property
     def database_url(self):
-        return f'postgresql://{self.database_username}:{self.database_password}@{self.database_host}:{self.database_port}/{self.database_name}'
+        # return f'postgresql://{self.database_username}:{self.database_password}@{self.database_host}:{self.database_port}/{self.database_name}'
+        return 'mongodb+srv://sblack:rRjDxvl1WXuQ6fr9@cluster0.iouzjvv.mongodb.net/test'
 
     class Config:
         env_file = dotenv_file

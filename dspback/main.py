@@ -1,12 +1,12 @@
 import uvicorn as uvicorn
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import PlainTextResponse
+from motor.motor_asyncio import AsyncIOMotorClient
 
 from dspback.config import get_settings
-from dspback.database.models import SessionLocal
 from dspback.dependencies import RepositoryException
 from dspback.routers import (
     authentication,
@@ -39,15 +39,16 @@ async def http_exception_handler(request, exc):
     return PlainTextResponse(f"Repository exception response[{str(exc.detail)}]", status_code=exc.status_code)
 
 
-@app.middleware("http")
-async def db_session_middleware(request: Request, call_next):
-    response = Response("Internal server error", status_code=500)
-    try:
-        request.state.db = SessionLocal()
-        response = await call_next(request)
-    finally:
-        request.state.db.close()
-    return response
+@app.on_event("startup")
+async def startup_db_client():
+    settings = get_settings()
+    app.mongodb_client = AsyncIOMotorClient(settings.db_url)
+    app.mongodb = app.mongodb_client[settings.db_name]
+
+
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    app.mongodb_client.close()
 
 
 openapi_schema = get_openapi(

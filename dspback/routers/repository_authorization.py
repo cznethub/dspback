@@ -4,11 +4,11 @@ from datetime import datetime, timedelta
 from authlib.integrations.starlette_client import OAuthError
 from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.params import Depends
-from sqlalchemy.orm import Session
+from motor.motor_asyncio import AsyncIOMotorCollection as Session
 from starlette.responses import HTMLResponse, JSONResponse
 
 from dspback.config import Settings, get_settings, oauth, repository_config
-from dspback.database.models import UserTable
+from dspback.pydantic_schemas import User
 from dspback.database.procedures import delete_repository_access_token
 from dspback.dependencies import (
     create_or_update_repository_token,
@@ -23,7 +23,7 @@ router = APIRouter()
 
 
 @router.get('/authorize/{repository}')
-async def authorize_repository(repository: str, request: Request, user: UserTable = Depends(get_current_user)):
+async def authorize_repository(repository: str, request: Request, user: User = Depends(get_current_user)):
     redirect_uri = url_for(request, 'auth_repository', repository=repository)
     return await getattr(oauth, repository).authorize_redirect(request, redirect_uri)
 
@@ -32,7 +32,7 @@ async def authorize_repository(repository: str, request: Request, user: UserTabl
 async def auth_repository(
     request: Request,
     repository: RepositoryType,
-    user: UserTable = Depends(get_current_user),
+    user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     try:
@@ -52,7 +52,7 @@ async def auth_repository(
 async def get_access_token(
     request: Request,
     repository: RepositoryType,
-    user: UserTable = Depends(get_current_user),
+    user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ):
@@ -65,13 +65,13 @@ async def get_access_token(
 
 @router.delete("/access_token/{repository}")
 async def delete_access_token(
-    repository: RepositoryType, user: UserTable = Depends(get_current_user), db: Session = Depends(get_db)
+    repository: RepositoryType, user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
-    delete_repository_access_token(db, repository, user)
+    await delete_repository_access_token(db, repository, user)
 
 
 @router.get("/urls/{repository}")
-async def get_urls(repository: RepositoryType, user: UserTable = Depends(get_current_user)):
+async def get_urls(repository: RepositoryType, user: User = Depends(get_current_user)):
     # TODO, build schema for repository config and validate
     if repository not in repository_config:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)

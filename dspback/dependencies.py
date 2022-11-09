@@ -7,14 +7,13 @@ from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
 from jose import JWTError, jwt
 from pydantic import BaseModel
-from sqlalchemy.orm import Session
+from motor.motor_asyncio import AsyncIOMotorCollection as Session
 from starlette import status
 from starlette.status import HTTP_403_FORBIDDEN
 
 from dspback.config import Settings, get_settings, oauth
-from dspback.database.models import RepositoryTokenTable, UserTable
 from dspback.database.procedures import delete_repository_access_token
-from dspback.pydantic_schemas import ORCIDResponse, RepositoryToken, RepositoryType, TokenData
+from dspback.pydantic_schemas import ORCIDResponse, RepositoryToken, RepositoryType, TokenData, User
 
 
 class RepositoryException(Exception):
@@ -105,57 +104,17 @@ def encode_access_token(orcid: str) -> str:
     return encoded_jwt
 
 
-def create_or_update_user(db: Session, orcid_response: ORCIDResponse) -> UserTable:
-    db_user: UserTable = get_user_table(db, orcid_response.orcid)
-    if db_user:
-        db_user = update_user_table(db, db_user, orcid_response)
-    else:
-        db_user = create_user_table(db, orcid_response)
-    return db_user
-
-
-def create_user_table(db: Session, orcid_response: ORCIDResponse) -> UserTable:
+async def create_or_update_user(db: Session, orcid_response: ORCIDResponse) -> User:
     access_token = encode_access_token(orcid_response.orcid)
-
-    db_user = UserTable(
-        name=orcid_response.name,
-        orcid=orcid_response.orcid,
-        access_token=access_token,
-        orcid_access_token=orcid_response.access_token,
-        refresh_token=orcid_response.refresh_token,
-        expires_in=orcid_response.expires_in,
-        expires_at=orcid_response.expires_at,
-    )
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+    user = User(name=orcid_response.name, orcid=orcid_response.orcid, access_token=access_token,
+                orcid_access_token=orcid_response.access_token, refresh_token=orcid_response.refresh_token,
+                expires_in=orcid_response.expires_in, expires_at=orcid_response.expires_at)
+    await db["user"].replace_one({"orcid": user.orcid}, user.dict(), True)
+    return user
 
 
-def update_user_table(db: Session, db_user: UserTable, orcid_response: ORCIDResponse) -> UserTable:
-    access_token = encode_access_token(orcid_response.orcid)
-    db_user.access_token = access_token
-    db_user.orcid_access_token = orcid_response.access_token
-    db_user.refresh_token = orcid_response.refresh_token
-    db_user.expires_in = orcid_response.expires_in
-    db_user.expires_at = orcid_response.expires_at
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
-
-
-async def create_or_update_repository_token(db, user: UserTable, repository, token) -> RepositoryToken:
-    repository_token_table: RepositoryTokenTable = get_repository_table(db, user, repository)
-    if repository_token_table:
-        repository_token_table = update_repository_token(db, repository_token_table, token)
-    else:
-        repository_token_table = create_repository_token(repository, db, user, token)
-    return RepositoryToken.from_orm(repository_token_table)
-
-
-def create_repository_token(repository: str, db: Session, user: UserTable, repository_response) -> RepositoryTokenTable:
-    db_repository = RepositoryTokenTable(
+async def create_or_update_repository_token(db, user: User, repository, repository_response) -> RepositoryToken:
+    db_repository = RepositoryToken(
         type=repository,
         access_token=repository_response['access_token'],
         user_id=user.id,
@@ -163,46 +122,25 @@ def create_repository_token(repository: str, db: Session, user: UserTable, repos
         expires_in=repository_response.get('expires_in', None),
         expires_at=repository_response.get('expires_at', None),
     )
-    db.add(db_repository)
-    db.commit()
-    db.refresh(db_repository)
+    await db["repository_token"].replace_one({"user_id": user.id, "type": repository}, db_repository.dict(), True)
     return db_repository
 
 
-def update_repository_token(
-    db: Session, db_repository: RepositoryTokenTable, repository_response
-) -> RepositoryTokenTable:
-    db_repository.access_token = repository_response['access_token']
-    db_repository.refresh_token = repository_response.get('refresh_token', None)
-    db_repository.expires_in = repository_response.get('expires_in', None)
-    db_repository.expires_at = repository_response.get('expires_at', None)
-    db.add(db_repository)
-    db.commit()
-    db.refresh(db_repository)
-    return db_repository
+async def get_user_table(db: Session, orcid: str) -> User:
+    return User(**await db["user"].find_one({"orcid": orcid}))
 
 
-def get_user_table(db: Session, orcid: str) -> UserTable:
-    user_table = db.query(UserTable).filter(UserTable.orcid == orcid).first()
-    return user_table
-
-
-def get_repository_table(db: Session, user: UserTable, repository_type: RepositoryType) -> RepositoryTokenTable:
-    repository_table = (
-        db.query(RepositoryTokenTable)
-        .filter(RepositoryTokenTable.user_id == user.id, RepositoryTokenTable.type == repository_type)
-        .first()
-    )
-    return repository_table
+async def get_repository_table(db: Session, user: User, repository_type: RepositoryType) -> RepositoryToken:
+    return RepositoryToken(**await db["repository_token"].find_one({"user_id": user.id, "type": repository_type}))
 
 
 def get_db(request: Request) -> Session:
-    return request.state.db
+    return request.app.mongodb
 
 
 async def get_current_user(
     request: Request, settings=Depends(get_settings), token: str = Depends(oauth2_scheme)
-) -> UserTable:
+) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -222,7 +160,7 @@ async def get_current_user(
     except JWTError as e:
         credentials_exception.detail = f"Exception occurred while decoding token [{str(e)}]"
         raise credentials_exception
-    user: UserTable = get_user_table(db, orcid=token_data.orcid)
+    user: User = await get_user_table(db, orcid=token_data.orcid)
     if user is None:
         credentials_exception.detail = f"No user found for orcid {token_data.orcid}"
         raise credentials_exception
@@ -238,18 +176,18 @@ async def get_current_user(
 async def get_current_repository_token(
     request: Request,
     repository: RepositoryType,
-    user: UserTable = Depends(get_current_user),
+    user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ) -> RepositoryToken:
-    repository_token: RepositoryToken = user.repository_token(db, repository)
+    repository_token: RepositoryToken = user.repository_token(repository)
     if not repository_token:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"User has not authorized with {repository}")
     expiration_buffer: int = settings.access_token_expiration_buffer_seconds
     now = int(datetime.utcnow().timestamp())
 
     if now > repository_token.expires_at:
-        delete_repository_access_token(db, repository, user)
+        await delete_repository_access_token(db, repository, user)
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"User token for {repository} has expired")
     if now > repository_token.expires_at - expiration_buffer:
         if repository_token.refresh_token:

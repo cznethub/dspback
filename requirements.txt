@@ -51,9 +51,11 @@ rsa==4.8
 six==1.16.0
 sniffio==1.2.0
 soupsieve==2.3.1
-SQLAlchemy==1.4.32
+#SQLAlchemy==1.4.32
 starlette==0.17.1
 tomli==2.0.1
 typing_extensions==4.1.1
 urllib3==1.26.9
 uvicorn==0.17.6
+motor==3.1.1
+beanie==1.15.2

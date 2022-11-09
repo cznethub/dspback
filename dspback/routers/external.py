@@ -67,4 +67,4 @@ class ExternalMetadataRoutes(MetadataRoutes):
         description="Deletes an external record.",
     )
     async def delete_metadata_repository(self, identifier):
-        delete_submission(self.db, self.repository_type, identifier, self.user)
+        await delete_submission(self.db, self.repository_type, identifier, self.user)

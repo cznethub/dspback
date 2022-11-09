@@ -1,61 +1,23 @@
-from sqlalchemy.orm import Session
+from motor.motor_asyncio import AsyncIOMotorCollection as Session
 
-from dspback.database.models import AuthorTable, RepositorySubmissionTable, UserTable
-from dspback.pydantic_schemas import RepositoryToken, RepositoryType, Submission
+from dspback.pydantic_schemas import RepositoryType, User, Submission
 
+async def create_or_update_submission(
+    db: Session, submission: Submission, user: User) -> Submission:
+    await db["repository_submission"].replace_one({"identifier": submission.identifier, "user_id": user.id}, submission.dict(), True)
 
-def create_or_update_submission(
-    db: Session, submission: Submission, user: UserTable, metadata_json
-) -> RepositorySubmissionTable:
-    submission_row = (
-        db.query(RepositorySubmissionTable)
-        .filter(RepositorySubmissionTable.identifier == submission.identifier)
-        .filter(RepositorySubmissionTable.user_id == user.id)
-        .first()
-    )
-    if submission_row:
-        db.delete(submission_row)
-
-    db_repository_submission = RepositorySubmissionTable(
-        title=submission.title,
-        repo_type=submission.repo_type,
-        identifier=submission.identifier,
-        user_id=user.id,
-        metadata_json=metadata_json,
-        url=submission.url,
-    )
-    db.add(db_repository_submission)
-    db.flush()
-    for author in submission.authors:
-        author = AuthorTable(name=author, repository_submission_id=db_repository_submission.id)
-        db.add(author)
-
-    db.commit()
-    db.refresh(db_repository_submission)
-    return db_repository_submission
+    return submission
 
 
-def delete_submission(db: Session, repository: RepositoryType, identifier: str, user: UserTable):
-    submission_row = (
-        db.query(RepositorySubmissionTable)
-        .filter(RepositorySubmissionTable.identifier == identifier)
-        .filter(RepositorySubmissionTable.user_id == user.id)
-        .filter(RepositorySubmissionTable.repo_type == repository)
-        .first()
-    )
-    if submission_row:
-        db.delete(submission_row)
-    db.commit()
+async def delete_submission(db: Session, repository: RepositoryType, identifier: str, user: User):
+    await db["repository_submission"].delete_one({"identifier": identifier, "user_id": user.id, "repo_type": repository})
 
 
-def delete_repository_access_token(db: Session, repository, user: UserTable):
-    repository_token: RepositoryToken = user.repository_token(db, repository)
-    if repository_token:
-        db.delete(repository_token)
-        db.commit()
+async def delete_repository_access_token(db: Session, repository, user: User):
+    del user.repository_tokens[repository]
+    await db["repository_token"].update_one(user.dict())
 
 
-def delete_access_token(db: Session, user: UserTable):
+async def delete_access_token(db: Session, user: User):
     user.access_token = None
-    db.add(user)
-    db.commit()
+    await db["user"].update_one(user.dict())

@@ -31,11 +31,11 @@ default-env:
 
 .PHONY: up
 up:
-	docker-compose --env-file .env up dspback database
+	docker-compose --env-file .env up dspback
 
 .PHONY: up-d
 up-d:
-	docker-compose --env-file .env up -d dspback database
+	docker-compose --env-file .env up -d dspback
 
 .PHONY: up-all
 up-all:
