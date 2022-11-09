@@ -3,15 +3,14 @@ from fastapi_restful.inferring_router import InferringRouter
 from requests import Session
 
 from dspback.config import Settings, get_settings, repository_config
-from dspback.dependencies import get_current_repository_token, get_current_user, get_db
-from dspback.routers.submissions import submit_record
+from dspback.dependencies import get_current_repository_token, get_current_user
 from dspback.pydantic_schemas import User
+from dspback.routers.submissions import submit_record
 
 router = InferringRouter()
 
 
 class MetadataRoutes:
-    db: Session = Depends(get_db)
     user: User = Depends(get_current_user)
     settings: Settings = Depends(get_settings)
 
@@ -22,13 +21,11 @@ class MetadataRoutes:
     async def submit(self, request, identifier, json_metadata=None):
         if json_metadata is None:
             json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
-        await submit_record(self.db, self.repository_type, identifier, self.user, json_metadata)
+        await submit_record(self.repository_type, identifier, self.user, json_metadata)
         return json_metadata
 
     async def access_token(self, request):
-        repository_token = await get_current_repository_token(
-            request, self.repository_type, self.user, self.db, self.settings
-        )
+        repository_token = await get_current_repository_token(request, self.repository_type, self.user, self.settings)
         return repository_token.access_token
 
     def __init__(self):

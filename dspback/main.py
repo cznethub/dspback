@@ -1,13 +1,15 @@
+import motor
 import uvicorn as uvicorn
+from beanie import init_beanie
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import PlainTextResponse
-from motor.motor_asyncio import AsyncIOMotorClient
 
 from dspback.config import get_settings
 from dspback.dependencies import RepositoryException
+from dspback.pydantic_schemas import RepositoryToken, Submission, User
 from dspback.routers import (
     authentication,
     earthchem,
@@ -41,14 +43,13 @@ async def http_exception_handler(request, exc):
 
 @app.on_event("startup")
 async def startup_db_client():
-    settings = get_settings()
-    app.mongodb_client = AsyncIOMotorClient(settings.db_url)
-    app.mongodb = app.mongodb_client[settings.db_name]
+    app.db = motor.motor_asyncio.AsyncIOMotorClient(get_settings().db_url)
+    await init_beanie(database=app.db[get_settings().db_name], document_models=[User, Submission, RepositoryToken])
 
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
-    app.mongodb_client.close()
+    app.db.close()
 
 
 openapi_schema = get_openapi(

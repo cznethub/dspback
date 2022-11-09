@@ -1,13 +1,14 @@
 from datetime import datetime, timedelta
 from typing import Any, Optional
 
+from beanie import WriteRules
+from beanie.odm.operators.update.general import Set
 from fastapi import Depends, HTTPException, Request
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
 from jose import JWTError, jwt
 from pydantic import BaseModel
-from motor.motor_asyncio import AsyncIOMotorCollection as Session
 from starlette import status
 from starlette.status import HTTP_403_FORBIDDEN
 
@@ -104,49 +105,46 @@ def encode_access_token(orcid: str) -> str:
     return encoded_jwt
 
 
-async def create_or_update_user(db: Session, orcid_response: ORCIDResponse) -> User:
+async def create_or_update_user(orcid_response: ORCIDResponse) -> User:
     access_token = encode_access_token(orcid_response.orcid)
-    user = User(name=orcid_response.name, orcid=orcid_response.orcid, access_token=access_token,
-                orcid_access_token=orcid_response.access_token, refresh_token=orcid_response.refresh_token,
-                expires_in=orcid_response.expires_in, expires_at=orcid_response.expires_at)
-    await db["user"].replace_one({"orcid": user.orcid}, user.dict(), True)
+    user_dict = {
+        'name': orcid_response.name,
+        'orcid': orcid_response.orcid,
+        'access_token': access_token,
+        'orcid_access_token': orcid_response.access_token,
+        'refresh_token': orcid_response.refresh_token,
+        'expires_in': orcid_response.expires_in,
+        'expires_at': orcid_response.expires_at,
+    }
+    await User.find_one(User.orcid == orcid_response.orcid).upsert(Set(user_dict), on_insert=User(**user_dict))
+    user = await User.find_one(User.orcid == orcid_response.orcid)
     return user
 
 
-async def create_or_update_repository_token(db, user: User, repository, repository_response) -> RepositoryToken:
-    db_repository = RepositoryToken(
-        type=repository,
-        access_token=repository_response['access_token'],
-        user_id=user.id,
-        refresh_token=repository_response.get('refresh_token', None),
-        expires_in=repository_response.get('expires_in', None),
-        expires_at=repository_response.get('expires_at', None),
-    )
-    await db["repository_token"].replace_one({"user_id": user.id, "type": repository}, db_repository.dict(), True)
-    return db_repository
+async def create_or_update_repository_token(user: User, repository, repository_response) -> RepositoryToken:
+    repository_token_dict = {
+        'type': repository,
+        'access_token': repository_response['access_token'],
+        'user_id': user.id,
+        'refresh_token': repository_response.get('refresh_token', None),
+        'expires_in': repository_response.get('expires_in', None),
+        'expires_at': repository_response.get('expires_at', None),
+    }
+    repository_token = user.repository_token(repository)
+    if repository_token:
+        await repository_token.update(Set(repository_token_dict))
+    else:
+        user.repository_tokens.append(RepositoryToken(**repository_token_dict))
+        await user.save(link_rule=WriteRules.WRITE)
+    return user.repository_token(repository)
 
 
-async def get_user_table(db: Session, orcid: str) -> User:
-    return User(**await db["user"].find_one({"orcid": orcid}))
-
-
-async def get_repository_table(db: Session, user: User, repository_type: RepositoryType) -> RepositoryToken:
-    return RepositoryToken(**await db["repository_token"].find_one({"user_id": user.id, "type": repository_type}))
-
-
-def get_db(request: Request) -> Session:
-    return request.app.mongodb
-
-
-async def get_current_user(
-    request: Request, settings=Depends(get_settings), token: str = Depends(oauth2_scheme)
-) -> User:
+async def get_current_user(settings=Depends(get_settings), token: str = Depends(oauth2_scheme)) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    db: Session = get_db(request)
     try:
         payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
         token_data = TokenData(**payload)
@@ -160,7 +158,8 @@ async def get_current_user(
     except JWTError as e:
         credentials_exception.detail = f"Exception occurred while decoding token [{str(e)}]"
         raise credentials_exception
-    user: User = await get_user_table(db, orcid=token_data.orcid)
+    user: User = await User.find_one(User.orcid == token_data.orcid)
+    await user.fetch_all_links()
     if user is None:
         credentials_exception.detail = f"No user found for orcid {token_data.orcid}"
         raise credentials_exception
@@ -177,7 +176,6 @@ async def get_current_repository_token(
     request: Request,
     repository: RepositoryType,
     user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ) -> RepositoryToken:
     repository_token: RepositoryToken = user.repository_token(repository)
@@ -187,7 +185,7 @@ async def get_current_repository_token(
     now = int(datetime.utcnow().timestamp())
 
     if now > repository_token.expires_at:
-        await delete_repository_access_token(db, repository, user)
+        await delete_repository_access_token(repository, user)
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"User token for {repository} has expired")
     if now > repository_token.expires_at - expiration_buffer:
         if repository_token.refresh_token:
@@ -195,5 +193,5 @@ async def get_current_repository_token(
             repository_token = await client.authorize_access_token(
                 request, grant_type='refresh_token', refresh_token=repository_token.refresh_token
             )
-            repository_token = await create_or_update_repository_token(db, user, repository, repository_token)
+            repository_token = await create_or_update_repository_token(user, repository, repository_token)
     return repository_token

@@ -55,7 +55,7 @@ class ExternalMetadataRoutes(MetadataRoutes):
         description="Get an external record along with the submission record.",
     )
     async def get_metadata_repository(self, identifier):
-        submission = self.user.submission(self.db, identifier)
+        submission = self.user.submission(identifier)
         metadata_json_str = submission.metadata_json
         metadata_json = json.loads(metadata_json_str)
         return metadata_json
@@ -67,4 +67,4 @@ class ExternalMetadataRoutes(MetadataRoutes):
         description="Deletes an external record.",
     )
     async def delete_metadata_repository(self, identifier):
-        await delete_submission(self.db, self.repository_type, identifier, self.user)
+        await delete_submission(identifier, self.user)

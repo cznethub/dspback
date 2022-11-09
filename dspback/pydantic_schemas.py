@@ -1,9 +1,10 @@
-import uuid
+import json
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Type, TypeVar
 
-from pydantic import BaseModel, Field, HttpUrl, root_validator, validator, Json, UUID4
+from beanie import Document, Link
+from pydantic import UUID4, BaseModel, EmailStr, Field, HttpUrl, Json, root_validator, validator
 
 from dspback.config import get_settings
 
@@ -50,23 +51,22 @@ class ORCIDResponse(BaseModel):
     expires_at: str
 
 
-class RepositoryToken(BaseModel):
-    id: str = Field(default_factory=uuid.uuid4, alias="_id")
+class RepositoryToken(Document):
     type: RepositoryType = None
     access_token: str = None
     refresh_token: Optional[str] = None
-    expires_in: str = None
-    expires_at: str = None
+    expires_in: int = None
+    expires_at: int = None
 
 
-class SubmissionBase(BaseModel):
+class Submission(Document):
     title: str = None
     authors: List[str] = []
     repo_type: RepositoryType = None
     identifier: str = None
     submitted: datetime = datetime.utcnow()
     url: HttpUrl = None
-    metadata_json: Json = {}
+    metadata_json: str = {}
 
     @validator('authors', pre=True)
     def extract_author_names(cls, values):
@@ -79,25 +79,20 @@ class SubmissionBase(BaseModel):
         return authors
 
 
-class Submission(SubmissionBase):
-    id: str = Field(default_factory=uuid.uuid4, alias="_id")
+class User(Document):
+    name: str
+    email: Optional[EmailStr]
+    orcid: str
+    access_token: Optional[str]
+    orcid_access_token: Optional[str]
+    refresh_token: Optional[str]
+    expires_in: Optional[int]
+    expires_at: Optional[int]
+    repository_tokens: List[Link[RepositoryToken]] = []
+    submissions: List[Link[Submission]] = []
 
-
-class UserBase(BaseModel):
-    name: str = None
-    # email: EmailStr = None
-    orcid: str = None
-    access_token: str = None
-    orcid_access_token: str = None
-    refresh_token: str = None
-    expires_in: int = None
-    expires_at: int = None
-    repository_tokens: List[UUID4] = []
-    submission_ids: List[UUID4] = []
-
-
-class User(UserBase):
-    id: str = Field(default_factory=uuid.uuid4, alias="_id")
+    def submission(self, identifier: str) -> Submission:
+        return next(filter(lambda submission: submission.identifier == identifier, self.submissions), None)
 
     def repository_token(self, repo_type: RepositoryType) -> RepositoryToken:
         return next(filter(lambda repo: repo.type == repo_type, self.repository_tokens), None)
@@ -206,3 +201,20 @@ class ExternalRecord(BaseRecord):
             identifier=identifier,
             url=self.url,
         )
+
+
+DocType = TypeVar("DocType", bound=Document)
+
+import sys
+from collections.abc import Sequence
+
+
+def gather_documents() -> Sequence[Type[DocType]]:
+    """Returns a list of all MongoDB document models defined in `models` module."""
+    from inspect import getmembers, isclass
+
+    return [
+        doc
+        for _, doc in getmembers(sys.modules[__name__], isclass)
+        if issubclass(doc, Document) and doc.__name__ != "Document"
+    ]

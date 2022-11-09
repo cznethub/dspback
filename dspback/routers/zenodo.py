@@ -8,7 +8,7 @@ from starlette.responses import JSONResponse
 
 from dspback.database.procedures import delete_submission
 from dspback.dependencies import RepositoryException
-from dspback.pydantic_schemas import RepositoryType, SubmissionBase
+from dspback.pydantic_schemas import RepositoryType, Submission
 from dspback.routers.metadata_class import MetadataRoutes
 from dspback.schemas.zenodo.model import ZenodoDatasetsSchemaForCzNetV100
 
@@ -128,7 +128,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         description="Deletes the Zenodo record along with the submission record.",
     )
     async def delete_metadata_repository(self, request: Request, identifier):
-        await delete_submission(self.db, self.repository_type, identifier, self.user)
+        await delete_submission(identifier, self.user)
 
         access_token = await self.access_token(request)
         response = requests.delete(self.delete_url % identifier, params={"access_token": access_token})
@@ -138,7 +138,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
     @router.put(
         '/submit/zenodo/{identifier}',
         name="submit",
-        response_model=SubmissionBase,
+        response_model=Submission,
         tags=["Zenodo"],
         summary="Register a Zenodo record",
         description="Creates a submission record of the Zenodo record.",

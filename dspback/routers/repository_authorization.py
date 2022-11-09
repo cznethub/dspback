@@ -8,16 +8,14 @@ from motor.motor_asyncio import AsyncIOMotorCollection as Session
 from starlette.responses import HTMLResponse, JSONResponse
 
 from dspback.config import Settings, get_settings, oauth, repository_config
-from dspback.pydantic_schemas import User
 from dspback.database.procedures import delete_repository_access_token
 from dspback.dependencies import (
     create_or_update_repository_token,
     get_current_repository_token,
     get_current_user,
-    get_db,
     url_for,
 )
-from dspback.pydantic_schemas import RepositoryToken, RepositoryType
+from dspback.pydantic_schemas import RepositoryType, User
 
 router = APIRouter()
 
@@ -33,7 +31,6 @@ async def auth_repository(
     request: Request,
     repository: RepositoryType,
     user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
 ):
     try:
         repo = getattr(oauth, repository)
@@ -42,7 +39,7 @@ async def auth_repository(
         return HTMLResponse(f'<h1>{error.error}</h1>')
 
     # TODO sort out await
-    await create_or_update_repository_token(db, user, repository, token)
+    await create_or_update_repository_token(user, repository, token)
     responseHTML = '<html><head><title>CzHub Sign In</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
     responseHTML = responseHTML.replace("%value%", json.dumps({'token': token}))
     return HTMLResponse(responseHTML)
@@ -53,25 +50,22 @@ async def get_access_token(
     request: Request,
     repository: RepositoryType,
     user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ):
     try:
-        repository_token = await get_current_repository_token(request, repository, user, db, settings)
+        repository_token = await get_current_repository_token(request, repository, user, settings)
     except HTTPException as http_exception:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=http_exception.detail)
     return {"access_token": repository_token.access_token}
 
 
 @router.delete("/access_token/{repository}")
-async def delete_access_token(
-    repository: RepositoryType, user: User = Depends(get_current_user), db: Session = Depends(get_db)
-):
-    await delete_repository_access_token(db, repository, user)
+async def delete_access_token(repository: RepositoryType, user: User = Depends(get_current_user)):
+    await delete_repository_access_token(repository, user)
 
 
 @router.get("/urls/{repository}")
-async def get_urls(repository: RepositoryType, user: User = Depends(get_current_user)):
+async def get_urls(repository: RepositoryType):
     # TODO, build schema for repository config and validate
     if repository not in repository_config:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)

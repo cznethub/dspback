@@ -8,7 +8,7 @@ from starlette.responses import JSONResponse
 
 from dspback.database.procedures import delete_submission
 from dspback.dependencies import RepositoryException
-from dspback.pydantic_schemas import RepositoryType, SubmissionBase
+from dspback.pydantic_schemas import RepositoryType
 from dspback.routers.metadata_class import MetadataRoutes
 from dspback.schemas.hydroshare.model import ResourceMetadata
 
@@ -105,7 +105,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         description="Deletes the HydroShare resource along with the submission record.",
     )
     async def delete_metadata_repository(self, request: Request, identifier):
-        await delete_submission(self.db, self.repository_type, identifier, self.user)
+        await delete_submission(identifier, self.user)
 
         access_token = await self.access_token(request)
         response = requests.delete(self.delete_url % identifier, params={"access_token": access_token})
