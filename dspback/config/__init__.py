@@ -64,12 +64,6 @@ class Settings(BaseSettings):
     earthchem_view_url: HttpUrl
     earthchem_health_url: HttpUrl
 
-    database_username: str
-    database_password: str
-    database_name: str
-    database_port: int = 5432
-    database_host: str
-
     jwt_secret_key: str
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 12 * 60
@@ -78,11 +72,6 @@ class Settings(BaseSettings):
     session_secret_key: str
 
     outside_host: str
-
-    @property
-    def database_url(self):
-        # return f'postgresql://{self.database_username}:{self.database_password}@{self.database_host}:{self.database_port}/{self.database_name}'
-        return 'mongodb+srv://sblack:rRjDxvl1WXuQ6fr9@cluster0.iouzjvv.mongodb.net/test'
 
     class Config:
         env_file = dotenv_file

@@ -35,3 +35,11 @@ services:
     ports:
       - 5002:5002
     restart: on-failure
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:5.0
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=AzureDiamond
+      - MONGO_INITDB_ROOT_PASSWORD=hunter2
