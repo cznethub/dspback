@@ -3,3 +3,4 @@ isort
 pytest-xdist
 pytest-cov
 datamodel-code-generator
+asgi-lifespan

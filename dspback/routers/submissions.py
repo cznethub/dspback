@@ -4,6 +4,7 @@ import json
 from beanie import WriteRules
 from fastapi import APIRouter
 from fastapi.params import Depends
+from pydantic import ValidationError
 
 from dspback.database.procedures import delete_submission
 from dspback.dependencies import get_current_user
@@ -33,7 +34,10 @@ def convert_timestamp(item_date_object):
 
 
 async def submit_record(repository, identifier, user: User, metadata_json):
-    record = record_type_by_repo_type[repository](**metadata_json)
+    try:
+        record = record_type_by_repo_type[repository](**metadata_json)
+    except ValidationError:
+        submission = Submission()
     submission = record.to_submission(identifier)
     submission.metadata_json = json.dumps(metadata_json)
     user.submissions.append(submission)

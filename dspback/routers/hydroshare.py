@@ -1,13 +1,13 @@
 import json
+import uuid
 
-import requests
 from fastapi import Request
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
+from minio import Minio
 from starlette.responses import JSONResponse
 
 from dspback.database.procedures import delete_submission
-from dspback.dependencies import RepositoryException
 from dspback.pydantic_schemas import RepositoryType
 from dspback.routers.metadata_class import MetadataRoutes
 from dspback.schemas.hydroshare.model import ResourceMetadata
@@ -31,22 +31,20 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         description="Validates the incoming metadata, creates a new HydroShare resource and creates a submission record.",
     )
     async def create_metadata_repository(self, request: Request, metadata: request_model):
-        access_token = await self.access_token(request)
-        response = requests.post(
-            self.create_url,
-            params={"access_token": access_token},
-            headers={"Content-Type": "application/json"},
-            timeout=15.0,
+        identifier = str(uuid.uuid4())
+        metadata_json = json.loads(metadata.json())
+        client = Minio(
+            "play.min.io",
+            access_key="FdquEDx9gKsDo98u",
+            secret_key="6CjZ1ZOR79vFyDEoD7K8jmAsrJpRLoIR",
         )
-
-        if response.status_code >= 300:
-            raise RepositoryException(status_code=response.status_code, detail=response.text)
-
-        identifier = response.json()["resource_id"]
-        # hydroshare doesn't accept all of the metadata on create
-        json_metadata = await self.update_metadata(request, metadata, identifier)
-
-        return JSONResponse(json_metadata, status_code=201)
+        client.make_bucket(identifier)
+        fp = open('test.txt', 'w')
+        fp.write(metadata.json(indent=2))
+        fp.close()
+        client.fput_object(identifier, "metadata.json", 'test.txt')
+        metadata_json = await self.submit(request, identifier, metadata_json)
+        return JSONResponse(metadata_json, status_code=201)
 
     @router.put(
         '/metadata/hydroshare/{identifier}',
@@ -57,33 +55,26 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         description="Validates the incoming metadata and updates the HydroShare resource associated with the provided identifier.",
     )
     async def update_metadata(self, request: Request, metadata: request_model, identifier):
-        access_token = await self.access_token(request)
-        response = requests.put(
-            self.update_url % identifier,
-            data=metadata.json(skip_defaults=True),
-            headers={"Content-Type": "application/json"},
-            params={"access_token": access_token},
+        client = Minio(
+            "play.min.io",
+            access_key="FdquEDx9gKsDo98u",
+            secret_key="6CjZ1ZOR79vFyDEoD7K8jmAsrJpRLoIR",
         )
-
-        if response.status_code >= 300:
-            raise RepositoryException(status_code=response.status_code, detail=response.text)
-
-        json_metadata = await self.submit(request, identifier)
-        return json_metadata
+        fp = open('test.txt', 'w')
+        fp.write(metadata.json(indent=2))
+        fp.close()
+        client.fput_object(identifier, "metadata.json", 'test.txt')
+        return await self.submit(request, identifier, metadata.dict())
 
     async def _retrieve_metadata_from_repository(self, request: Request, identifier):
-        access_token = await self.access_token(request)
-        response = requests.get(self.read_url % identifier, params={"access_token": access_token})
-        if response.status_code >= 300:
-            raise RepositoryException(status_code=response.status_code, detail=response.text)
-
-        json_metadata = json.loads(response.text)
-        if "additional_metadata" in json_metadata:
-            # TODO add the key/value list to the hsmodels schema.
-            # add the response models back to the routes once hsmodels is updated.
-            as_dict = json_metadata["additional_metadata"]
-            json_metadata["additional_metadata"] = [{"key": key, "value": value} for key, value in as_dict.items()]
-        return json_metadata
+        client = Minio(
+            "play.min.io",
+            access_key="FdquEDx9gKsDo98u",
+            secret_key="6CjZ1ZOR79vFyDEoD7K8jmAsrJpRLoIR",
+        )
+        client.fget_object(identifier, "metadata.json", 'test.txt')
+        with open('test.txt', 'r') as f:
+            return json.loads(f.read())
 
     @router.get(
         '/metadata/hydroshare/{identifier}',
@@ -107,11 +98,14 @@ class HydroShareMetadataRoutes(MetadataRoutes):
     async def delete_metadata_repository(self, request: Request, identifier):
         await delete_submission(identifier, self.user)
 
-        access_token = await self.access_token(request)
-        response = requests.delete(self.delete_url % identifier, params={"access_token": access_token})
-
-        if response.status_code >= 300:
-            raise RepositoryException(status_code=response.status_code, detail=response.text)
+        client = Minio(
+            "play.min.io",
+            access_key="FdquEDx9gKsDo98u",
+            secret_key="6CjZ1ZOR79vFyDEoD7K8jmAsrJpRLoIR",
+        )
+        client.remove_object(identifier, "metadata.json")
+        with open('test.txt', 'r') as f:
+            return json.loads(f.read())
 
     @router.put(
         '/submit/hydroshare/{identifier}',
@@ -122,8 +116,8 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         summary="Register a HydroShare resource",
         description="Creates a submission record of the HydroShare resource.",
     )
-    async def submit_repository_record(self, identifier: str):
-        json_metadata = await self.submit(identifier)
+    async def submit_repository_record(self, request: Request, identifier: str):
+        json_metadata = await self.submit(request, identifier)
         return json_metadata
 
     @router.get(
