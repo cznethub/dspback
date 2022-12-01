@@ -11,6 +11,8 @@ from dspback.dependencies import RepositoryException
 from dspback.pydantic_schemas import RepositoryType, SubmissionBase
 from dspback.routers.metadata_class import MetadataRoutes
 from dspback.schemas.hydroshare.model import ResourceMetadata
+from dspback.utils.jsonld.hydroshare import scrape_jsonld
+from dspback.utils.mongo import upsert_jsonld
 
 router = InferringRouter()
 
@@ -135,3 +137,19 @@ class HydroShareMetadataRoutes(MetadataRoutes):
     async def get_json_metadata_repository(self, request: Request, identifier):
         json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
         return json_metadata
+
+    @router.put(
+        '/jsonld/hydroshare/{identifier}',
+        tags=["HydroShare"],
+        summary="",
+        description="",
+    )
+    async def submit_json_ld(self, request: Request, identifier):
+        res_url = f"https://www.hydroshare.org/resource/{identifier}"
+        response = requests.get(res_url)
+        if response.status_code >= 300:
+            raise RepositoryException(status_code=response.status_code, detail=response.text)
+
+        json_ld = scrape_jsonld(response.text)
+        upsert_jsonld(json_ld)
+        return json_ld
