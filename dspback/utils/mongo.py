@@ -1,16 +1,18 @@
+from functools import lru_cache
+
 from pymongo import MongoClient
 
+from dspback.config import get_settings
 
+
+@lru_cache
 def get_database():
-
-    # Provide the mongodb atlas url to connect python to mongodb using pymongo
-    CONNECTION_STRING = "mongodb+srv://user:password@cluster0.iouzjvv.mongodb.net/?retryWrites=true&w=majority"
-
+    settings = get_settings()
     # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
-    client = MongoClient(CONNECTION_STRING, tls=True, tlsAllowInvalidCertificates=True)
+    client = MongoClient(settings.mongo_url, tls=True, tlsAllowInvalidCertificates=True)
 
     # Create the database for our example (we will use the same database throughout the tutorial
-    return client['czo']['test_cznet']
+    return client[settings.mongo_database][settings.mongo_collection]
 
 
 def upsert_jsonld(json_ld):

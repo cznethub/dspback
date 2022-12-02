@@ -67,6 +67,12 @@ class Settings(BaseSettings):
     database_port: int = 5432
     database_host: str
 
+    mongo_username: str
+    mongo_password: str
+    mongo_host: str
+    mongo_database: str
+    mongo_collection: str
+
     jwt_secret_key: str
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 12 * 60
@@ -79,6 +85,12 @@ class Settings(BaseSettings):
     @property
     def database_url(self):
         return f'postgresql://{self.database_username}:{self.database_password}@{self.database_host}:{self.database_port}/{self.database_name}'
+
+    @property
+    def mongo_url(self):
+        return (
+            f"mongodb+srv://{self.mongo_username}:{self.mongo_password}@{self.mongo_host}/?retryWrites=true&w=majority"
+        )
 
     class Config:
         env_file = dotenv_file
