@@ -5,9 +5,9 @@ from bs4 import BeautifulSoup
 from dspback.utils.jsonld.formatter import format_fields
 
 
-def scrape_jsonld(resource_data, identifier):
+def scrape_jsonld(resource_data, identifier, script_match):
     resource_soup = BeautifulSoup(resource_data, "html.parser")
-    resource_json_ld = resource_soup.find("script", {"id": "schemaorg"})
+    resource_json_ld = resource_soup.find("script", script_match)
     resource_json_ld = json.loads(resource_json_ld.text)
     resource_json_ld = format_fields(resource_json_ld)
     resource_json_ld["@repository_identifier"] = identifier

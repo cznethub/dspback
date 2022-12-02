@@ -11,7 +11,7 @@ from dspback.dependencies import RepositoryException
 from dspback.pydantic_schemas import RepositoryType
 from dspback.routers.metadata_class import MetadataRoutes
 from dspback.schemas.earthchem.model import Record
-from dspback.utils.jsonld.earthchem import scrape_jsonld
+from dspback.utils.jsonld.scraper import scrape_jsonld
 from dspback.utils.mongo import delete_jsonld, upsert_jsonld
 
 router = InferringRouter()
@@ -184,7 +184,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         if response.status_code >= 300:
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
-        json_ld = scrape_jsonld(response.text, identifier)
+        json_ld = scrape_jsonld(response.text, identifier, {"type": "application/ld+json"})
         upsert_jsonld(json_ld)
         return json_ld
 
