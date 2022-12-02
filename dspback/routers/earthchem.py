@@ -12,7 +12,7 @@ from dspback.pydantic_schemas import RepositoryType
 from dspback.routers.metadata_class import MetadataRoutes
 from dspback.schemas.earthchem.model import Record
 from dspback.utils.jsonld.earthchem import scrape_jsonld
-from dspback.utils.mongo import upsert_jsonld
+from dspback.utils.mongo import delete_jsonld, upsert_jsonld
 
 router = InferringRouter()
 
@@ -178,12 +178,21 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         summary="",
         description="",
     )
-    async def submit_json_ld(self, request: Request, identifier):
-        res_url = f"https://ecl.earthchem.org/view.php?id={identifier}"
+    async def submit_jsonld(self, request: Request, identifier):
+        res_url = self.jsonld_url % identifier
         response = requests.get(res_url)
         if response.status_code >= 300:
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
-        json_ld = scrape_jsonld(response.text)
+        json_ld = scrape_jsonld(response.text, identifier)
         upsert_jsonld(json_ld)
         return json_ld
+
+    @router.delete(
+        '/jsonld/earthchem/{identifier}',
+        tags=["EarthChem"],
+        summary="",
+        description="",
+    )
+    async def delete_jsonld(self, request: Request, identifier):
+        delete_jsonld(identifier)

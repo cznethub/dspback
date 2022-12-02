@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     hydroshare_update_url: HttpUrl
     hydroshare_read_url: HttpUrl
     hydroshare_delete_url: HttpUrl
+    hydroshare_jsonld_url: HttpUrl
     hydroshare_file_create_url: HttpUrl
     hydroshare_file_delete_url: HttpUrl
     hydroshare_file_read_url: HttpUrl
@@ -55,6 +56,7 @@ class Settings(BaseSettings):
     earthchem_update_url: HttpUrl
     earthchem_read_url: HttpUrl
     earthchem_delete_url: HttpUrl
+    earthchem_jsonld_url: HttpUrl
     earthchem_file_create_url: HttpUrl
     earthchem_file_delete_url: HttpUrl
     earthchem_file_read_url: HttpUrl
@@ -147,6 +149,7 @@ repository_config = {
         "update": settings.zenodo_update_url,
         "read": settings.zenodo_read_url,
         "delete": settings.zenodo_delete_url,
+        "jsonld": None,
         "file_create": settings.zenodo_file_create_url,
         "file_delete": settings.zenodo_file_delete_url,
         "file_read": settings.zenodo_file_read_url,
@@ -163,6 +166,7 @@ repository_config = {
         "update": settings.hydroshare_update_url,
         "read": settings.hydroshare_read_url,
         "delete": settings.hydroshare_delete_url,
+        "jsonld": settings.hydroshare_jsonld_url,
         "file_create": settings.hydroshare_file_create_url,
         "file_delete": settings.hydroshare_file_delete_url,
         "file_read": settings.hydroshare_file_read_url,
@@ -182,6 +186,7 @@ repository_config = {
         "update": settings.earthchem_update_url,
         "read": settings.earthchem_read_url,
         "delete": settings.earthchem_delete_url,
+        "jsonld": settings.earthchem_jsonld_url,
         "file_create": settings.earthchem_file_create_url,
         "file_delete": settings.earthchem_file_delete_url,
         "file_read": settings.earthchem_file_read_url,
@@ -197,6 +202,7 @@ repository_config = {
         "update": None,
         "read": None,
         "delete": None,
+        "jsonld": None,
         "file_create": None,
         "file_delete": None,
         "file_read": None,
