@@ -46,7 +46,7 @@ cluster_by_id = {
 }
 
 
-def _clusters(json_ld):
+def clusters(json_ld):
     f_ids = []
     if "funding" in json_ld:
         for funding in json_ld["funding"]:
