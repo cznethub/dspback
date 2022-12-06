@@ -34,6 +34,26 @@ def test_zenodo_to_submission(zenodo):
     assert zenodo_submission.url == get_settings().zenodo_view_url % zenodo_record.record_id
 
 
+def test_zenodo_to_jsonld(zenodo):
+    zenodo_record = ZenodoRecord(**zenodo)
+    zenodo_jsonld = zenodo_record.to_jsonld()
+
+    assert zenodo_jsonld.type == "Dataset"
+    assert zenodo_jsonld.provider.name == "Zenodo"
+    assert zenodo_jsonld.name == zenodo_record.title
+    assert zenodo_jsonld.description == zenodo_record.description
+    assert zenodo_jsonld.keywords == zenodo_record.keywords
+    assert zenodo_jsonld.creator.dict(by_alias=True) == {
+        '@list': [{'name': creator.name} for creator in zenodo_record.creators]
+    }
+    assert zenodo_jsonld.license.text == zenodo_record.license
+    assert zenodo_jsonld.funding.funder[0].name == zenodo_record.notes
+    assert zenodo_jsonld.datePublished == zenodo_record.publication_date
+    assert zenodo_jsonld.relations == [
+        f'{relation.name} - {relation.identifier}' for relation in zenodo_record.relations
+    ]
+
+
 def test_external_to_submission(external):
     external_record = ExternalRecord(**external)
     external_submission = external_record.to_submission("947940")

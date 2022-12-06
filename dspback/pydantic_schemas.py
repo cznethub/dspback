@@ -1,12 +1,11 @@
-import base64
-import json
-from datetime import datetime
+from datetime import date, datetime
 from enum import Enum
 from typing import List, Optional
 
 from pydantic import BaseModel, Field, HttpUrl, root_validator, validator
 
 from dspback.config import get_settings
+from dspback.utils.jsonld.pydantic_schemas import JSONLD
 
 
 class ORCIDResponse(BaseModel):
@@ -124,8 +123,18 @@ class ZenodoRecord(BaseRecord):
     class Creator(BaseModel):
         name: str = None
 
+    class RelatedIdentifier(BaseModel):
+        identifier: str = None
+        relation: str = None
+
     title: str = None
+    description: str = None
+    keywords: List[str] = []
     creators: List[Creator] = []
+    license: str = None
+    notes: str = None
+    publication_date: datetime = None
+    relations: List[RelatedIdentifier] = []
     modified: datetime = None
     record_id: str = None
 
@@ -134,6 +143,12 @@ class ZenodoRecord(BaseRecord):
         values.update(values['metadata'])
         del values['metadata']
         return values
+
+    @validator('publication_date', pre=True)
+    def parse_publication_date(cls, value):
+        if isinstance(value, str):
+            return datetime.strptime(value, '%Y-%m-%d')
+        return value
 
     def to_submission(self, identifier) -> Submission:
         settings = get_settings()
@@ -145,6 +160,19 @@ class ZenodoRecord(BaseRecord):
             submitted=datetime.utcnow(),
             identifier=identifier,
             url=view_url,
+        )
+
+    def to_jsonld(self):
+        return JSONLD(
+            provider={'name': 'Zenodo'},
+            name=self.title,
+            description=self.description,
+            keywords=self.keywords,
+            creator={'@list': [{'name': creator.name} for creator in self.creators]},
+            license={'text': self.license},
+            funding={'funder': [{'name': self.notes}]},  # need to do some regex magic
+            datePublished=self.publication_date,
+            relations=[f'{relation.name} - {relation.identifier}' for relation in self.relations],
         )
 
 

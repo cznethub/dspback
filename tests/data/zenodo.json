@@ -50,7 +50,9 @@
     },
     "publication_date": "2021-10-27",
     "title": "a title",
-    "upload_type": "dataset"
+    "upload_type": "dataset",
+    "notes": "Funding Agency Name: \nAward Title: \nAward Number: \nFunding Agency URL: ",
+    "creators": [{"name": "Ivan Winter Black"}]
   },
   "modified": "2021-10-27T14:49:01.936008+00:00",
   "owner": 97238,
