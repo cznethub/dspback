@@ -118,6 +118,9 @@ class BaseRecord(BaseModel):
     def to_submission(self, identifier) -> Submission:
         raise NotImplementedError()
 
+    def to_submission(self, identifier) -> Submission:
+        raise NotImplementedError()
+
 
 class ZenodoRecord(BaseRecord):
     class Creator(BaseModel):
@@ -136,6 +139,7 @@ class ZenodoRecord(BaseRecord):
     publication_date: datetime = None
     relations: List[RelatedIdentifier] = []
     modified: datetime = None
+    created: datetime = None
     record_id: str = None
 
     @root_validator(pre=True)
@@ -162,16 +166,20 @@ class ZenodoRecord(BaseRecord):
             url=view_url,
         )
 
-    def to_jsonld(self):
+    def to_jsonld(self, identifier):
+        settings = get_settings()
+        view_url = settings.zenodo_view_url % identifier
         return JSONLD(
+            url=view_url,
             provider={'name': 'Zenodo'},
             name=self.title,
             description=self.description,
             keywords=self.keywords,
             creator={'@list': [{'name': creator.name} for creator in self.creators]},
             license={'text': self.license},
-            funding={'funder': [{'name': self.notes}]},  # need to do some regex magic
+            funding={'name': self.notes, 'funder': [{'name': self.notes}]},  # need to do some regex magic
             datePublished=self.publication_date,
+            dateCreated=self.created,
             relations=[f'{relation.name} - {relation.identifier}' for relation in self.relations],
         )
 
@@ -184,6 +192,21 @@ class HydroShareRecord(BaseRecord):
     creators: List[Creator] = []
     modified: datetime = None
     identifier: str = None
+    '''
+    class JSONLD(BaseModel):
+        type: str = Field(alias='@type')
+        provider: Provider
+        name: str
+        description: str
+        keywords: List[str]
+        temporalCoverage: TemporalCoverage
+        spatialCoverage: SpatialCoverage
+        creator: List[CreatorList] # creator.@list.name
+        license: License
+        funding: Funding
+        datePublished: datetime
+        relations: List[str]
+    '''
 
     @validator("identifier")
     def extract_identifier(cls, value):

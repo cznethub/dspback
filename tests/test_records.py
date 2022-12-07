@@ -36,8 +36,9 @@ def test_zenodo_to_submission(zenodo):
 
 def test_zenodo_to_jsonld(zenodo):
     zenodo_record = ZenodoRecord(**zenodo)
-    zenodo_jsonld = zenodo_record.to_jsonld()
+    zenodo_jsonld = zenodo_record.to_jsonld("947940")
 
+    assert zenodo_jsonld.url == get_settings().zenodo_view_url % zenodo_record.record_id
     assert zenodo_jsonld.type == "Dataset"
     assert zenodo_jsonld.provider.name == "Zenodo"
     assert zenodo_jsonld.name == zenodo_record.title
@@ -48,7 +49,9 @@ def test_zenodo_to_jsonld(zenodo):
     }
     assert zenodo_jsonld.license.text == zenodo_record.license
     assert zenodo_jsonld.funding.funder[0].name == zenodo_record.notes
+    assert zenodo_jsonld.funding.name == zenodo_record.notes
     assert zenodo_jsonld.datePublished == zenodo_record.publication_date
+    assert zenodo_jsonld.dateCreated == zenodo_record.created
     assert zenodo_jsonld.relations == [
         f'{relation.name} - {relation.identifier}' for relation in zenodo_record.relations
     ]

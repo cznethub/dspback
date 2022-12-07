@@ -35,10 +35,12 @@ class Funder(BaseModel):
 
 
 class Funding(BaseModel):
+    name: str = None
     funder: List[Funder] = []
 
 
 class JSONLD(BaseModel):
+    url: HttpUrl
     type: str = Field(alias='@type', default='Dataset')
     provider: Provider
     name: str
@@ -50,4 +52,5 @@ class JSONLD(BaseModel):
     license: License = License()
     funding: Funding = Funding()
     datePublished: datetime
+    dateCreated: datetime
     relations: List[str]
