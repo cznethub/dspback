@@ -19,6 +19,7 @@ from dspback.routers import (
     submissions,
     zenodo,
 )
+from dspback.utils.jsonld.pydantic_schemas import JSONLD
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=get_settings().session_secret_key)
@@ -44,7 +45,9 @@ async def http_exception_handler(request, exc):
 @app.on_event("startup")
 async def startup_db_client():
     app.db = motor.motor_asyncio.AsyncIOMotorClient(get_settings().mongo_url)
-    await init_beanie(database=app.db[get_settings().mongo_database], document_models=[User, Submission, RepositoryToken])
+    await init_beanie(
+        database=app.db[get_settings().mongo_database], document_models=[User, Submission, RepositoryToken, JSONLD]
+    )
 
 
 @app.on_event("shutdown")

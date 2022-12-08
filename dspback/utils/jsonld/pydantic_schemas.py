@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Any, List, Optional
 
+from beanie import Document
 from pydantic import BaseModel, Field, HttpUrl
 
 
@@ -39,7 +40,8 @@ class Funding(BaseModel):
     funder: List[Funder] = []
 
 
-class JSONLD(BaseModel):
+class JSONLD(Document):
+    repository_identifier: str
     url: HttpUrl
     type: str = Field(alias='@type', default='Dataset')
     provider: Provider

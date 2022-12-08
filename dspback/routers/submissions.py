@@ -2,12 +2,11 @@ import datetime
 import json
 
 from beanie import WriteRules
-from dspback.dependencies import get_current_user
 from fastapi import APIRouter
 from fastapi.params import Depends
 
-from dspback.utils.mongo import upsert_jsonld
 from dspback.database.procedures import delete_submission
+from dspback.dependencies import get_current_user
 from dspback.pydantic_schemas import (
     EarthChemRecord,
     ExternalRecord,
@@ -16,6 +15,7 @@ from dspback.pydantic_schemas import (
     User,
     ZenodoRecord,
 )
+from dspback.utils.jsonld.pydantic_schemas import JSONLD
 
 router = APIRouter()
 
@@ -37,9 +37,21 @@ async def submit_record(repository, identifier, user: User, metadata_json):
     record = record_type_by_repo_type[repository](**metadata_json)
     submission = record.to_submission(identifier)
     submission.metadata_json = json.dumps(metadata_json)
-    user.submissions.append(submission)
-    await user.save(link_rule=WriteRules.WRITE)
-    upsert_jsonld(record.to_jsonld(identifier))
+    existing_submission = user.submission(identifier)
+    if existing_submission:
+        existing_submission.update(submission.dict(exclude_unset=True))
+        await existing_submission.save(link_rule=WriteRules.WRITE)
+    else:
+        user.submissions.append(submission)
+        await user.save(link_rule=WriteRules.WRITE)
+    # TODO, remove the coupling, probably just drop it into a collection with a pipeline setup
+    jsonld = record.to_jsonld(identifier)
+    existing_jsonld = await JSONLD.find_one(JSONLD.repository_identifier == jsonld.repository_identifier)
+    if existing_jsonld:
+        existing_jsonld.update(jsonld.dict(exclude_unset=True))
+        await existing_jsonld.save(link_rule=WriteRules.WRITE)
+    else:
+        await jsonld.save(link_rule=WriteRules.WRITE)
     return submission
 
 

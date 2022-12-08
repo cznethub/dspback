@@ -84,9 +84,7 @@ class Settings(BaseSettings):
 
     @property
     def mongo_url(self):
-        return (
-            f"mongodb+srv://{self.mongo_username}:{self.mongo_password}@{self.mongo_host}/?retryWrites=true&w=majority"
-        )
+        return f"mongodb://{self.mongo_username}:{self.mongo_password}@{self.mongo_host}/?retryWrites=true&w=majority"
 
     class Config:
         env_file = dotenv_file

@@ -1,10 +1,9 @@
-
 from datetime import datetime
 from enum import Enum
 from typing import List, Optional, Type, TypeVar
 
-from geojson import Feature, Point
 from beanie import Document, Link
+from geojson import Feature, Point
 from pydantic import BaseModel, EmailStr, Field, HttpUrl, root_validator, validator
 
 from dspback.config import get_settings
@@ -152,10 +151,11 @@ class ZenodoRecord(BaseRecord):
             url=view_url,
         )
 
-    def to_jsonld(self, identifier):
+    def to_jsonld(self, identifier) -> JSONLD:
         settings = get_settings()
         view_url = settings.zenodo_view_url % identifier
         return JSONLD(
+            repository_identifier=identifier,
             url=view_url,
             provider={'name': 'Zenodo'},
             name=self.title,
@@ -236,10 +236,11 @@ class HydroShareRecord(BaseRecord):
             url=view_url,
         )
 
-    def to_jsonld(self, identifier):
+    def to_jsonld(self, identifier) -> JSONLD:
         settings = get_settings()
         view_url = settings.hydroshare_view_url % identifier
         return JSONLD(
+            repository_identifier=identifier,
             url=view_url,
             provider={'name': 'HydroShare'},
             name=self.title,
@@ -306,12 +307,13 @@ class EarthChemRecord(BaseRecord):
             url=view_url,
         )
 
-    def to_jsonld(self, identifier):
+    def to_jsonld(self, identifier) -> JSONLD:
         settings = get_settings()
         view_url = settings.earthchem_view_url % identifier
         creators = [{'name': self.leadAuthor.name}] + [{'name': contributor.name} for contributor in self.contributors]
 
         return JSONLD(
+            repository_identifier=identifier,
             url=view_url,
             provider={'name': 'EarthChem Library'},
             name=self.title,
@@ -395,8 +397,9 @@ class ExternalRecord(BaseRecord):
             url=self.url,
         )
 
-    def to_jsonld(self, identifier):
+    def to_jsonld(self, identifier) -> JSONLD:
         return JSONLD(
+            repository_identifier=identifier,
             url=self.url,
             provider={'name': self.provider.name},
             name=self.name,

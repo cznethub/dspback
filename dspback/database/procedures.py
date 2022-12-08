@@ -1,14 +1,14 @@
 from beanie import DeleteRules
 
 from dspback.pydantic_schemas import User
-from dspback.utils.mongo import delete_jsonld
+from dspback.utils.jsonld.pydantic_schemas import JSONLD
 
 
 async def delete_submission(identifier: str, user: User):
     await user.fetch_link(User.submissions)
     submission = user.submission(identifier)
-    submission.delete(link_rule=DeleteRules.DELETE_LINKS)
-    delete_jsonld(identifier)
+    await submission.delete(link_rule=DeleteRules.DELETE_LINKS)
+    JSONLD.find_one(JSONLD.repository_identifier == identifier).delete()
 
 
 async def delete_repository_access_token(repository, user: User):
