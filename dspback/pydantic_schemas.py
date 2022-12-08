@@ -350,8 +350,53 @@ class ExternalRecord(BaseRecord):
     class Creator(BaseModel):
         name: str = None
 
-    name: str = None
+    class Provider(BaseModel):
+        name: str
+
+    class TemporalCoverage(BaseModel):
+        start: datetime
+        end: datetime
+
+    class SpatialCoverage(BaseModel):
+        type: Optional[str]
+        name: Optional[str]
+        north: Optional[float]
+        east: Optional[float]
+        northlimit: Optional[float]
+        southlimit: Optional[float]
+        eastlimit: Optional[float]
+        westlimit: Optional[float]
+
+        @property
+        def geojson(self):
+            if self.type == 'box':
+                return [float(self.northlimit), float(self.southlimit), float(self.eastlimit), float(self.westlimit)]
+            else:
+                return [Feature(geometry=Point([float(self.east), float(self.north)]))]
+
+    class License(BaseModel):
+        description: str
+
+    class Funder(BaseModel):
+        fundingAgency: str
+        awardNumber: str
+        awardName: str
+
+    class Relation(BaseModel):
+        value: str
+
+    name: str
+    provider: Provider
+    description: str
+    keywords: List[str] = []
+    temporalCoverage: Optional[TemporalCoverage]
+    spatialCoverage: Optional[SpatialCoverage]
     creators: List[Creator] = []
+    license: License
+    funders: List[Funder] = []
+    datePublished: datetime
+    relations: List[Relation] = []
+    dateCreated: datetime
     identifier: str = None
     url: HttpUrl = None
 
@@ -363,4 +408,24 @@ class ExternalRecord(BaseRecord):
             submitted=datetime.utcnow(),
             identifier=identifier,
             url=self.url,
+        )
+
+    def to_jsonld(self, identifier):
+        return JSONLD(
+            url=self.url,
+            provider={'name': self.provider.name},
+            name=self.name,
+            description=self.description,
+            keywords=self.keywords,
+            temporalCoverage=self.temporalCoverage,
+            spatialCoverage={"geojson": self.spatialCoverage.geojson},
+            creator={'@list': self.creators},
+            license={'text': self.license.description},
+            funding=[
+                {"name": funder.awardName, "number": funder.awardNumber, "funder": [{"name": funder.fundingAgency}]}
+                for funder in self.funders
+            ],
+            datePublished=self.datePublished,
+            dateCreated=self.dateCreated,
+            relations=[relation.value for relation in self.relations],
         )
