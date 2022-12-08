@@ -46,11 +46,12 @@ class JSONLD(BaseModel):
     name: str
     description: str = None
     keywords: List[str]
+    creator: CreatorList  # creator.@list.name
+    funding: List[Funding]
+
     temporalCoverage: Optional[TemporalCoverage]
     spatialCoverage: Optional[SpatialCoverage]
-    creator: CreatorList  # creator.@list.name
     license: Optional[License]
-    funding: List[Funding] = []
     datePublished: Optional[datetime]
     dateCreated: Optional[datetime]
-    relations: List[str]
+    relations: Optional[List[str]] = []
