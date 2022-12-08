@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import Any, List, Optional
 
 from pydantic import BaseModel, Field, HttpUrl
 
@@ -14,7 +14,7 @@ class TemporalCoverage(BaseModel):
 
 
 class SpatialCoverage(BaseModel):
-    pass
+    geojson: List[Any]
 
 
 class Creator(BaseModel):
@@ -27,7 +27,6 @@ class CreatorList(BaseModel):
 
 class License(BaseModel):
     text: str = None
-    url: HttpUrl = None
 
 
 class Funder(BaseModel):
@@ -36,6 +35,7 @@ class Funder(BaseModel):
 
 class Funding(BaseModel):
     name: str = None
+    number: str = None
     funder: List[Funder] = []
 
 
@@ -44,13 +44,13 @@ class JSONLD(BaseModel):
     type: str = Field(alias='@type', default='Dataset')
     provider: Provider
     name: str
-    description: str
+    description: str = None
     keywords: List[str]
-    temporalCoverage: TemporalCoverage = TemporalCoverage()
-    spatialCoverage: SpatialCoverage = SpatialCoverage()
+    temporalCoverage: Optional[TemporalCoverage]
+    spatialCoverage: Optional[SpatialCoverage]
     creator: CreatorList  # creator.@list.name
-    license: License = License()
-    funding: Funding = Funding()
-    datePublished: datetime
-    dateCreated: datetime
+    license: Optional[License]
+    funding: List[Funding] = []
+    datePublished: Optional[datetime]
+    dateCreated: Optional[datetime]
     relations: List[str]

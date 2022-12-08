@@ -22,6 +22,32 @@ def test_hydroshare_to_submission(hydroshare):
     assert hs_submission.url == get_settings().hydroshare_view_url % hs_record.identifier
 
 
+def test_hydroshare_to_jsonld(hydroshare):
+    hs_record = HydroShareRecord(**hydroshare)
+    hs_jsonld = hs_record.to_jsonld("470e2ef676e947e5ab2628556c309122")
+
+    assert hs_jsonld.url == get_settings().hydroshare_view_url % hs_record.identifier
+    assert hs_jsonld.provider.name == 'HydroShare'
+    assert hs_jsonld.name == hs_record.title
+    assert hs_jsonld.description == hs_record.description
+    assert hs_jsonld.keywords == hs_record.subjects
+    assert hs_jsonld.temporalCoverage == hs_record.period_coverage.dict()
+    print(hs_jsonld.spatialCoverage.geojson)
+    print(hs_record.spatial_coverage.geojson)
+    assert hs_jsonld.spatialCoverage.geojson == hs_record.spatial_coverage.geojson
+    assert hs_jsonld.creator.dict(by_alias=True) == {
+        '@list': [{'name': creator.name} for creator in hs_record.creators]
+    }
+    assert hs_jsonld.license.dict() == {'text': hs_record.rights.statement}
+    assert hs_jsonld.dict()['funding'] == [
+        {"name": award.title, "number": award.number, "funder": [{"name": award.funding_agency_name}]}
+        for award in hs_record.awards
+    ]
+    assert hs_jsonld.datePublished == hs_record.published
+    assert hs_jsonld.dateCreated == hs_record.created
+    assert hs_jsonld.relations == [relation.value for relation in hs_record.relations]
+
+
 def test_zenodo_to_submission(zenodo):
     zenodo_record = ZenodoRecord(**zenodo)
     zenodo_submission = zenodo_record.to_submission("947940")
@@ -48,8 +74,8 @@ def test_zenodo_to_jsonld(zenodo):
         '@list': [{'name': creator.name} for creator in zenodo_record.creators]
     }
     assert zenodo_jsonld.license.text == zenodo_record.license
-    assert zenodo_jsonld.funding.funder[0].name == zenodo_record.notes
-    assert zenodo_jsonld.funding.name == zenodo_record.notes
+    assert zenodo_jsonld.funding[0].funder[0].name == zenodo_record.notes
+    assert zenodo_jsonld.funding[0].name == zenodo_record.notes
     assert zenodo_jsonld.datePublished == zenodo_record.publication_date
     assert zenodo_jsonld.dateCreated == zenodo_record.created
     assert zenodo_jsonld.relations == [

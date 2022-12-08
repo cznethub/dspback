@@ -43,7 +43,20 @@
   },
   "created": "2018-04-24T21:20:44.438661+00:00",
   "modified": "2018-10-08T18:58:17.154974+00:00",
-  "awards": [],
+  "awards": [
+    {
+      "funding_agency_name": "National Science Foundation",
+      "title": "Collaborative Research: Network Cluster: Urban Critical Zone processes along the Piedmont-Coastal Plain transition",
+      "number": "2012340",
+      "funding_agency_url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2012340"
+    },
+    {
+      "funding_agency_name": "National Science Foundation",
+      "title": "Frameworks:Collaborative Proposal: Software Infrastructure for Transformative Urban Sustainability Research",
+      "number": "1931283",
+      "funding_agency_url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=1931283"
+    }
+  ],
   "spatial_coverage": {
     "type": "box",
     "northlimit": 41.84732649257394,

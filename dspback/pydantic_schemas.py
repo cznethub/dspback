@@ -2,6 +2,7 @@ from datetime import date, datetime
 from enum import Enum
 from typing import List, Optional
 
+from geojson import Feature, Point
 from pydantic import BaseModel, Field, HttpUrl, root_validator, validator
 
 from dspback.config import get_settings
@@ -73,7 +74,7 @@ class SubmissionBase(BaseModel):
     submitted: datetime = datetime.utcnow()
     url: HttpUrl = None
 
-    @validator('authors', pre=True)
+    @validator('authors', pre=True, allow_reuse=True)
     def extract_author_names(cls, values):
         authors = []
         for author in values:
@@ -142,7 +143,7 @@ class ZenodoRecord(BaseRecord):
     created: datetime = None
     record_id: str = None
 
-    @root_validator(pre=True)
+    @root_validator(pre=True, allow_reuse=True)
     def extract_metadata(cls, values):
         values.update(values['metadata'])
         del values['metadata']
@@ -177,7 +178,7 @@ class ZenodoRecord(BaseRecord):
             keywords=self.keywords,
             creator={'@list': [{'name': creator.name} for creator in self.creators]},
             license={'text': self.license},
-            funding={'name': self.notes, 'funder': [{'name': self.notes}]},  # need to do some regex magic
+            funding=[{'name': self.notes, 'funder': [{'name': self.notes}]}],  # need to do some regex magic
             datePublished=self.publication_date,
             dateCreated=self.created,
             relations=[f'{relation.name} - {relation.identifier}' for relation in self.relations],
@@ -185,28 +186,53 @@ class ZenodoRecord(BaseRecord):
 
 
 class HydroShareRecord(BaseRecord):
+    class PeriodCoverage(BaseModel):
+        start: datetime = None
+        end: datetime = None
+
+    class SpatialCoverage(BaseModel):
+        type: str = None
+        northlimit: float = None
+        eastlimit: float = None
+        southlimit: float = None
+        westlimit: float = None
+        north: float = None
+        east: float = None
+
+        @property
+        def geojson(self):
+            if self.type == 'box':
+                return [float(self.northlimit), float(self.southlimit), float(self.eastlimit), float(self.westlimit)]
+            else:
+                return [Feature(geometry=Point([float(self.east), float(self.north)]))]
+
     class Creator(BaseModel):
         name: str = None
 
+    class Award(BaseModel):
+        funding_agency_name: str = None
+        title: str = None
+        number: str = None
+
+    class Relation(BaseModel):
+        value: str = None
+
+    class Rights(BaseModel):
+        statement: str = None
+
     title: str = None
+    description: str = None
+    subjects: List[str] = []
+    period_coverage: PeriodCoverage = PeriodCoverage()
+    spatial_coverage: SpatialCoverage = SpatialCoverage()
     creators: List[Creator] = []
-    modified: datetime = None
+    awards: List[Award]
+    rights: Rights
+    relations: List[Relation] = []
+    published: Optional[datetime]
+    modified: Optional[datetime]
+    created: Optional[datetime]
     identifier: str = None
-    '''
-    class JSONLD(BaseModel):
-        type: str = Field(alias='@type')
-        provider: Provider
-        name: str
-        description: str
-        keywords: List[str]
-        temporalCoverage: TemporalCoverage
-        spatialCoverage: SpatialCoverage
-        creator: List[CreatorList] # creator.@list.name
-        license: License
-        funding: Funding
-        datePublished: datetime
-        relations: List[str]
-    '''
 
     @validator("identifier")
     def extract_identifier(cls, value):
@@ -223,6 +249,28 @@ class HydroShareRecord(BaseRecord):
             submitted=datetime.utcnow(),
             identifier=identifier,
             url=view_url,
+        )
+
+    def to_jsonld(self, identifier):
+        settings = get_settings()
+        view_url = settings.hydroshare_view_url % identifier
+        return JSONLD(
+            url=view_url,
+            provider={'name': 'HydroShare'},
+            name=self.title,
+            description=self.description,
+            keywords=self.subjects,
+            temporalCoverage=self.period_coverage.dict(),
+            spatialCoverage={"geojson": self.spatial_coverage.geojson},
+            creator={'@list': [{'name': creator.name} for creator in self.creators]},
+            license={'text': self.rights.statement},
+            funding=[
+                {"name": award.title, "number": award.number, "funder": [{"name": award.funding_agency_name}]}
+                for award in self.awards
+            ],
+            datePublished=self.published,
+            dateCreated=self.created,
+            relations=[relation.value for relation in self.relations],
         )
 
 
