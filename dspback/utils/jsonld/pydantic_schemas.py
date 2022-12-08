@@ -34,7 +34,7 @@ class Funder(BaseModel):
 
 
 class Funding(BaseModel):
-    name: str = None
+    name: Optional[str]
     number: str = None
     funder: List[Funder] = []
 

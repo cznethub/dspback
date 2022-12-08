@@ -279,16 +279,39 @@ class EarthChemRecord(BaseRecord):
         givenName: str = None
         familyName: str = None
 
+        @property
+        def name(self):
+            return f"{self.familyName}, {self.givenName}"
+
+    class Funding(BaseModel):
+        class Funder(BaseModel):
+            name: str
+
+        identifier: str
+        funder: Funder
+
+    class RelatedResource(BaseModel):
+        bibliographicCitation: str
+
+    class License(BaseModel):
+        alternateName: str
+
     title: str = None
+    description: str = None
+    keywords: List[str] = []
     contributors: List[Contributor] = []
     leadAuthor: Contributor = None
+    license: License
+    fundings: List[Funding] = []
+    datePublished: Optional[datetime]
+    relatedResources: List[RelatedResource] = []
 
     def to_submission(self, identifier) -> Submission:
         settings = get_settings()
         view_url = settings.earthchem_view_url
         view_url = view_url % identifier
-        authors = [f"{contributor.familyName}, {contributor.givenName}" for contributor in self.contributors]
-        authors.insert(0, f"{self.leadAuthor.familyName}, {self.leadAuthor.givenName}")
+        authors = [contributor.name for contributor in self.contributors]
+        authors.insert(0, self.leadAuthor.name)
         return Submission(
             title=self.title,
             authors=authors,
@@ -296,6 +319,30 @@ class EarthChemRecord(BaseRecord):
             submitted=datetime.utcnow(),
             identifier=identifier,
             url=view_url,
+        )
+
+    def to_jsonld(self, identifier):
+        settings = get_settings()
+        view_url = settings.earthchem_view_url % identifier
+        creators = [{'name': self.leadAuthor.name}] + [{'name': contributor.name} for contributor in self.contributors]
+
+        return JSONLD(
+            url=view_url,
+            provider={'name': 'EarthChem Library'},
+            name=self.title,
+            description=self.description,
+            keywords=self.keywords,
+            # We do not have temporal/spatial coverage yet
+            # temporalCoverage=self.period_coverage.dict(),
+            # spatialCoverage={"geojson": self.spatial_coverage.geojson},
+            creator={'@list': creators},
+            license={'text': self.license.alternateName},
+            funding=[
+                {"number": funding.identifier, "funder": [{"name": funding.funder.name}]} for funding in self.fundings
+            ],
+            datePublished=self.datePublished,
+            # dateCreated=self.created,
+            relations=[relation.bibliographicCitation for relation in self.relatedResources],
         )
 
 

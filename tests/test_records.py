@@ -32,8 +32,6 @@ def test_hydroshare_to_jsonld(hydroshare):
     assert hs_jsonld.description == hs_record.description
     assert hs_jsonld.keywords == hs_record.subjects
     assert hs_jsonld.temporalCoverage == hs_record.period_coverage.dict()
-    print(hs_jsonld.spatialCoverage.geojson)
-    print(hs_record.spatial_coverage.geojson)
     assert hs_jsonld.spatialCoverage.geojson == hs_record.spatial_coverage.geojson
     assert hs_jsonld.creator.dict(by_alias=True) == {
         '@list': [{'name': creator.name} for creator in hs_record.creators]
@@ -107,3 +105,25 @@ def test_earthchem_to_submission(earthchem):
     assert earthchem_submission.submitted <= datetime.utcnow()
     assert earthchem_submission.identifier == "947940"
     assert earthchem_submission.url == get_settings().earthchem_view_url % "947940"
+
+
+def test_earthchem_to_jsonld(earthchem):
+    ecl_record = EarthChemRecord(**earthchem)
+    ecl_jsonld = ecl_record.to_jsonld("947940")
+
+    assert ecl_jsonld.url == get_settings().earthchem_view_url % "947940"
+    assert ecl_jsonld.provider.name == 'EarthChem Library'
+    assert ecl_jsonld.name == ecl_record.title
+    assert ecl_jsonld.description == ecl_record.description
+    assert ecl_jsonld.keywords == ecl_record.keywords
+    creators = [{'name': ecl_record.leadAuthor.name}] + [
+        {'name': contributor.name} for contributor in ecl_record.contributors
+    ]
+    assert ecl_jsonld.creator.dict(by_alias=True) == {'@list': [creator for creator in creators]}
+    assert ecl_jsonld.license.dict() == {'text': ecl_record.license.alternateName}
+    assert ecl_jsonld.dict()['funding'] == [
+        {"name": None, "number": funding.identifier, "funder": [{"name": funding.funder.name}]}
+        for funding in ecl_record.fundings
+    ]
+    assert ecl_jsonld.datePublished == ecl_record.datePublished
+    assert ecl_jsonld.relations == [relation.bibliographicCitation for relation in ecl_record.relatedResources]
