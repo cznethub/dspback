@@ -63,12 +63,6 @@ class Settings(BaseSettings):
     earthchem_view_url: HttpUrl
     earthchem_health_url: HttpUrl
 
-    database_username: str
-    database_password: str
-    database_name: str
-    database_port: int = 5432
-    database_host: str
-
     mongo_username: str
     mongo_password: str
     mongo_host: str

@@ -1,9 +1,11 @@
-from datetime import date, datetime
+
+from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Type, TypeVar
 
 from geojson import Feature, Point
-from pydantic import BaseModel, Field, HttpUrl, root_validator, validator
+from beanie import Document, Link
+from pydantic import BaseModel, EmailStr, Field, HttpUrl, root_validator, validator
 
 from dspback.config import get_settings
 from dspback.utils.jsonld.pydantic_schemas import JSONLD
@@ -51,28 +53,22 @@ class ORCIDResponse(BaseModel):
     expires_at: str
 
 
-class RepositoryTokenBase(BaseModel):
+class RepositoryToken(Document):
     type: RepositoryType = None
     access_token: str = None
     refresh_token: Optional[str] = None
-    expires_in: str = None
-    expires_at: str = None
+    expires_in: int = None
+    expires_at: int = None
 
 
-class RepositoryToken(RepositoryTokenBase):
-    class Config:
-        orm_mode = True
-
-    id: int = None
-
-
-class SubmissionBase(BaseModel):
+class Submission(Document):
     title: str = None
     authors: List[str] = []
     repo_type: RepositoryType = None
     identifier: str = None
     submitted: datetime = datetime.utcnow()
     url: HttpUrl = None
+    metadata_json: str = {}
 
     @validator('authors', pre=True, allow_reuse=True)
     def extract_author_names(cls, values):
@@ -85,31 +81,20 @@ class SubmissionBase(BaseModel):
         return authors
 
 
-class Submission(SubmissionBase):
-    class Config:
-        orm_mode = True
+class User(Document):
+    name: str
+    email: Optional[EmailStr]
+    orcid: str
+    access_token: Optional[str]
+    orcid_access_token: Optional[str]
+    refresh_token: Optional[str]
+    expires_in: Optional[int]
+    expires_at: Optional[int]
+    repository_tokens: List[Link[RepositoryToken]] = []
+    submissions: List[Link[Submission]] = []
 
-    id: int = None
-
-
-class UserBase(BaseModel):
-    name: str = None
-    # email: EmailStr = None
-    orcid: str = None
-    access_token: str = None
-    orcid_access_token: str = None
-    refresh_token: str = None
-    expires_in: int = None
-    expires_at: int = None
-    repository_tokens: List[RepositoryToken] = []
-    submissions: List[Submission] = []
-
-
-class User(UserBase):
-    class Config:
-        orm_mode = True
-
-    id: Optional[int] = None
+    def submission(self, identifier: str) -> Submission:
+        return next(filter(lambda submission: submission.identifier == identifier, self.submissions), None)
 
     def repository_token(self, repo_type: RepositoryType) -> RepositoryToken:
         return next(filter(lambda repo: repo.type == repo_type, self.repository_tokens), None)

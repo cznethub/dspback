@@ -136,7 +136,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         description="Deletes the EarthChem record along with the submission record.",
     )
     async def delete_metadata_repository(self, request: Request, identifier):
-        delete_submission(self.db, self.repository_type, identifier, self.user)
+        await delete_submission(identifier, self.user)
 
         access_token = await self.access_token(request)
         response = requests.delete(
