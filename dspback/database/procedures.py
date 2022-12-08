@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 from dspback.database.models import AuthorTable, RepositorySubmissionTable, UserTable
 from dspback.pydantic_schemas import RepositoryToken, RepositoryType, Submission
+from dspback.utils.mongo import delete_jsonld
 
 
 def create_or_update_submission(
@@ -46,6 +47,7 @@ def delete_submission(db: Session, repository: RepositoryType, identifier: str, 
     if submission_row:
         db.delete(submission_row)
     db.commit()
+    delete_jsonld(identifier)
 
 
 def delete_repository_access_token(db: Session, repository, user: UserTable):

@@ -8,11 +8,9 @@ from starlette.responses import JSONResponse
 
 from dspback.database.procedures import delete_submission
 from dspback.dependencies import RepositoryException
-from dspback.pydantic_schemas import RepositoryType, SubmissionBase
+from dspback.pydantic_schemas import RepositoryType
 from dspback.routers.metadata_class import MetadataRoutes
 from dspback.schemas.hydroshare.model import ResourceMetadata
-from dspback.utils.jsonld.scraper import scrape_jsonld
-from dspback.utils.mongo import delete_jsonld, upsert_jsonld
 
 router = InferringRouter()
 
@@ -137,28 +135,3 @@ class HydroShareMetadataRoutes(MetadataRoutes):
     async def get_json_metadata_repository(self, request: Request, identifier):
         json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
         return json_metadata
-
-    @router.put(
-        '/jsonld/hydroshare/{identifier}',
-        tags=["HydroShare"],
-        summary="",
-        description="",
-    )
-    async def submit_jsonld(self, request: Request, identifier):
-        res_url = self.jsonld_url % identifier
-        response = requests.get(res_url)
-        if response.status_code >= 300:
-            raise RepositoryException(status_code=response.status_code, detail=response.text)
-
-        json_ld = scrape_jsonld(response.text, identifier, {"id": "schemaorg"})
-        upsert_jsonld(json_ld)
-        return json_ld
-
-    @router.delete(
-        '/jsonld/hydroshare/{identifier}',
-        tags=["HydroShare"],
-        summary="",
-        description="",
-    )
-    async def delete_jsonld(self, request: Request, identifier):
-        delete_jsonld(identifier)
