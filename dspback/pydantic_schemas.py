@@ -119,13 +119,13 @@ class ZenodoRecord(BaseRecord):
     description: str = None
     keywords: List[str] = []
     creators: List[Creator] = []
-    license: str = None
-    notes: str = None
-    publication_date: datetime = None
-    relations: List[RelatedIdentifier] = []
-    modified: datetime = None
-    created: datetime = None
-    record_id: str = None
+    license: Optional[str]
+    notes: str = ""
+    publication_date: Optional[datetime]
+    relations: Optional[List[RelatedIdentifier]] = []
+    modified: Optional[datetime]
+    created: Optional[datetime]
+    record_id: str
 
     @root_validator(pre=True, allow_reuse=True)
     def extract_metadata(cls, values):
@@ -154,20 +154,25 @@ class ZenodoRecord(BaseRecord):
     def to_jsonld(self, identifier) -> JSONLD:
         settings = get_settings()
         view_url = settings.zenodo_view_url % identifier
-        return JSONLD(
-            repository_identifier=identifier,
-            url=view_url,
-            provider={'name': 'Zenodo'},
-            name=self.title,
-            description=self.description,
-            keywords=self.keywords,
-            creator={'@list': [{'name': creator.name} for creator in self.creators]},
-            license={'text': self.license},
-            funding=[{'name': self.notes, 'funder': [{'name': self.notes}]}],  # need to do some regex magic
-            datePublished=self.publication_date,
-            dateCreated=self.created,
-            relations=[f'{relation.name} - {relation.identifier}' for relation in self.relations],
-        )
+        required = {
+            "url": view_url,
+            "provider": {'name': 'Zenodo'},
+            "name": self.title,
+            "description": self.description,
+            "keywords": self.keywords,
+            "creator": {'@list': [{'name': creator.name} for creator in self.creators]},
+            "funding": [{'name': self.notes, 'funder': [{'name': self.notes}]}],  # need to do some regex magic
+        }
+        optional = {}
+        if self.license:
+            optional["license"] = {'text': self.license}
+        if self.publication_date:
+            optional["datePublished"] = self.publication_date
+        if self.created:
+            optional["dateCreated"] = self.created
+        if self.relations:
+            optional["relations"] = [f'{relation.name} - {relation.identifier}' for relation in self.relations]
+        return JSONLD(**required, **optional)
 
 
 class HydroShareRecord(BaseRecord):
@@ -208,12 +213,12 @@ class HydroShareRecord(BaseRecord):
     title: str = None
     description: str = None
     subjects: List[str] = []
-    period_coverage: PeriodCoverage = PeriodCoverage()
-    spatial_coverage: SpatialCoverage = SpatialCoverage()
+    period_coverage: Optional[PeriodCoverage]
+    spatial_coverage: Optional[SpatialCoverage]
     creators: List[Creator] = []
-    awards: List[Award]
-    rights: Rights
-    relations: List[Relation] = []
+    awards: List[Award] = []
+    rights: Optional[Rights]
+    relations: Optional[List[Relation]] = []
     published: Optional[datetime]
     modified: Optional[datetime]
     created: Optional[datetime]
@@ -239,25 +244,32 @@ class HydroShareRecord(BaseRecord):
     def to_jsonld(self, identifier) -> JSONLD:
         settings = get_settings()
         view_url = settings.hydroshare_view_url % identifier
-        return JSONLD(
-            repository_identifier=identifier,
-            url=view_url,
-            provider={'name': 'HydroShare'},
-            name=self.title,
-            description=self.description,
-            keywords=self.subjects,
-            temporalCoverage=self.period_coverage.dict(),
-            spatialCoverage={"geojson": self.spatial_coverage.geojson},
-            creator={'@list': [{'name': creator.name} for creator in self.creators]},
-            license={'text': self.rights.statement},
-            funding=[
+        required = {
+            "url": view_url,
+            "provider": {'name': 'HydroShare'},
+            "name": self.title,
+            "description": self.description,
+            "keywords": self.subjects,
+            "creator": {'@list': [{'name': creator.name} for creator in self.creators]},
+            "funding": [
                 {"name": award.title, "number": award.number, "funder": [{"name": award.funding_agency_name}]}
                 for award in self.awards
             ],
-            datePublished=self.published,
-            dateCreated=self.created,
-            relations=[relation.value for relation in self.relations],
-        )
+        }
+        optional = {}
+        if self.period_coverage:
+            optional["temporalCoverage"] = self.period_coverage
+        if self.spatial_coverage:
+            optional["spatialCoverage"] = {"geojson": self.spatial_coverage.geojson}
+        if self.rights:
+            optional["license"] = {'text': self.rights.statement}
+        if self.published:
+            optional["datePublished"] = self.published
+        if self.created:
+            optional["dateCreated"] = self.created
+        if self.relations:
+            optional["relations"] = [relation.value for relation in self.relations]
+        return JSONLD(**required, **optional)
 
 
 class EarthChemRecord(BaseRecord):
@@ -286,11 +298,11 @@ class EarthChemRecord(BaseRecord):
     description: str = None
     keywords: List[str] = []
     contributors: List[Contributor] = []
-    leadAuthor: Contributor = None
-    license: License
+    leadAuthor: Contributor
+    license: Optional[License]
     fundings: List[Funding] = []
     datePublished: Optional[datetime]
-    relatedResources: List[RelatedResource] = []
+    relatedResources: Optional[List[RelatedResource]] = []
 
     def to_submission(self, identifier) -> Submission:
         settings = get_settings()
@@ -311,26 +323,25 @@ class EarthChemRecord(BaseRecord):
         settings = get_settings()
         view_url = settings.earthchem_view_url % identifier
         creators = [{'name': self.leadAuthor.name}] + [{'name': contributor.name} for contributor in self.contributors]
-
-        return JSONLD(
-            repository_identifier=identifier,
-            url=view_url,
-            provider={'name': 'EarthChem Library'},
-            name=self.title,
-            description=self.description,
-            keywords=self.keywords,
-            # We do not have temporal/spatial coverage yet
-            # temporalCoverage=self.period_coverage.dict(),
-            # spatialCoverage={"geojson": self.spatial_coverage.geojson},
-            creator={'@list': creators},
-            license={'text': self.license.alternateName},
-            funding=[
+        required = {
+            "url": view_url,
+            "provider": {'name': 'EarthChem Library'},
+            "name": self.title,
+            "description": self.description,
+            "keywords": self.keywords,
+            "creator": {'@list': creators},
+            "funding": [
                 {"number": funding.identifier, "funder": [{"name": funding.funder.name}]} for funding in self.fundings
             ],
-            datePublished=self.datePublished,
-            # dateCreated=self.created,
-            relations=[relation.bibliographicCitation for relation in self.relatedResources],
-        )
+        }
+        optional = {}
+        if self.license:
+            optional["license"] = {'text': self.license.alternateName}
+        if self.datePublished:
+            optional["datePublished"] = self.datePublished
+        if self.relatedResources:
+            optional["relations"] = [relation.bibliographicCitation for relation in self.relatedResources]
+        return JSONLD(**required, **optional)
 
 
 class ExternalRecord(BaseRecord):
@@ -379,11 +390,11 @@ class ExternalRecord(BaseRecord):
     temporalCoverage: Optional[TemporalCoverage]
     spatialCoverage: Optional[SpatialCoverage]
     creators: List[Creator] = []
-    license: License
+    license: Optional[License]
     funders: List[Funder] = []
-    datePublished: datetime
-    relations: List[Relation] = []
-    dateCreated: datetime
+    datePublished: Optional[datetime]
+    relations: Optional[List[Relation]] = []
+    dateCreated: Optional[datetime]
     identifier: str = None
     url: HttpUrl = None
 
@@ -398,22 +409,30 @@ class ExternalRecord(BaseRecord):
         )
 
     def to_jsonld(self, identifier) -> JSONLD:
-        return JSONLD(
-            repository_identifier=identifier,
-            url=self.url,
-            provider={'name': self.provider.name},
-            name=self.name,
-            description=self.description,
-            keywords=self.keywords,
-            temporalCoverage=self.temporalCoverage,
-            spatialCoverage={"geojson": self.spatialCoverage.geojson},
-            creator={'@list': self.creators},
-            license={'text': self.license.description},
-            funding=[
+        required = {
+            "repository_identifier": identifier,
+            "url": self.url,
+            "provider": {'name': self.provider.name},
+            "name": self.name,
+            "description": self.description,
+            "keywords": self.keywords,
+            "creator": {'@list': self.creators},
+            "funding": [
                 {"name": funder.awardName, "number": funder.awardNumber, "funder": [{"name": funder.fundingAgency}]}
                 for funder in self.funders
             ],
-            datePublished=self.datePublished,
-            dateCreated=self.dateCreated,
-            relations=[relation.value for relation in self.relations],
-        )
+        }
+        optional = {}
+        if self.temporalCoverage:
+            optional["temporalCoverage"] = self.temporalCoverage
+        if self.spatialCoverage:
+            optional["spatialCoverage"] = {"geojson": self.spatialCoverage.geojson}
+        if self.license:
+            optional["license"] = {'text': self.license.description}
+        if self.datePublished:
+            optional["datePublished"] = self.datePublished
+        if self.dateCreated:
+            optional["dateCreated"] = self.dateCreated
+        if self.relations:
+            optional["relations"] = [relation.value for relation in self.relations]
+        return JSONLD(**required, **optional)

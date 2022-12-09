@@ -31,7 +31,7 @@ def test_hydroshare_to_jsonld(hydroshare):
     assert hs_jsonld.name == hs_record.title
     assert hs_jsonld.description == hs_record.description
     assert hs_jsonld.keywords == hs_record.subjects
-    assert hs_jsonld.temporalCoverage == hs_record.period_coverage.dict()
+    assert hs_jsonld.temporalCoverage == hs_record.period_coverage
     assert hs_jsonld.spatialCoverage.geojson == hs_record.spatial_coverage.geojson
     assert hs_jsonld.creator.dict(by_alias=True) == {
         '@list': [{'name': creator.name} for creator in hs_record.creators]
