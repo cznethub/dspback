@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional, Type, TypeVar
+from typing import List, Optional
 
 from beanie import Document, Link
 from geojson import Feature, Point
@@ -155,6 +155,7 @@ class ZenodoRecord(BaseRecord):
         settings = get_settings()
         view_url = settings.zenodo_view_url % identifier
         required = {
+            "repository_identifier": identifier,
             "url": view_url,
             "provider": {'name': 'Zenodo'},
             "name": self.title,
@@ -245,6 +246,7 @@ class HydroShareRecord(BaseRecord):
         settings = get_settings()
         view_url = settings.hydroshare_view_url % identifier
         required = {
+            "repository_identifier": identifier,
             "url": view_url,
             "provider": {'name': 'HydroShare'},
             "name": self.title,
@@ -324,6 +326,7 @@ class EarthChemRecord(BaseRecord):
         view_url = settings.earthchem_view_url % identifier
         creators = [{'name': self.leadAuthor.name}] + [{'name': contributor.name} for contributor in self.contributors]
         required = {
+            "repository_identifier": identifier,
             "url": view_url,
             "provider": {'name': 'EarthChem Library'},
             "name": self.title,
