@@ -17,7 +17,6 @@ router = InferringRouter()
 
 @cbv(router)
 class HydroShareMetadataRoutes(MetadataRoutes):
-
     request_model = ResourceMetadata
     response_model = ResourceMetadata
     repository_type = RepositoryType.HYDROSHARE

@@ -36,7 +36,6 @@ def from_zenodo_format(json_metadata):
 
 @cbv(router)
 class ZenodoMetadataRoutes(MetadataRoutes):
-
     request_model = ZenodoDatasetsSchemaForCzNetV100
     response_model = ZenodoDatasetsSchemaForCzNetV100
     repository_type = RepositoryType.ZENODO

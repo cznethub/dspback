@@ -16,7 +16,6 @@ router = InferringRouter()
 
 @cbv(router)
 class ExternalMetadataRoutes(MetadataRoutes):
-
     request_model = GenericDatasetSchemaForCzNetDataSubmissionPortalV100
     response_model = GenericDatasetSchemaForCzNetDataSubmissionPortalV100
     repository_type = RepositoryType.EXTERNAL

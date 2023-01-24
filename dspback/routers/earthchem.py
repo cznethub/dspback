@@ -28,7 +28,6 @@ def prepare_metadata_for_ecl(json_metadata):
 
 @cbv(router)
 class EarthChemMetadataRoutes(MetadataRoutes):
-
     request_model = Record
     request_model_update = Record
     response_model = Record

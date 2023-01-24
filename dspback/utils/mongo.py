@@ -16,6 +16,7 @@ def get_database():
     # Create the database for our example (we will use the same database throughout the tutorial
     return client[settings.mongo_database][settings.mongo_collection]
 
+
 async def upsert_jsonld(json_ld):
     existing_jsonld = await JSONLD.find_one(JSONLD.repository_identifier == json_ld.repository_identifier)
     if existing_jsonld:

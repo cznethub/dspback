@@ -16,6 +16,7 @@ async def delete_repository_access_token(repository, user: User):
     repository_token = user.repository_token(repository)
     repository_token.delete(link_rule=DeleteRules.DELETE_LINKS)
 
+
 async def create_or_update_submission(identifier, submission, user: User, metadata_json):
     submission.metadata_json = json.dumps(metadata_json)
     existing_submission = user.submission(identifier)
