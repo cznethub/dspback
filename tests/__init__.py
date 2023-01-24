@@ -4,18 +4,37 @@ import secrets
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
+import motor
 import pytest
+from asgi_lifespan import LifespanManager
 from authlib.integrations.starlette_client import StarletteRemoteApp
+from beanie import init_beanie
+from httpx import AsyncClient
 from starlette.testclient import TestClient
 
+from dspback.config import get_settings
 from dspback.main import app
+from dspback.pydantic_schemas import JSONLD, RepositoryToken, Submission, User
 
 prefix = "/api"
-client = TestClient(app)
+
+pytestmark = pytest.mark.asyncio
 
 
 @pytest.fixture
-def authorize_response():
+async def client_test():
+    """
+    Create an instance of the client.
+    :return: yield HTTP client.
+    """
+    async with LifespanManager(app):
+        async with AsyncClient(app=app, base_url="http://test", follow_redirects=True) as ac:
+            ac.app = app
+            yield ac
+
+
+@pytest.fixture
+async def authorize_response():
     return {
         'access_token': 'e6c2b3c2-c204-4199-a1c1-9b29e964b74b',
         'token_type': 'bearer',
@@ -38,7 +57,7 @@ def authorize_response():
 
 
 @pytest.fixture
-def authorize_response_expired():
+async def authorize_response_expired():
     return {
         'access_token': 'e6c2b3c2-c204-4199-a1c1-9b29e964b74b',
         'token_type': 'bearer',
@@ -61,7 +80,7 @@ def authorize_response_expired():
 
 
 @pytest.fixture
-def authorize_response_hydroshare():
+async def authorize_response_hydroshare():
     return {
         'access_token': 'ASbna3fKiyb2wZWZBKnIipircDPVwa',
         'expires_in': 2592000,
@@ -73,39 +92,39 @@ def authorize_response_hydroshare():
 
 
 @pytest.fixture
-def user_cookie(authorize_response):
+async def user_cookie(client_test, authorize_response):
     with patch.object(StarletteRemoteApp, 'authorize_access_token', return_value=authorize_response):
-        response = client.get(prefix + "/auth", allow_redirects=False)
+        response = await client_test.get(prefix + "/auth")
         assert response.status_code == 200
         return response.text
 
 
 @pytest.fixture(scope="function")
-def change_test_dir(request):
+async def change_test_dir(request):
     os.chdir(request.fspath.dirname)
     yield
     os.chdir(request.config.invocation_dir)
 
 
 @pytest.fixture
-def hydroshare(change_test_dir):
+async def hydroshare(change_test_dir):
     with open("data/hydroshare.json", "r") as f:
         return json.loads(f.read())
 
 
 @pytest.fixture
-def zenodo(change_test_dir):
+async def zenodo(change_test_dir):
     with open("data/zenodo.json", "r") as f:
         return json.loads(f.read())
 
 
 @pytest.fixture
-def external(change_test_dir):
+async def external(change_test_dir):
     with open("data/external.json", "r") as f:
         return json.loads(f.read())
 
 
 @pytest.fixture
-def earthchem(change_test_dir):
+async def earthchem(change_test_dir):
     with open("data/earthchem.json", "r") as f:
         return json.loads(f.read())

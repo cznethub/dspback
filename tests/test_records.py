@@ -9,7 +9,7 @@ from dspback.pydantic_schemas import EarthChemRecord, ExternalRecord, HydroShare
 from tests import change_test_dir, earthchem, external, hydroshare, zenodo
 
 
-def test_hydroshare_to_submission(hydroshare):
+async def test_hydroshare_to_submission(hydroshare):
     hs_record = HydroShareRecord(**hydroshare)
     hs_submission = hs_record.to_submission("470e2ef676e947e5ab2628556c309122")
 
@@ -22,7 +22,7 @@ def test_hydroshare_to_submission(hydroshare):
     assert hs_submission.url == get_settings().hydroshare_view_url % hs_record.identifier
 
 
-def test_hydroshare_to_jsonld(hydroshare):
+async def test_hydroshare_to_jsonld(hydroshare):
     hs_record = HydroShareRecord(**hydroshare)
     hs_jsonld = hs_record.to_jsonld("470e2ef676e947e5ab2628556c309122")
 
@@ -46,7 +46,7 @@ def test_hydroshare_to_jsonld(hydroshare):
     assert hs_jsonld.relations == [relation.value for relation in hs_record.relations]
 
 
-def test_zenodo_to_submission(zenodo):
+async def test_zenodo_to_submission(zenodo):
     zenodo_record = ZenodoRecord(**zenodo)
     zenodo_submission = zenodo_record.to_submission("947940")
 
@@ -58,7 +58,7 @@ def test_zenodo_to_submission(zenodo):
     assert zenodo_submission.url == get_settings().zenodo_view_url % zenodo_record.record_id
 
 
-def test_zenodo_to_jsonld(zenodo):
+async def test_zenodo_to_jsonld(zenodo):
     zenodo_record = ZenodoRecord(**zenodo)
     zenodo_jsonld = zenodo_record.to_jsonld("947940")
 
@@ -81,7 +81,7 @@ def test_zenodo_to_jsonld(zenodo):
     ]
 
 
-def test_external_to_submission(external):
+async def test_external_to_submission(external):
     external_record = ExternalRecord(**external)
     external_submission = external_record.to_submission("947940")
 
@@ -93,7 +93,7 @@ def test_external_to_submission(external):
     assert external_submission.url == external_record.url
 
 
-def test_external_to_jsonld(external):
+async def test_external_to_jsonld(external):
     external_record = ExternalRecord(**external)
     external_jsonld = external_record.to_jsonld("947940")
 
@@ -117,7 +117,7 @@ def test_external_to_jsonld(external):
     assert external_jsonld.relations == [relation.value for relation in external_record.relations]
 
 
-def test_earthchem_to_submission(earthchem):
+async def test_earthchem_to_submission(earthchem):
     earthchem_record = EarthChemRecord(**earthchem)
     earthchem_submission = earthchem_record.to_submission("947940")
 
@@ -131,7 +131,7 @@ def test_earthchem_to_submission(earthchem):
     assert earthchem_submission.url == get_settings().earthchem_view_url % "947940"
 
 
-def test_earthchem_to_jsonld(earthchem):
+async def test_earthchem_to_jsonld(earthchem):
     ecl_record = EarthChemRecord(**earthchem)
     ecl_jsonld = ecl_record.to_jsonld("947940")
 

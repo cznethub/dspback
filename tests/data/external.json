@@ -54,8 +54,8 @@
     "name": "string",
     "east": 0,
     "north": 0,
-    "units": "string",
-    "projection": "string"
+    "units": "Decimal degrees",
+    "projection": "WGS 84 EPSG:4326"
   },
   "provider": {
     "name": "string",
