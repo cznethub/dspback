@@ -1,29 +1,14 @@
 import datetime
 import json
 
-from beanie import WriteRules
 from fastapi import APIRouter
 from fastapi.params import Depends
+from pydantic import BaseModel
 
-<<<<<<< HEAD
-from dspback.database.procedures import delete_submission
+from dspback.database.procedures import delete_submission, create_or_update_submission
 from dspback.dependencies import get_current_user
-from dspback.pydantic_schemas import (
-    EarthChemRecord,
-    ExternalRecord,
-    HydroShareRecord,
-    RepositoryType,
-    User,
-    ZenodoRecord,
-)
-from dspback.utils.jsonld.pydantic_schemas import JSONLD
-=======
-from dspback.database.models import UserTable
-from dspback.database.procedures import create_or_update_submission, delete_submission
-from dspback.dependencies import get_current_user, get_db
-from dspback.pydantic_schemas import EarthChemRecord, ExternalRecord, HydroShareRecord, RepositoryType, ZenodoRecord
+from dspback.pydantic_schemas import User, EarthChemRecord, ExternalRecord, HydroShareRecord, RepositoryType, ZenodoRecord
 from dspback.utils.mongo import upsert_jsonld
->>>>>>> optional-tweaks
 
 router = APIRouter()
 
@@ -44,28 +29,8 @@ def convert_timestamp(item_date_object):
 async def submit_record(repository, identifier, user: User, metadata_json):
     record = record_type_by_repo_type[repository](**metadata_json)
     submission = record.to_submission(identifier)
-<<<<<<< HEAD
-    submission.metadata_json = json.dumps(metadata_json)
-    existing_submission = user.submission(identifier)
-    if existing_submission:
-        existing_submission.update(submission.dict(exclude_unset=True))
-        await existing_submission.save(link_rule=WriteRules.WRITE)
-    else:
-        user.submissions.append(submission)
-        await user.save(link_rule=WriteRules.WRITE)
-    # TODO, remove the coupling, probably just drop it into a collection with a pipeline setup
-    jsonld = record.to_jsonld(identifier)
-    existing_jsonld = await JSONLD.find_one(JSONLD.repository_identifier == jsonld.repository_identifier)
-    if existing_jsonld:
-        existing_jsonld.update(jsonld.dict(exclude_unset=True))
-        await existing_jsonld.save(link_rule=WriteRules.WRITE)
-    else:
-        await jsonld.save(link_rule=WriteRules.WRITE)
-=======
-    metadata_json_str = json.dumps(metadata_json, default=BaseModel.__json_encoder__)
-    create_or_update_submission(db, submission, user, metadata_json_str)
-    upsert_jsonld(record.to_jsonld(identifier))
->>>>>>> optional-tweaks
+    await create_or_update_submission(identifier, submission, user, metadata_json)
+    await upsert_jsonld(record.to_jsonld(identifier))
     return submission
 
 

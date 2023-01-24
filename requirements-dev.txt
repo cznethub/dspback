@@ -2,4 +2,4 @@ black
 isort
 pytest-xdist
 pytest-cov
-datamodel-code-generator
+datamodel-code-generator==0.15.0
