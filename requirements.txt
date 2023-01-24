@@ -60,3 +60,4 @@ pymongo
 geojson
 motor
 beanie
+minio

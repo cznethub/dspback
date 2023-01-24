@@ -14,7 +14,8 @@ from dspback.routers import (
     authentication,
     earthchem,
     external,
-    hydroshare,
+    #hydroshare,
+    hydroshare_minio,
     repository_authorization,
     submissions,
     zenodo,
@@ -30,7 +31,8 @@ app.include_router(authentication.router, prefix="/api", tags=["Authentication"]
 app.include_router(
     repository_authorization.router, prefix="/api", tags=["Repository Authorization"], include_in_schema=False
 )
-app.include_router(hydroshare.router, prefix="/api")
+#app.include_router(hydroshare.router, prefix="/api")
+app.include_router(hydroshare_minio.router, prefix="/api")
 app.include_router(zenodo.router, prefix="/api")
 app.include_router(earthchem.router, prefix="/api")
 app.include_router(external.router, prefix="/api")
