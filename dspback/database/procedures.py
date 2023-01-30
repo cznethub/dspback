@@ -25,9 +25,9 @@ async def create_or_update_submission(identifier, record, user: User, metadata_j
     existing_submission = user.submission(identifier)
     if existing_submission:
         existing_submission.update(submission.dict(exclude_unset=True))
-        await existing_submission.save(link_rule=WriteRules.WRITE)
+        await existing_submission.set(submission.dict(exclude_unset=True))
     else:
         user.submissions.append(submission)
         await user.save(link_rule=WriteRules.WRITE)
 
-    asyncio.get_event_loop().create_task(upsert_discovery_entry(submission, identifier))
+    asyncio.get_event_loop().create_task(upsert_discovery_entry(record, identifier))

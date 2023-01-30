@@ -30,8 +30,7 @@ async def upsert_discovery_entry(record, identifier):
         if not json_ld:
             await existing_jsonld.delete()
         else:
-            existing_jsonld.update(json_ld.dict(exclude_unset=True))
-            await existing_jsonld.save(link_rule=WriteRules.WRITE)
+            await existing_jsonld.set(json_ld.dict(exclude_unset=True))
     else:
         await json_ld.save(link_rule=WriteRules.WRITE)
 
