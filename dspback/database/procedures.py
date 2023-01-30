@@ -9,12 +9,12 @@ from dspback.utils.jsonld.pydantic_schemas import JSONLD
 async def delete_submission(identifier: str, user: User):
     submission = user.submission(identifier)
     await submission.delete(link_rule=DeleteRules.DELETE_LINKS)
-    JSONLD.find_one(JSONLD.repository_identifier == identifier).delete()
+    await JSONLD.find_one(JSONLD.repository_identifier == identifier).delete()
 
 
 async def delete_repository_access_token(repository, user: User):
     repository_token = user.repository_token(repository)
-    repository_token.delete(link_rule=DeleteRules.DELETE_LINKS)
+    await repository_token.delete(link_rule=DeleteRules.DELETE_LINKS)
 
 
 async def create_or_update_submission(identifier, submission, user: User, metadata_json):

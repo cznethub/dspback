@@ -16,7 +16,7 @@ from dspback.pydantic_schemas import (
     User,
     ZenodoRecord,
 )
-from dspback.utils.mongo import upsert_jsonld
+from dspback.utils.mongo import upsert_discovery_entry
 
 router = APIRouter()
 
@@ -38,8 +38,10 @@ async def submit_record(repository, identifier, user: User, metadata_json):
     record = record_type_by_repo_type[repository](**metadata_json)
     submission = record.to_submission(identifier)
     await create_or_update_submission(identifier, submission, user, metadata_json)
-    asyncio.get_event_loop().create_task(upsert_jsonld(record.to_jsonld(identifier)))
+
+    asyncio.get_event_loop().create_task(upsert_discovery_entry(submission))
     return submission
+
 
 @router.delete('/submit/{repository}/{identifier}')
 async def delete_repository_record(repository: RepositoryType, identifier: str, user: User = Depends(get_current_user)):
