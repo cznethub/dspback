@@ -4,6 +4,7 @@ from beanie import WriteRules
 from pymongo import MongoClient
 
 from dspback.config import get_settings
+from dspback.pydantic_schemas import RepositoryType
 from dspback.utils.jsonld.pydantic_schemas import JSONLD
 from dspback.utils.jsonld.scraper import retrieve_discovery_jsonld
 
@@ -18,8 +19,12 @@ def get_database():
     return client[settings.mongo_database][settings.mongo_collection]
 
 
-async def upsert_discovery_entry(submission):
-    json_ld = await retrieve_discovery_jsonld(submission)
+async def upsert_discovery_entry(record, identifier):
+    submission = record.to_submission(identifier)
+    if submission.repo_type == RepositoryType.EXTERNAL:
+        json_ld = record.to_jsonld(identifier)
+    else:
+        json_ld = await retrieve_discovery_jsonld(submission)
     existing_jsonld = await JSONLD.find_one(JSONLD.repository_identifier == json_ld.repository_identifier)
     if existing_jsonld:
         if not json_ld:

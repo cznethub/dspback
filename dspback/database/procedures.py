@@ -1,9 +1,11 @@
+import asyncio
 import json
 
 from beanie import DeleteRules, WriteRules
 
 from dspback.pydantic_schemas import User
 from dspback.utils.jsonld.pydantic_schemas import JSONLD
+from dspback.utils.mongo import upsert_discovery_entry
 
 
 async def delete_submission(identifier: str, user: User):
@@ -17,7 +19,8 @@ async def delete_repository_access_token(repository, user: User):
     await repository_token.delete(link_rule=DeleteRules.DELETE_LINKS)
 
 
-async def create_or_update_submission(identifier, submission, user: User, metadata_json):
+async def create_or_update_submission(identifier, record, user: User, metadata_json):
+    submission = record.to_submission(identifier)
     submission.metadata_json = json.dumps(metadata_json)
     existing_submission = user.submission(identifier)
     if existing_submission:
@@ -26,3 +29,5 @@ async def create_or_update_submission(identifier, submission, user: User, metada
     else:
         user.submissions.append(submission)
         await user.save(link_rule=WriteRules.WRITE)
+
+    asyncio.get_event_loop().create_task(upsert_discovery_entry(submission, identifier))

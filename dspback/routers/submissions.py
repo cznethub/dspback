@@ -1,10 +1,7 @@
-import asyncio
 import datetime
-import json
 
 from fastapi import APIRouter
 from fastapi.params import Depends
-from pydantic import BaseModel
 
 from dspback.database.procedures import create_or_update_submission, delete_submission
 from dspback.dependencies import get_current_user
@@ -16,7 +13,6 @@ from dspback.pydantic_schemas import (
     User,
     ZenodoRecord,
 )
-from dspback.utils.mongo import upsert_discovery_entry
 
 router = APIRouter()
 
@@ -36,11 +32,7 @@ def convert_timestamp(item_date_object):
 
 async def submit_record(repository, identifier, user: User, metadata_json):
     record = record_type_by_repo_type[repository](**metadata_json)
-    submission = record.to_submission(identifier)
-    await create_or_update_submission(identifier, submission, user, metadata_json)
-
-    asyncio.get_event_loop().create_task(upsert_discovery_entry(submission))
-    return submission
+    return await create_or_update_submission(identifier, record, user, metadata_json)
 
 
 @router.delete('/submit/{repository}/{identifier}')
