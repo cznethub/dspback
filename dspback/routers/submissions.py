@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import json
 
@@ -37,9 +38,8 @@ async def submit_record(repository, identifier, user: User, metadata_json):
     record = record_type_by_repo_type[repository](**metadata_json)
     submission = record.to_submission(identifier)
     await create_or_update_submission(identifier, submission, user, metadata_json)
-    await upsert_jsonld(record.to_jsonld(identifier))
+    asyncio.get_event_loop().create_task(upsert_jsonld(record.to_jsonld(identifier)))
     return submission
-
 
 @router.delete('/submit/{repository}/{identifier}')
 async def delete_repository_record(repository: RepositoryType, identifier: str, user: User = Depends(get_current_user)):
