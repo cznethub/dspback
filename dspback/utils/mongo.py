@@ -25,14 +25,15 @@ async def upsert_discovery_entry(record, identifier):
         json_ld = record.to_jsonld(identifier)
     else:
         json_ld = await retrieve_discovery_jsonld(submission)
-    existing_jsonld = await JSONLD.find_one(JSONLD.repository_identifier == json_ld.repository_identifier)
+    existing_jsonld = await JSONLD.find_one(JSONLD.repository_identifier == identifier)
     if existing_jsonld:
         if not json_ld:
             await existing_jsonld.delete()
         else:
             await existing_jsonld.set(json_ld.dict(exclude_unset=True))
     else:
-        await json_ld.save(link_rule=WriteRules.WRITE)
+        if json_ld:
+            await json_ld.save(link_rule=WriteRules.WRITE)
 
 
 async def delete_discovery_entry(identifier):

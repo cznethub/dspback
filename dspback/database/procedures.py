@@ -24,7 +24,6 @@ async def create_or_update_submission(identifier, record, user: User, metadata_j
     submission.metadata_json = json.dumps(metadata_json)
     existing_submission = user.submission(identifier)
     if existing_submission:
-        existing_submission.update(submission.dict(exclude_unset=True))
         await existing_submission.set(submission.dict(exclude_unset=True))
     else:
         user.submissions.append(submission)

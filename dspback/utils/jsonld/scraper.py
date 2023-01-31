@@ -19,7 +19,7 @@ def scrape_jsonld(resource_data, script_match):
 
 async def fetch_landing_page(url):
     async with aiohttp.ClientSession() as session:
-        async with session.post(url) as response:
+        async with session.get(url) as response:
             if response.status != 200:
                 return None
             return await response.text()
@@ -33,5 +33,4 @@ async def retrieve_discovery_jsonld(submission):
         {"id": "schemaorg"} if submission.repo_type == RepositoryType.HYDROSHARE else {"type": "application/ld+json"}
     )
     resource_json_ld = scrape_jsonld(resource_data, script_match=script_match)
-    resource_json_ld["@repository_identifier"] = submission.identifier
-    return JSONLD(**resource_json_ld)
+    return JSONLD(**resource_json_ld, repository_identifier=submission.identifier)
