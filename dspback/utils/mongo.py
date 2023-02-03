@@ -24,7 +24,7 @@ async def upsert_discovery_entry(record, identifier):
     if submission.repo_type == RepositoryType.EXTERNAL:
         json_ld = record.to_jsonld(identifier)
     else:
-        json_ld = await retrieve_discovery_jsonld(submission)
+        json_ld = await retrieve_discovery_jsonld(submission.identifier, submission.repo_type, submission.url)
     existing_jsonld = await JSONLD.find_one(JSONLD.repository_identifier == identifier)
     if existing_jsonld:
         if not json_ld:

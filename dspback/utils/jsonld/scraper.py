@@ -25,12 +25,15 @@ async def fetch_landing_page(url):
             return await response.text()
 
 
-async def retrieve_discovery_jsonld(submission):
-    resource_data = await fetch_landing_page(submission.url)
+async def retrieve_discovery_jsonld(identifier, repository_type, url):
+    resource_data = await fetch_landing_page(url)
     if not resource_data:
         return None
     script_match = (
-        {"id": "schemaorg"} if submission.repo_type == RepositoryType.HYDROSHARE else {"type": "application/ld+json"}
+        {"id": "schemaorg"} if repository_type == RepositoryType.HYDROSHARE else {"type": "application/ld+json"}
     )
     resource_json_ld = scrape_jsonld(resource_data, script_match=script_match)
-    return JSONLD(**resource_json_ld, repository_identifier=submission.identifier)
+    # only Zenodo does not have provider in the json ld
+    if repository_type == RepositoryType.ZENODO:
+        resource_json_ld['provider'] = {'name': 'Zenodo'}
+    return JSONLD(**resource_json_ld, repository_identifier=identifier)

@@ -45,11 +45,11 @@ class JSONLD(Document):
     url: HttpUrl
     type: str = Field(alias='@type', default='Dataset')
     provider: Provider
-    name: str
-    description: str = None
-    keywords: List[str]
-    creator: CreatorList  # creator.@list.name
-    funding: List[Funding]
+    name: Optional[str]
+    description: Optional[str]
+    keywords: Optional[List[str]]
+    creator: Optional[CreatorList]  # creator.@list.name
+    funding: Optional[List[Funding]]
 
     temporalCoverage: Optional[TemporalCoverage]
     spatialCoverage: Optional[SpatialCoverage]
