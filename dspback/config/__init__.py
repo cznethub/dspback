@@ -80,10 +80,6 @@ class Settings(BaseSettings):
     outside_host: str
 
     @property
-    def database_url(self):
-        return f'postgresql://{self.database_username}:{self.database_password}@{self.database_host}:{self.database_port}/{self.database_name}'
-
-    @property
     def mongo_url(self):
         return f"mongodb://{self.mongo_username}:{self.mongo_password}@{self.mongo_host}/?retryWrites=true&w=majority"
 

@@ -54,7 +54,7 @@ build:
 	docker-compose --env-file .env build dspback mongodb
 
 .PHONY: build-all
-build:
+build-all:
 	docker-compose --env-file .env build
 
 .PHONY: build-dspfront
