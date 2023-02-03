@@ -39,8 +39,8 @@ class Funding(BaseModel):
     number: str = None
     funder: List[Funder] = []
 
-
 class JSONLD(Document):
+    context: HttpUrl = Field(alias='@context', default='https://schema.org')
     repository_identifier: str
     url: HttpUrl
     type: str = Field(alias='@type', default='Dataset')
