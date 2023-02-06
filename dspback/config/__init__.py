@@ -68,7 +68,7 @@ class Settings(BaseSettings):
     mongo_password: str
     mongo_host: str
     mongo_database: str
-    mongo_collection: str
+    mongo_protocol: str
 
     jwt_secret_key: str
     jwt_algorithm: str = "HS256"
@@ -81,7 +81,7 @@ class Settings(BaseSettings):
 
     @property
     def mongo_url(self):
-        return f"mongodb://{self.mongo_username}:{self.mongo_password}@{self.mongo_host}/?retryWrites=true&w=majority"
+        return f"{self.mongo_protocol}://{self.mongo_username}:{self.mongo_password}@{self.mongo_host}/?retryWrites=true&w=majority"
 
     class Config:
         env_file = dotenv_file
