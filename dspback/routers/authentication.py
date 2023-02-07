@@ -37,7 +37,7 @@ async def logout(
     response = RedirectResponse(url="/")
     response.delete_cookie("Authorization", domain=settings.outside_host)
     user.access_token = None
-    user.save()
+    await user.save()
     return response
 
 

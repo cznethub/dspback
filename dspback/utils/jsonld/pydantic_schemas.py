@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, List, Optional
 
-from beanie import Document
+from beanie import Document, Indexed
 from pydantic import BaseModel, Field, HttpUrl
 
 
@@ -42,7 +42,7 @@ class Funding(BaseModel):
 class JSONLD(Document):
     context: HttpUrl = Field(alias='@context', default='https://schema.org')
     repository_identifier: str
-    url: HttpUrl
+    url: Indexed(HttpUrl, unique=True)
     type: str = Field(alias='@type', default='Dataset')
     provider: Provider
     name: Optional[str]

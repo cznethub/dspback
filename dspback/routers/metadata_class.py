@@ -54,7 +54,3 @@ class MetadataRoutes:
         if "delete" not in repository_config[self.repository_type]:
             raise ValueError(f"No 'delete' value found for {self.repository_type} configuration")
         self.delete_url = repository_config[self.repository_type]["delete"]
-
-        if "jsonld" not in repository_config[self.repository_type]:
-            raise ValueError(f"No 'jsonld' value found for {self.repository_type} configuration")
-        self.jsonld_url = repository_config[self.repository_type]["jsonld"]
