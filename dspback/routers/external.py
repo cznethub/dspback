@@ -16,7 +16,6 @@ router = InferringRouter()
 
 @cbv(router)
 class ExternalMetadataRoutes(MetadataRoutes):
-
     request_model = GenericDatasetSchemaForCzNetDataSubmissionPortalV100
     response_model = GenericDatasetSchemaForCzNetDataSubmissionPortalV100
     repository_type = RepositoryType.EXTERNAL
@@ -55,7 +54,7 @@ class ExternalMetadataRoutes(MetadataRoutes):
         description="Get an external record along with the submission record.",
     )
     async def get_metadata_repository(self, identifier):
-        submission = self.user.submission(self.db, identifier)
+        submission = self.user.submission(identifier)
         metadata_json_str = submission.metadata_json
         metadata_json = json.loads(metadata_json_str)
         return metadata_json
@@ -67,4 +66,17 @@ class ExternalMetadataRoutes(MetadataRoutes):
         description="Deletes an external record.",
     )
     async def delete_metadata_repository(self, identifier):
-        delete_submission(self.db, self.repository_type, identifier, self.user)
+        await delete_submission(identifier, self.user)
+
+    @router.put(
+        '/submit/external/{identifier}',
+        name="submit",
+        response_model_exclude_unset=True,
+        response_model=response_model,
+        tags=["HydroShare"],
+        summary="Register an External resource",
+        description="Creates a submission record of the External resource.",
+    )
+    async def submit_repository_record(self, identifier: str):
+        json_metadata = await self.submit(identifier)
+        return json_metadata

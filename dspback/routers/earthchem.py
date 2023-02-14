@@ -28,7 +28,6 @@ def prepare_metadata_for_ecl(json_metadata):
 
 @cbv(router)
 class EarthChemMetadataRoutes(MetadataRoutes):
-
     request_model = Record
     request_model_update = Record
     response_model = Record
@@ -90,7 +89,6 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         if response.status_code >= 300:
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
-        # await self.submit(identifier)
         return await self.get_metadata_repository(request, identifier)
 
     async def _retrieve_metadata_from_repository(self, request: Request, identifier):
@@ -137,7 +135,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         description="Deletes the EarthChem record along with the submission record.",
     )
     async def delete_metadata_repository(self, request: Request, identifier):
-        delete_submission(self.db, self.repository_type, identifier, self.user)
+        await delete_submission(identifier, self.user)
 
         access_token = await self.access_token(request)
         response = requests.delete(

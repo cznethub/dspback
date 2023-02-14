@@ -27,15 +27,15 @@ test-cov-gh-action:
 
 .PHONY: default-env
 default-env:
-	wget -N https://raw.githubusercontent.com/cznethub/dsp/develop/.env
+	wget -N https://raw.githubusercontent.com/cznethub/dsp/jsonld-mongo/.env
 
 .PHONY: up
 up:
-	docker-compose --env-file .env up dspback database
+	docker-compose --env-file .env up dspback mongodb
 
 .PHONY: up-d
 up-d:
-	docker-compose --env-file .env up -d dspback database
+	docker-compose --env-file .env up -d dspback mongodb
 
 .PHONY: up-all
 up-all:
@@ -51,6 +51,10 @@ down:
 
 .PHONY: build
 build:
+	docker-compose --env-file .env build dspback mongodb
+
+.PHONY: build-all
+build-all:
 	docker-compose --env-file .env build
 
 .PHONY: build-dspfront
@@ -66,7 +70,7 @@ bash:
 
 .PHONY: build-pydantic-schemas
 build-pydantic-schemas:
-	docker exec dsp_dev_dspback datamodel-codegen --input-file-type jsonschema --input dspback/schemas/hydroshare/schema.json --output dspback/schemas/hydroshare/model.py
 	docker exec dsp_dev_dspback datamodel-codegen --input-file-type jsonschema --input dspback/schemas/zenodo/schema.json --output dspback/schemas/zenodo/model.py
 	docker exec dsp_dev_dspback datamodel-codegen --input-file-type jsonschema --input dspback/schemas/external/schema.json --output dspback/schemas/external/model.py
 	docker exec dsp_dev_dspback datamodel-codegen --input-file-type jsonschema --input dspback/schemas/earthchem/schema.json --output dspback/schemas/earthchem/model.py
+	docker exec dsp_dev_dspback datamodel-codegen --input-file-type jsonschema --input dspback/schemas/hydroshare/schema.json --output dspback/schemas/hydroshare/model.py

@@ -99,6 +99,7 @@
       }
     ]
   },
+  "datePublished": "2018-10-08T18:58:17.154974+00:00",
   "relatedResources": [
     {
       "bibliographicCitation": "string",
@@ -115,7 +116,6 @@
   ],
   "fundings": [
     {
-      "identifer": "string",
       "identifier": "string",
       "funder": {
         "name": "string",

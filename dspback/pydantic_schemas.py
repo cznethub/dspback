@@ -1,12 +1,13 @@
-import base64
-import json
 from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, HttpUrl, root_validator, validator
+from beanie import Document, Link
+from geojson import Feature, Point
+from pydantic import BaseModel, EmailStr, Field, HttpUrl, root_validator, validator
 
 from dspback.config import get_settings
+from dspback.utils.jsonld.pydantic_schemas import JSONLD
 
 
 class ORCIDResponse(BaseModel):
@@ -51,30 +52,24 @@ class ORCIDResponse(BaseModel):
     expires_at: str
 
 
-class RepositoryTokenBase(BaseModel):
+class RepositoryToken(Document):
     type: RepositoryType = None
     access_token: str = None
     refresh_token: Optional[str] = None
-    expires_in: str = None
-    expires_at: str = None
+    expires_in: int = None
+    expires_at: int = None
 
 
-class RepositoryToken(RepositoryTokenBase):
-    class Config:
-        orm_mode = True
-
-    id: int = None
-
-
-class SubmissionBase(BaseModel):
+class Submission(Document):
     title: str = None
     authors: List[str] = []
     repo_type: RepositoryType = None
     identifier: str = None
     submitted: datetime = datetime.utcnow()
     url: HttpUrl = None
+    metadata_json: str = {}
 
-    @validator('authors', pre=True)
+    @validator('authors', pre=True, allow_reuse=True)
     def extract_author_names(cls, values):
         authors = []
         for author in values:
@@ -85,31 +80,20 @@ class SubmissionBase(BaseModel):
         return authors
 
 
-class Submission(SubmissionBase):
-    class Config:
-        orm_mode = True
+class User(Document):
+    name: str
+    email: Optional[EmailStr]
+    orcid: str
+    access_token: Optional[str]
+    orcid_access_token: Optional[str]
+    refresh_token: Optional[str]
+    expires_in: Optional[int]
+    expires_at: Optional[int]
+    repository_tokens: List[Link[RepositoryToken]] = []
+    submissions: List[Link[Submission]] = []
 
-    id: int = None
-
-
-class UserBase(BaseModel):
-    name: str = None
-    # email: EmailStr = None
-    orcid: str = None
-    access_token: str = None
-    orcid_access_token: str = None
-    refresh_token: str = None
-    expires_in: int = None
-    expires_at: int = None
-    repository_tokens: List[RepositoryToken] = []
-    submissions: List[Submission] = []
-
-
-class User(UserBase):
-    class Config:
-        orm_mode = True
-
-    id: Optional[int] = None
+    def submission(self, identifier: str) -> Submission:
+        return next(filter(lambda submission: submission.identifier == identifier, self.submissions), None)
 
     def repository_token(self, repo_type: RepositoryType) -> RepositoryToken:
         return next(filter(lambda repo: repo.type == repo_type, self.repository_tokens), None)
@@ -119,21 +103,41 @@ class BaseRecord(BaseModel):
     def to_submission(self, identifier) -> Submission:
         raise NotImplementedError()
 
+    def to_submission(self, identifier) -> Submission:
+        raise NotImplementedError()
+
 
 class ZenodoRecord(BaseRecord):
     class Creator(BaseModel):
         name: str = None
 
-    title: str = None
-    creators: List[Creator] = []
-    modified: datetime = None
-    record_id: str = None
+    class RelatedIdentifier(BaseModel):
+        identifier: str = None
+        relation: str = None
 
-    @root_validator(pre=True)
+    title: str = None
+    description: str = None
+    keywords: List[str] = []
+    creators: List[Creator] = []
+    license: Optional[str]
+    notes: str = ""
+    publication_date: Optional[datetime]
+    relations: Optional[List[RelatedIdentifier]] = []
+    modified: Optional[datetime]
+    created: Optional[datetime]
+    record_id: str
+
+    @root_validator(pre=True, allow_reuse=True)
     def extract_metadata(cls, values):
         values.update(values['metadata'])
         del values['metadata']
         return values
+
+    @validator('publication_date', pre=True)
+    def parse_publication_date(cls, value):
+        if isinstance(value, str):
+            return datetime.strptime(value, '%Y-%m-%d')
+        return value
 
     def to_submission(self, identifier) -> Submission:
         settings = get_settings()
@@ -147,14 +151,78 @@ class ZenodoRecord(BaseRecord):
             url=view_url,
         )
 
+    def to_jsonld(self, identifier) -> JSONLD:
+        settings = get_settings()
+        view_url = settings.zenodo_view_url % identifier
+        required = {
+            "repository_identifier": identifier,
+            "url": view_url,
+            "provider": {'name': 'Zenodo'},
+            "name": self.title,
+            "description": self.description,
+            "keywords": self.keywords,
+            "creator": {'@list': [{'name': creator.name} for creator in self.creators]},
+            "funding": [{'name': self.notes, 'funder': [{'name': self.notes}]}],  # need to do some regex magic
+        }
+        optional = {}
+        if self.license:
+            optional["license"] = {'text': self.license}
+        if self.publication_date:
+            optional["datePublished"] = self.publication_date
+        if self.created:
+            optional["dateCreated"] = self.created
+        if self.relations:
+            optional["relations"] = [f'{relation.name} - {relation.identifier}' for relation in self.relations]
+        return JSONLD(**required, **optional)
+
 
 class HydroShareRecord(BaseRecord):
+    class PeriodCoverage(BaseModel):
+        start: datetime = None
+        end: datetime = None
+
+    class SpatialCoverage(BaseModel):
+        type: str = None
+        northlimit: float = None
+        eastlimit: float = None
+        southlimit: float = None
+        westlimit: float = None
+        north: float = None
+        east: float = None
+
+        @property
+        def geojson(self):
+            if self.type == 'box':
+                return [float(self.northlimit), float(self.southlimit), float(self.eastlimit), float(self.westlimit)]
+            else:
+                return [Feature(geometry=Point([float(self.east), float(self.north)]))]
+
     class Creator(BaseModel):
         name: str = None
 
+    class Award(BaseModel):
+        funding_agency_name: str = None
+        title: str = None
+        number: str = None
+
+    class Relation(BaseModel):
+        value: str = None
+
+    class Rights(BaseModel):
+        statement: str = None
+
     title: str = None
+    description: str = None
+    subjects: List[str] = []
+    period_coverage: Optional[PeriodCoverage]
+    spatial_coverage: Optional[SpatialCoverage]
     creators: List[Creator] = []
-    modified: datetime = None
+    awards: List[Award] = []
+    rights: Optional[Rights]
+    relations: Optional[List[Relation]] = []
+    published: Optional[datetime]
+    modified: Optional[datetime]
+    created: Optional[datetime]
     identifier: str = None
 
     @validator("identifier")
@@ -174,22 +242,76 @@ class HydroShareRecord(BaseRecord):
             url=view_url,
         )
 
+    def to_jsonld(self, identifier) -> JSONLD:
+        settings = get_settings()
+        view_url = settings.hydroshare_view_url % identifier
+        required = {
+            "repository_identifier": identifier,
+            "url": view_url,
+            "provider": {'name': 'HydroShare'},
+            "name": self.title,
+            "description": self.description,
+            "keywords": self.subjects,
+            "creator": {'@list': [{'name': creator.name} for creator in self.creators]},
+            "funding": [
+                {"name": award.title, "number": award.number, "funder": [{"name": award.funding_agency_name}]}
+                for award in self.awards
+            ],
+        }
+        optional = {}
+        if self.period_coverage:
+            optional["temporalCoverage"] = self.period_coverage
+        if self.spatial_coverage:
+            optional["spatialCoverage"] = {"geojson": self.spatial_coverage.geojson}
+        if self.rights:
+            optional["license"] = {'text': self.rights.statement}
+        if self.published:
+            optional["datePublished"] = self.published
+        if self.created:
+            optional["dateCreated"] = self.created
+        if self.relations:
+            optional["relations"] = [relation.value for relation in self.relations]
+        return JSONLD(**required, **optional)
+
 
 class EarthChemRecord(BaseRecord):
     class Contributor(BaseModel):
         givenName: str = None
         familyName: str = None
 
+        @property
+        def name(self):
+            return f"{self.familyName}, {self.givenName}"
+
+    class Funding(BaseModel):
+        class Funder(BaseModel):
+            name: str
+
+        identifier: str
+        funder: Funder
+
+    class RelatedResource(BaseModel):
+        bibliographicCitation: str
+
+    class License(BaseModel):
+        alternateName: str
+
     title: str = None
+    description: str = None
+    keywords: List[str] = []
     contributors: List[Contributor] = []
-    leadAuthor: Contributor = None
+    leadAuthor: Contributor
+    license: Optional[License]
+    fundings: List[Funding] = []
+    datePublished: Optional[datetime]
+    relatedResources: Optional[List[RelatedResource]] = []
 
     def to_submission(self, identifier) -> Submission:
         settings = get_settings()
         view_url = settings.earthchem_view_url
         view_url = view_url % identifier
-        authors = [f"{contributor.familyName}, {contributor.givenName}" for contributor in self.contributors]
-        authors.insert(0, f"{self.leadAuthor.familyName}, {self.leadAuthor.givenName}")
+        authors = [contributor.name for contributor in self.contributors]
+        authors.insert(0, self.leadAuthor.name)
         return Submission(
             title=self.title,
             authors=authors,
@@ -199,13 +321,83 @@ class EarthChemRecord(BaseRecord):
             url=view_url,
         )
 
+    def to_jsonld(self, identifier) -> JSONLD:
+        settings = get_settings()
+        view_url = settings.earthchem_view_url % identifier
+        creators = [{'name': self.leadAuthor.name}] + [{'name': contributor.name} for contributor in self.contributors]
+        required = {
+            "repository_identifier": identifier,
+            "url": view_url,
+            "provider": {'name': 'EarthChem Library'},
+            "name": self.title,
+            "description": self.description,
+            "keywords": self.keywords,
+            "creator": {'@list': creators},
+            "funding": [
+                {"number": funding.identifier, "funder": [{"name": funding.funder.name}]} for funding in self.fundings
+            ],
+        }
+        optional = {}
+        if self.license:
+            optional["license"] = {'text': self.license.alternateName}
+        if self.datePublished:
+            optional["datePublished"] = self.datePublished
+        if self.relatedResources:
+            optional["relations"] = [relation.bibliographicCitation for relation in self.relatedResources]
+        return JSONLD(**required, **optional)
+
 
 class ExternalRecord(BaseRecord):
     class Creator(BaseModel):
         name: str = None
 
-    name: str = None
+    class Provider(BaseModel):
+        name: str
+
+    class TemporalCoverage(BaseModel):
+        start: datetime
+        end: datetime
+
+    class SpatialCoverage(BaseModel):
+        type: Optional[str]
+        name: Optional[str]
+        north: Optional[float]
+        east: Optional[float]
+        northlimit: Optional[float]
+        southlimit: Optional[float]
+        eastlimit: Optional[float]
+        westlimit: Optional[float]
+
+        @property
+        def geojson(self):
+            if self.type == 'box':
+                return [float(self.northlimit), float(self.southlimit), float(self.eastlimit), float(self.westlimit)]
+            else:
+                return [Feature(geometry=Point([float(self.east), float(self.north)]))]
+
+    class License(BaseModel):
+        description: str
+
+    class Funder(BaseModel):
+        fundingAgency: str
+        awardNumber: str
+        awardName: str
+
+    class Relation(BaseModel):
+        value: str
+
+    name: str
+    provider: Provider
+    description: str
+    keywords: List[str] = []
+    temporalCoverage: Optional[TemporalCoverage]
+    spatialCoverage: Optional[SpatialCoverage]
     creators: List[Creator] = []
+    license: Optional[License]
+    funders: List[Funder] = []
+    datePublished: Optional[datetime]
+    relations: Optional[List[Relation]] = []
+    dateCreated: Optional[datetime]
     identifier: str = None
     url: HttpUrl = None
 
@@ -218,3 +410,32 @@ class ExternalRecord(BaseRecord):
             identifier=identifier,
             url=self.url,
         )
+
+    def to_jsonld(self, identifier) -> JSONLD:
+        required = {
+            "repository_identifier": identifier,
+            "url": self.url,
+            "provider": {'name': self.provider.name},
+            "name": self.name,
+            "description": self.description,
+            "keywords": self.keywords,
+            "creator": {'@list': self.creators},
+            "funding": [
+                {"name": funder.awardName, "number": funder.awardNumber, "funder": [{"name": funder.fundingAgency}]}
+                for funder in self.funders
+            ],
+        }
+        optional = {}
+        if self.temporalCoverage:
+            optional["temporalCoverage"] = self.temporalCoverage
+        if self.spatialCoverage:
+            optional["spatialCoverage"] = {"geojson": self.spatialCoverage.geojson}
+        if self.license:
+            optional["license"] = {'text': self.license.description}
+        if self.datePublished:
+            optional["datePublished"] = self.datePublished
+        if self.dateCreated:
+            optional["dateCreated"] = self.dateCreated
+        if self.relations:
+            optional["relations"] = [relation.value for relation in self.relations]
+        return JSONLD(**required, **optional)
