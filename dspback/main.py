@@ -2,8 +2,9 @@ import asyncio
 import logging
 
 import uvicorn as uvicorn
-from api import app as app_fastapi
-from scheduler import app as app_rocketry
+
+from dspback.api import app as app_fastapi
+from dspback.scheduler import app as app_rocketry
 
 
 class Server(uvicorn.Server):

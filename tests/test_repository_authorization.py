@@ -5,7 +5,6 @@ import pytest
 from authlib.integrations.starlette_client import StarletteRemoteApp
 
 from dspback.dependencies import url_for
-from dspback.main import app
 from tests import authorize_response, authorize_response_expired, change_test_dir, client_test, prefix, user_cookie
 
 

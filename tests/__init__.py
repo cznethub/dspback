@@ -12,8 +12,8 @@ from beanie import init_beanie
 from httpx import AsyncClient
 from starlette.testclient import TestClient
 
+from dspback.api import app
 from dspback.config import get_settings
-from dspback.main import app
 from dspback.pydantic_schemas import JSONLD, RepositoryToken, Submission, User
 
 prefix = "/api"

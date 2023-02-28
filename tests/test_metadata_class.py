@@ -7,7 +7,6 @@ from authlib.integrations.starlette_client import StarletteRemoteApp
 from pydantic import BaseModel
 
 from dspback.dependencies import url_for
-from dspback.main import app
 from tests import (
     authorize_response,
     authorize_response_hydroshare,
