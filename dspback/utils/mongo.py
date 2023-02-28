@@ -9,12 +9,16 @@ from dspback.utils.jsonld.pydantic_schemas import JSONLD
 from dspback.utils.jsonld.scraper import retrieve_discovery_jsonld
 
 
-async def upsert_discovery_entry(record, identifier):
+async def retrieve_and_upsert_discovery_entry(record, identifier):
     submission = record.to_submission(identifier)
     if submission.repo_type == RepositoryType.EXTERNAL:
         json_ld = record.to_jsonld(identifier)
     else:
         json_ld = await retrieve_discovery_jsonld(submission.identifier, submission.repo_type, submission.url)
+    await upsert_discovery_entry(json_ld, identifier)
+
+
+async def upsert_discovery_entry(json_ld, identifier):
     existing_jsonld = await JSONLD.find_one(JSONLD.repository_identifier == identifier)
     if existing_jsonld:
         if not json_ld:

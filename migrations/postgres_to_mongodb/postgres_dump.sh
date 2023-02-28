@@ -1,12 +1,3 @@
-docker exec -u postgres database psql -U cznuser cznethubdb -c " SELECT row_to_json(u) FROM (SELECT * FROM author) u;" > author.json
-sed -i '1d' author.json
-sed -i '1d' author.json
-sed -i '$d' author.json
-sed -i '$d' author.json
-sed -i s/$/,/ author.json
-sed -i '1i [' author.json
-sed -i '$s/,$/]/' author.json
-
 docker exec -u postgres database psql -U cznuser cznethubdb -c " SELECT row_to_json(u) FROM (SELECT * FROM repository_submission) u;" > repository_submission.json
 sed -i '1d' repository_submission.json
 sed -i '1d' repository_submission.json

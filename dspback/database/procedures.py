@@ -5,7 +5,7 @@ from beanie import DeleteRules, WriteRules
 
 from dspback.pydantic_schemas import User
 from dspback.utils.jsonld.pydantic_schemas import JSONLD
-from dspback.utils.mongo import upsert_discovery_entry
+from dspback.utils.mongo import retrieve_and_upsert_discovery_entry
 
 
 async def delete_submission(identifier: str, user: User):
@@ -29,4 +29,4 @@ async def create_or_update_submission(identifier, record, user: User, metadata_j
         user.submissions.append(submission)
         await user.save(link_rule=WriteRules.WRITE)
 
-    asyncio.get_event_loop().create_task(upsert_discovery_entry(record, identifier))
+    asyncio.get_event_loop().create_task(retrieve_and_upsert_discovery_entry(record, identifier))

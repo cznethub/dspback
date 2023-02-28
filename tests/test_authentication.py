@@ -6,7 +6,6 @@ import pytest
 from authlib.integrations.starlette_client import StarletteRemoteApp
 
 from dspback.dependencies import url_for
-from dspback.main import app
 from tests import authorize_response, client_test
 
 
