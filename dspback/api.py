@@ -20,7 +20,6 @@ from dspback.routers import (
 )
 from dspback.utils.jsonld.pydantic_schemas import JSONLD
 
-
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=get_settings().session_secret_key)
 

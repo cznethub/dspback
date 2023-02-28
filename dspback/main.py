@@ -1,5 +1,6 @@
-import logging
 import asyncio
+import logging
+
 import uvicorn as uvicorn
 from api import app as app_fastapi
 from scheduler import app as app_rocketry
@@ -10,6 +11,7 @@ class Server(uvicorn.Server):
         app_rocketry.session.shut_down()
         return super().handle_exit(sig, frame)
 
+
 async def main():
     "Run Rocketry and FastAPI"
     server = Server(config=uvicorn.Config(app_fastapi, workers=1, loop="asyncio", host="0.0.0.0", port=5002))
@@ -18,6 +20,7 @@ async def main():
     sched = asyncio.create_task(app_rocketry.serve())
 
     await asyncio.wait([sched, api])
+
 
 if __name__ == "__main__":
     # Print Rocketry's logs to terminal
