@@ -4,7 +4,7 @@ The submission portal API uses a mongodb docker image for convenience with local
 The CZNet project has 2 clusters, one for production and another for development and testing.
 
 ### Setup Database Access
-Administrators should setup Database Access restricted to each Database.
+Administrators should setup Database Access restricted to each Database. - https://cloud.mongodb.com
 1. In the left navigation column, select Database Access
 2. Click ADD NEW DATABASE USER
 3. Choose the authentication password Authentication Method
