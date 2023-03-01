@@ -1,0 +1,77 @@
+{
+  "mappings": {
+    "dynamic": false,
+    "fields": {
+      "@type": {
+        "analyzer": "lucene.keyword",
+        "searchAnalyzer": "lucene.keyword",
+        "type": "string"
+      },
+      "creator": {
+        "fields": {
+          "@list": {
+            "fields": {
+              "name": {
+                "type": "string"
+              }
+            },
+            "type": "document"
+          }
+        },
+        "type": "document"
+      },
+      "datePublished": {
+        "type": "date"
+      },
+      "description": [
+        {
+          "analyzer": "lucene.simple",
+          "searchAnalyzer": "lucene.simple",
+          "type": "string"
+        },
+        {
+          "type": "autocomplete"
+        }
+      ],
+      "keywords": [
+        {
+          "analyzer": "lucene.keyword",
+          "searchAnalyzer": "lucene.keyword",
+          "type": "string"
+        },
+        {
+          "type": "autocomplete"
+        }
+      ],
+      "name": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "autocomplete"
+        }
+      ],
+      "provider": {
+        "fields": {
+          "name": {
+            "analyzer": "lucene.keyword",
+            "searchAnalyzer": "lucene.keyword",
+            "type": "string"
+          }
+        },
+        "type": "document"
+      },
+      "temporalCoverage": {
+        "fields": {
+          "end": {
+            "type": "date"
+          },
+          "start": {
+            "type": "date"
+          }
+        },
+        "type": "document"
+      }
+    }
+  }
+}
