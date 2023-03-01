@@ -11,6 +11,7 @@ from dspback.dependencies import RepositoryException
 from dspback.pydantic_schemas import RepositoryToken, Submission, User
 from dspback.routers import (
     authentication,
+    discovery,
     earthchem,
     external,
     hydroshare,
@@ -34,6 +35,7 @@ app.include_router(zenodo.router, prefix="/api")
 app.include_router(earthchem.router, prefix="/api")
 app.include_router(external.router, prefix="/api")
 app.include_router(submissions.router, prefix="/api", tags=["Submissions"])
+app.include_router(discovery.router, prefix="/api/discovery", tags=["Discovery"])
 
 
 @app.exception_handler(RepositoryException)

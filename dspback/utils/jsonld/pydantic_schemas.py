@@ -4,6 +4,8 @@ from typing import Any, List, Optional
 from beanie import Document, Indexed
 from pydantic import BaseModel, Field, HttpUrl
 
+from dspback.config import get_settings
+
 
 class Provider(BaseModel):
     name: str
@@ -58,3 +60,6 @@ class JSONLD(Document):
     datePublished: Optional[datetime]
     dateCreated: Optional[datetime]
     relations: Optional[List[str]] = []
+
+    class Settings:
+        name = "discovery"
