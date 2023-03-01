@@ -20,7 +20,7 @@ async def main():
     api = asyncio.create_task(server.serve())
     sched = asyncio.create_task(app_rocketry.serve())
 
-    await asyncio.wait([sched, api])
+    await asyncio.wait([api, sched])
 
 
 if __name__ == "__main__":
