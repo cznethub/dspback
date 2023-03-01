@@ -11,7 +11,9 @@ from dspback.utils.mongo import retrieve_and_upsert_discovery_entry
 async def delete_submission(identifier: str, user: User):
     submission = user.submission(identifier)
     await submission.delete(link_rule=DeleteRules.DELETE_LINKS)
-    await JSONLD.find_one(JSONLD.repository_identifier == identifier).delete()
+    asyncio.get_event_loop().create_task(
+        JSONLD.find_one(JSONLD.repository_identifier == identifier, JSONLD.legacy == False).delete()
+    )
 
 
 async def delete_repository_access_token(repository, user: User):

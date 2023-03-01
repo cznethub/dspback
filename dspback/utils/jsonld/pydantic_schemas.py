@@ -60,6 +60,7 @@ class JSONLD(Document):
     datePublished: Optional[datetime]
     dateCreated: Optional[datetime]
     relations: Optional[List[str]] = []
+    legacy: Optional[bool] = False
 
     class Settings:
         name = "discovery"

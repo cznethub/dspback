@@ -17,7 +17,7 @@ app = Rocketry(config={"task_execution": "async"})
 async def do_daily():
     db = motor.motor_asyncio.AsyncIOMotorClient(get_settings().mongo_url)
     await init_beanie(database=db[get_settings().mongo_database], document_models=[JSONLD])
-    async for jsonld in JSONLD.find_all():
+    async for jsonld in JSONLD.find(JSONLD.legacy == False):
         submission = await Submission.find_one(Submission.identifier == jsonld.repository_identifier)
         if not submission:
             # remove
