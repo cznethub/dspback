@@ -9,6 +9,10 @@ from dspback.utils.jsonld.pydantic_schemas import JSONLD
 from dspback.utils.jsonld.scraper import retrieve_discovery_jsonld
 
 
+async def delete_discovery_entry(identifier):
+    await JSONLD.find_one(JSONLD.repository_identifier == identifier, JSONLD.legacy == False).delete()
+
+
 async def retrieve_and_upsert_discovery_entry(record, identifier):
     submission = record.to_submission(identifier)
     if submission.repo_type == RepositoryType.EXTERNAL:
