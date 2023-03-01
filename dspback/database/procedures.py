@@ -5,15 +5,13 @@ from beanie import DeleteRules, WriteRules
 
 from dspback.pydantic_schemas import User
 from dspback.utils.jsonld.pydantic_schemas import JSONLD
-from dspback.utils.mongo import retrieve_and_upsert_discovery_entry
+from dspback.utils.mongo import delete_discovery_entry, retrieve_and_upsert_discovery_entry
 
 
 async def delete_submission(identifier: str, user: User):
     submission = user.submission(identifier)
     await submission.delete(link_rule=DeleteRules.DELETE_LINKS)
-    asyncio.get_event_loop().create_task(
-        JSONLD.find_one(JSONLD.repository_identifier == identifier, JSONLD.legacy == False).delete()
-    )
+    asyncio.get_event_loop().create_task(delete_discovery_entry(identifier))
 
 
 async def delete_repository_access_token(repository, user: User):
