@@ -1,3 +1,5 @@
+import logging
+
 import motor
 from beanie import init_beanie
 from rocketry import Rocketry
@@ -15,6 +17,7 @@ app = Rocketry(config={"task_execution": "async"})
 # @app.task(daily)
 @app.task(daily)
 async def do_daily():
+    logger = logging.getLogger()
     db = motor.motor_asyncio.AsyncIOMotorClient(get_settings().mongo_url)
     await init_beanie(database=db[get_settings().mongo_database], document_models=[JSONLD])
     async for jsonld in JSONLD.find(JSONLD.legacy == False):
@@ -25,9 +28,12 @@ async def do_daily():
 
     async for submission in Submission.find_all():
         if submission.repo_type != RepositoryType.EXTERNAL:
-            public_json_ld = await retrieve_discovery_jsonld(
-                submission.identifier, submission.repo_type, submission.url
-            )
+            try:
+                public_json_ld = await retrieve_discovery_jsonld(
+                    submission.identifier, submission.repo_type, submission.url
+                )
+            except Exception as e:
+                logger.warning(f"Scraping for submission {submission.url} failed. {str(e)}")
             await upsert_discovery_entry(public_json_ld, submission.identifier)
 
 
