@@ -3,6 +3,7 @@ from beanie import init_beanie
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import PlainTextResponse
 
@@ -23,6 +24,14 @@ from dspback.utils.jsonld.pydantic_schemas import JSONLD
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=get_settings().session_secret_key)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.mount("/api/schema", StaticFiles(directory="dspback/schemas"), name="schemas")
 
