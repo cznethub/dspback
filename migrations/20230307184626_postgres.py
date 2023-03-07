@@ -27,17 +27,23 @@ class Forward:
         async for submission_old in SubmissionOld.find_all():
             if submission_old.user_id:
                 user_old = await UserOld.find_one(UserOld.old_id == submission_old.user_id)
-                submission = Submission(**submission_old.dict())
-                user_old.submissions.append(submission)
-                await user_old.save(link_rule=WriteRules.WRITE)
+                if user_old:
+                    submission = Submission(**submission_old.dict())
+                    user_old.submissions.append(submission)
+                    await user_old.save(link_rule=WriteRules.WRITE)
+                else:
+                    print(f"Could not finder user for submission {submission_old}")
             else:
                 print(f"Could not link user to {submission_old}")
 
         async for repository_token_old in RepositoryTokenOld.find_all():
             if repository_token_old.user_id:
                 user_old = await UserOld.find_one(UserOld.old_id == repository_token_old.user_id)
-                repository_token = RepositoryToken(**repository_token_old.dict())
-                user_old.repository_tokens.append(repository_token)
-                await user_old.save(link_rule=WriteRules.WRITE)
+                if user_old:
+                    repository_token = RepositoryToken(**repository_token_old.dict())
+                    user_old.repository_tokens.append(repository_token)
+                    await user_old.save(link_rule=WriteRules.WRITE)
+                else:
+                    print(f"Could not finder user for submission {submission_old}")
             else:
                 print(f"Could not link user to {repository_token_old}")
