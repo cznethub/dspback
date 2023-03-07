@@ -11,7 +11,10 @@
         },
         {
           "type": "Control",
-          "scope": "#/properties/url"
+          "scope": "#/properties/url",
+          "options": {
+            "description": "URL for the landing page that describes the resource and where the content of the resource can be accessed."
+          }
         },
         {
           "type": "HorizontalLayout",
@@ -160,7 +163,30 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/license"
+      "scope": "#/properties/license",
+      "options": {
+        "detail": {
+          "type": "HorizontalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/name"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/description"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/url",
+              "options": {
+                "label": "License URL",
+                "description": "URL for a page that describes the license for the resource."
+              }
+            }
+          ]
+        }
+      }
     },
     {
       "type": "Control",
@@ -175,7 +201,11 @@
             },
             {
               "type": "Control",
-              "scope": "#/properties/url"
+              "scope": "#/properties/url",
+              "options": {
+                "label": "Provider URL",
+                "description": "A URL for the repository or organization that provides access to the resource."
+              }
             }
           ]
         }
