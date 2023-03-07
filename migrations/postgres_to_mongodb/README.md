@@ -18,3 +18,6 @@
     * Delete the temporary directory
     * docker rm mongoimport
     * docker rmi $(docker images 'mongoimport' -a -q)
+8. Login to backend-0*-czn VM
+    * build a uri for the environment from `mongodb+srv://{username}:{password}@cluster0.iouzjvv.mongodb.net` 
+    * docker exec dspback beanie migrate -uri {your_uri_here} -db 'czo_{env}' -p migrations --distance 1
