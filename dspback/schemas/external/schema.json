@@ -52,6 +52,7 @@
     "license": {
       "title": "License",
       "type": "object",
+      "options": { "flat": false },
       "description": "License under which the resource is released for access and reuse.",
       "additionalProperties": false,
       "properties": {
@@ -66,8 +67,6 @@
           "description": "Text of the license or description of the license for the resource."
         },
         "url": {
-          "title": "License URL",
-          "description": "URL for a page that describes the license for the resource.",
           "$ref": "#/definitions/UrlPattern"
         }
       },
@@ -136,9 +135,7 @@
       "description": "A version tag string for the resource - e.g., v1.0.0. Mostly relevant for software and dataset uploads. Any string will be accepted, but semantically-versioned tag is recommended."
     },
     "url": {
-      "$ref": "#/definitions/UrlPattern",
-      "title": "URL",
-      "description": "URL for the landing page that describes the resource and where the content of the resource can be accessed."
+      "$ref": "#/definitions/UrlPattern"
     },
     "identifier": {
       "title": "Identifier",
@@ -384,8 +381,6 @@
           "description": "The name of the repository or organization that provides access to the resource."
         },
         "url": {
-          "title": "Provider URL",
-          "description": "A URL for the repository or organization that provides access to the resource.",
           "$ref": "#/definitions/UrlPattern"
         }
       },

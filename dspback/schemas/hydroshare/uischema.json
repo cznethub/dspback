@@ -13,7 +13,8 @@
           "type": "Control",
           "scope": "#/properties/abstract",
           "options": {
-            "multi": true
+            "multi": true,
+            "trim": true
           }
         },
         {
@@ -65,7 +66,18 @@
                 },
                 {
                   "type": "Control",
-                  "scope": "#/properties/homepage"
+                  "scope": "#/properties/homepage",
+                  "options": {
+                    "description": "URL for a website associated with the creator"
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/profile_url",
+                  "options": {
+                    "placeholder": "e.g. 'https://www.hydroshare.org/user/10/'",
+                    "description": "A URL for the creator's HydroShare profile"
+                  }
                 }
               ]
             }
@@ -116,7 +128,18 @@
                 },
                 {
                   "type": "Control",
-                  "scope": "#/properties/homepage"
+                  "scope": "#/properties/homepage",
+                  "options": {
+                    "description": "URL for a website associated with the contributor"
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/profile_url",
+                  "options": {
+                    "placeholder": "e.g. 'https://www.hydroshare.org/user/10/'",
+                    "description": "A URL for the contributor's HydroShare profile"
+                  }
                 }
               ]
             }
@@ -200,7 +223,11 @@
                 },
                 {
                   "type": "Control",
-                  "scope": "#/properties/funding_agency_url"
+                  "scope": "#/properties/funding_agency_url",
+                  "options": {
+                    "label": "Agency URL",
+                    "description": "URL for a website describing the funding award"
+                  }
                 }
               ]
             }
