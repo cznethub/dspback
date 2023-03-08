@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from beanie import Document, Link
 from geojson import Feature, Point
@@ -395,9 +395,9 @@ class ExternalRecord(BaseRecord):
     creators: List[Creator] = []
     license: Optional[License]
     funders: List[Funder] = []
-    datePublished: Optional[datetime]
+    datePublished: Optional[Union[int, datetime]]
     relations: Optional[List[Relation]] = []
-    dateCreated: Optional[datetime]
+    dateCreated: Optional[Union[int, datetime]]
     identifier: str = None
     url: HttpUrl = None
 
@@ -433,9 +433,15 @@ class ExternalRecord(BaseRecord):
         if self.license:
             optional["license"] = {'text': self.license.description}
         if self.datePublished:
-            optional["datePublished"] = self.datePublished
+            if isinstance(self.datePublished, int):
+                optional["datePublished"] = datetime(self.datePublished, 1, 1)
+            else:
+                optional["datePublished"] = self.datePublished
         if self.dateCreated:
-            optional["dateCreated"] = self.dateCreated
+            if isinstance(self.dateCreated, int):
+                optional["dateCreated"] = datetime(self.dateCreated, 1, 1)
+            else:
+                optional["dateCreated"] = self.dateCreated
         if self.relations:
             optional["relations"] = [relation.value for relation in self.relations]
         return JSONLD(**required, **optional)
