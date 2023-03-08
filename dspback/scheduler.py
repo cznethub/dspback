@@ -3,11 +3,12 @@ import logging
 
 import motor
 from beanie import init_beanie
+from pymongo.errors import DuplicateKeyError
 from rocketry import Rocketry
 from rocketry.conds import daily
 
 from dspback.config import get_settings
-from dspback.pydantic_schemas import RepositoryType, Submission, ExternalRecord
+from dspback.pydantic_schemas import ExternalRecord, RepositoryType, Submission
 from dspback.utils.jsonld.pydantic_schemas import JSONLD
 from dspback.utils.jsonld.scraper import retrieve_discovery_jsonld
 from dspback.utils.mongo import upsert_discovery_entry
@@ -35,11 +36,13 @@ async def do_daily():
                 )
             except Exception as e:
                 logger.warning(f"Scraping for submission {submission.url} failed. {str(e)}")
-            await upsert_discovery_entry(public_json_ld, submission.identifier)
         else:
-            external_json_ld = ExternalRecord(**json.loads(submission.metadata_json)).to_jsonld()
-            await upsert_discovery_entry(external_json_ld, submission.identifier)
+            public_json_ld = ExternalRecord(**json.loads(submission.metadata_json)).to_jsonld(submission.identifier)
 
+        try:
+            await upsert_discovery_entry(public_json_ld, submission.identifier)
+        except DuplicateKeyError:
+            logger.warning(f"Duplicate key found for submission {submission.identifier}")
 
 
 if __name__ == "__main__":
