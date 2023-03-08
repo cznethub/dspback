@@ -15,6 +15,55 @@ from dspback.schemas.hydroshare.model import ResourceMetadata
 router = InferringRouter()
 
 
+def to_hydroshare_format(metadata_json):
+    """
+    Prepares form input for Storage in HydroShare by converting HydroShare profile urls to user IDs
+    """
+
+    def profile_url_to_user_id(user_json):
+        if "profile_url" in user_json:
+            parts = user_json["profile_url"].strip('/').split('/')
+            last_part = parts[-1]
+            user_json["hydroshare_user_id"] = int(last_part)
+            del user_json["profile_url"]
+        return user_json
+
+    for index in range(0, len(metadata_json["creators"])):
+        metadata_json["creators"][index] = profile_url_to_user_id(metadata_json["creators"][index])
+    for index in range(0, len(metadata_json["contributors"])):
+        metadata_json["contributors"][index] = profile_url_to_user_id(metadata_json["contributors"][index])
+    return metadata_json
+
+
+def from_hydroshare_format(metadata_json):
+    """
+    Reverses the to_hydroshare_format() function by:
+     - converting HydroShare user IDs back to profile URLs
+     - converting dictionaries to a list of dictionaries with key/value keys
+    """
+
+    def user_id_to_profile_url(user_json):
+        if "hydroshare_user_id" in user_json:
+            user_id = user_json["hydroshare_user_id"]
+            profile_url = f"https://www.hydroshare.org/user/{user_id}/"
+            user_json["profile_url"] = profile_url
+            del user_json["hydroshare_user_id"]
+        return user_json
+
+    for index in range(0, len(metadata_json["creators"])):
+        metadata_json["creators"][index] = user_id_to_profile_url(metadata_json["creators"][index])
+    for index in range(0, len(metadata_json["contributors"])):
+        metadata_json["contributors"][index] = user_id_to_profile_url(metadata_json["contributors"][index])
+
+    if "additional_metadata" in metadata_json:
+        # TODO add the key/value list to the hsmodels schema.
+        # add the response models back to the routes once hsmodels is updated.
+        as_dict = metadata_json["additional_metadata"]
+        metadata_json["additional_metadata"] = [{"key": key, "value": value} for key, value in as_dict.items()]
+
+    return metadata_json
+
+
 @cbv(router)
 class HydroShareMetadataRoutes(MetadataRoutes):
     request_model = ResourceMetadata
@@ -57,9 +106,10 @@ class HydroShareMetadataRoutes(MetadataRoutes):
     )
     async def update_metadata(self, request: Request, metadata: request_model, identifier):
         access_token = await self.access_token(request)
+        metadata_json = to_hydroshare_format(json.loads(metadata.json(skip_defaults=True)))
         response = requests.put(
             self.update_url % identifier,
-            data=metadata.json(skip_defaults=True),
+            data=json.dumps(metadata_json),
             headers={"Content-Type": "application/json"},
             params={"access_token": access_token},
         )
@@ -77,11 +127,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         json_metadata = json.loads(response.text)
-        if "additional_metadata" in json_metadata:
-            # TODO add the key/value list to the hsmodels schema.
-            # add the response models back to the routes once hsmodels is updated.
-            as_dict = json_metadata["additional_metadata"]
-            json_metadata["additional_metadata"] = [{"key": key, "value": value} for key, value in as_dict.items()]
+        json_metadata = from_hydroshare_format(json_metadata)
         return json_metadata
 
     @router.get(
