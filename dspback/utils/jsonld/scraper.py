@@ -1,6 +1,7 @@
 import json
 
 import aiohttp
+import html
 from bs4 import BeautifulSoup
 
 from dspback.pydantic_schemas import RepositoryType
@@ -11,7 +12,7 @@ from dspback.utils.jsonld.pydantic_schemas import JSONLD
 def scrape_jsonld(resource_data, script_match):
     resource_soup = BeautifulSoup(resource_data, "html.parser")
     resource_json_ld = resource_soup.find("script", script_match)
-    resource_json_ld = json.loads(resource_json_ld.text)
+    resource_json_ld = json.loads(html.unescape(resource_json_ld.text))
     resource_json_ld = format_fields(resource_json_ld)
 
     return resource_json_ld
