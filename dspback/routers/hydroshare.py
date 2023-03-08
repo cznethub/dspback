@@ -28,10 +28,12 @@ def to_hydroshare_format(metadata_json):
             del user_json["profile_url"]
         return user_json
 
-    for index in range(0, len(metadata_json["creators"])):
-        metadata_json["creators"][index] = profile_url_to_user_id(metadata_json["creators"][index])
-    for index in range(0, len(metadata_json["contributors"])):
-        metadata_json["contributors"][index] = profile_url_to_user_id(metadata_json["contributors"][index])
+    if "creators" in metadata_json:
+        for index in range(0, len(metadata_json["creators"])):
+            metadata_json["creators"][index] = profile_url_to_user_id(metadata_json["creators"][index])
+    if "contributors" in metadata_json:
+        for index in range(0, len(metadata_json["contributors"])):
+            metadata_json["contributors"][index] = profile_url_to_user_id(metadata_json["contributors"][index])
     return metadata_json
 
 
@@ -50,10 +52,12 @@ def from_hydroshare_format(metadata_json):
             del user_json["hydroshare_user_id"]
         return user_json
 
-    for index in range(0, len(metadata_json["creators"])):
-        metadata_json["creators"][index] = user_id_to_profile_url(metadata_json["creators"][index])
-    for index in range(0, len(metadata_json["contributors"])):
-        metadata_json["contributors"][index] = user_id_to_profile_url(metadata_json["contributors"][index])
+    if "creators" in metadata_json:
+        for index in range(0, len(metadata_json["creators"])):
+            metadata_json["creators"][index] = user_id_to_profile_url(metadata_json["creators"][index])
+    if "contributors" in metadata_json:
+        for index in range(0, len(metadata_json["contributors"])):
+            metadata_json["contributors"][index] = user_id_to_profile_url(metadata_json["contributors"][index])
 
     if "additional_metadata" in metadata_json:
         # TODO add the key/value list to the hsmodels schema.
