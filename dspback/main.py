@@ -5,6 +5,7 @@ import uvicorn as uvicorn
 
 from dspback.api import app as app_fastapi
 from dspback.scheduler import app as app_rocketry
+from dspback.triggers import watch_discovery
 
 
 class Server(uvicorn.Server):
@@ -19,14 +20,15 @@ async def main():
 
     api = asyncio.create_task(server.serve())
     sched = asyncio.create_task(app_rocketry.serve())
+    discovery_trigger = asyncio.create_task(watch_discovery())
 
-    await asyncio.wait([api, sched])
+    await asyncio.wait([api, discovery_trigger, sched])
 
 
 if __name__ == "__main__":
     # Print Rocketry's logs to terminal
-    logger = logging.getLogger("rocketry.task")
-    logger.addHandler(logging.StreamHandler())
+    rocketry_logger = logging.getLogger("rocketry.task")
+    rocketry_logger.addHandler(logging.StreamHandler())
 
-    # Run both applications
+    # Run all applications
     asyncio.run(main())

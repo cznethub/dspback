@@ -31,11 +31,11 @@ default-env:
 
 .PHONY: up
 up:
-	docker-compose --env-file .env up dspback mongodb
+	docker-compose --env-file .env up dspback
 
 .PHONY: up-d
 up-d:
-	docker-compose --env-file .env up -d dspback mongodb
+	docker-compose --env-file .env up -d dspback
 
 .PHONY: up-all
 up-all:
@@ -51,7 +51,7 @@ down:
 
 .PHONY: build
 build:
-	docker-compose --env-file .env build dspback mongodb
+	docker-compose --env-file .env build dspback
 
 .PHONY: build-all
 build-all:

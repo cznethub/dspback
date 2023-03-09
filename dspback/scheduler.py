@@ -16,7 +16,6 @@ from dspback.utils.mongo import upsert_discovery_entry
 app = Rocketry(config={"task_execution": "async"})
 
 
-# @app.task(daily)
 @app.task(daily)
 async def do_daily():
     logger = logging.getLogger()
@@ -26,7 +25,7 @@ async def do_daily():
         submission = await Submission.find_one(Submission.identifier == jsonld.repository_identifier)
         if not submission:
             # remove
-            await JSONLD.find_one(JSONLD.repository_identifier == submission.identifier).delete()
+            await JSONLD.find_one(JSONLD.repository_identifier == jsonld.repository_identifier).delete()
 
     async for submission in Submission.find_all():
         if submission.repo_type != RepositoryType.EXTERNAL:

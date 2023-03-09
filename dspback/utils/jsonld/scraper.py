@@ -1,7 +1,7 @@
+import html
 import json
 
 import aiohttp
-import html
 from bs4 import BeautifulSoup
 
 from dspback.pydantic_schemas import RepositoryType
