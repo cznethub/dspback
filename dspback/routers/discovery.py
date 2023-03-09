@@ -1,4 +1,6 @@
 import json
+import re
+
 from datetime import datetime
 
 import pandas
@@ -135,9 +137,50 @@ async def typeahead(request: Request, term: str, pageSize: int = 30):
 
 
 @router.get("/csv")
-async def sanitize(request: Request):
+async def csv(request: Request):
     project = [{'$project': {'name': 1, 'description': 1, 'keywords': 1, '_id': 0}}]
     json_response = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(project).to_list(None)
+    df = pandas.read_json(json.dumps(json_response))
+    filename = "file.csv"
+    df.to_csv(filename)
+    return FileResponse(filename, filename=filename, media_type='application/octet-stream')
+def sanitize(text):
+    # remove urls form text
+    text = re.sub(r'https?://\S+', '', text)
+
+    # remove all single characters except "a"
+    text = re.sub(r"\b[a-zA-Z](?<!a)\b", "", text)
+
+    # replace parentheses and forward slash with space
+    text = re.sub('[()/]', ' ', text)
+
+    # remove double dashes
+    text = re.sub('--', '', text)
+
+    # remove special characters
+    text = re.sub('[^a-zA-Z0-9,\- ]', '', text)
+
+    # remove leading/trailing hyphens
+    words = text.split(' ')
+    for i in range(len(words)):
+        words[i] = words[i].strip("-")
+    text = " ".join(words)
+
+    # remove extra spaces
+    text = " ".join(text.split())
+
+    return text
+@router.get("/csv/sanitized")
+async def sanitized_csv(request: Request):
+    project = [{'$project': {'name': 1, 'description': 1, 'keywords': 1, '_id': 0}}]
+    json_response = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(project).to_list(None)
+    for entry in json_response:
+        entry['name'] = sanitize(entry['name'])
+        entry['description'] = sanitize(entry['description'])
+        sanitized_keywords = []
+        for keyword in entry['keywords']:
+            sanitized_keywords.append(sanitize(keyword))
+        entry['keywords'] = sanitized_keywords
     df = pandas.read_json(json.dumps(json_response))
     filename = "file.csv"
     df.to_csv(filename)
