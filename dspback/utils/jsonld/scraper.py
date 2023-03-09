@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 
 from dspback.pydantic_schemas import RepositoryType
 from dspback.utils.jsonld.formatter import format_fields
-from dspback.utils.jsonld.pydantic_schemas import JSONLD
 
 
 def scrape_jsonld(resource_data, script_match):
@@ -37,4 +36,5 @@ async def retrieve_discovery_jsonld(identifier, repository_type, url):
     # only Zenodo does not have provider in the json ld
     if repository_type == RepositoryType.ZENODO:
         resource_json_ld['provider'] = {'name': 'Zenodo'}
-    return JSONLD(**resource_json_ld, repository_identifier=identifier)
+    resource_json_ld["repository_identifier"] = identifier
+    return resource_json_ld

@@ -1,9 +1,12 @@
+import json
 import logging
 import re
 
 import motor
 
 from dspback.config import get_settings
+from dspback.pydantic_schemas import ExternalRecord
+from dspback.utils.jsonld.scraper import retrieve_discovery_jsonld
 
 logger = logging.getLogger()
 
@@ -48,3 +51,21 @@ async def watch_discovery():
                 'keywords': [sanitize(keyword) for keyword in document['keywords']],
             }
             await db["typeahead"].find_one_and_replace({"_id": sanitized["_id"]}, sanitized, upsert=True)
+
+
+async def watch_submissions():
+    db = motor.motor_asyncio.AsyncIOMotorClient(get_settings().mongo_url)[get_settings().mongo_database]
+    async with db["Submission"].watch(full_document="updateLookup") as stream:
+        async for change in stream:
+            document = change["fullDocument"]
+            if document["repo_type"] == "external":
+                public_json_ld = (
+                    ExternalRecord(**json.loads(document["metadata_json"])).to_jsonld(document["identifier"]).dict()
+                )
+            else:
+                public_json_ld = await retrieve_discovery_jsonld(
+                    document["identifier"], document["repo_type"], document["url"]
+                )
+            await db["discovery"].find_one_and_replace(
+                {"repository_identifier": public_json_ld["repository_identifier"]}, public_json_ld, upsert=True
+            )
