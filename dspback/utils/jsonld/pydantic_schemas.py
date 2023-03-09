@@ -1,10 +1,7 @@
 from datetime import datetime
 from typing import Any, List, Optional
 
-from beanie import Document, Indexed
 from pydantic import BaseModel, Field, HttpUrl
-
-from dspback.config import get_settings
 
 
 class Provider(BaseModel):
@@ -42,10 +39,10 @@ class Funding(BaseModel):
     funder: List[Funder] = []
 
 
-class JSONLD(Document):
+class JSONLD(BaseModel):
     context: HttpUrl = Field(alias='@context', default='https://schema.org')
     repository_identifier: str
-    url: Indexed(HttpUrl, unique=True)
+    url: HttpUrl
     type: str = Field(alias='@type', default='Dataset')
     provider: Provider
     name: Optional[str]

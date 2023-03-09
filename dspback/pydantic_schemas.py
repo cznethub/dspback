@@ -398,7 +398,7 @@ class ExternalRecord(BaseRecord):
     datePublished: Optional[Union[int, datetime]]
     relations: Optional[List[Relation]] = []
     dateCreated: Optional[Union[int, datetime]]
-    identifier: str = None
+    repository_identifier: str = None
     url: HttpUrl = None
 
     def to_submission(self, identifier) -> Submission:

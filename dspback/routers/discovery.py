@@ -130,12 +130,12 @@ async def typeahead(request: Request, term: str, pageSize: int = 30):
             }
         },
     ]
-    result = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
+    result = await request.app.db[get_settings().mongo_database]["typeahead"].aggregate(stages).to_list(pageSize)
     return result
 
 
 @router.get("/csv")
-async def sanitize(request: Request):
+async def csv(request: Request):
     project = [{'$project': {'name': 1, 'description': 1, 'keywords': 1, '_id': 0}}]
     json_response = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(project).to_list(None)
     df = pandas.read_json(json.dumps(json_response))
