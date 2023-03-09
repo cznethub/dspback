@@ -79,9 +79,13 @@ async def watch_submissions():
                     public_json_ld = await retrieve_discovery_jsonld(
                         document["identifier"], document["repo_type"], document["url"]
                     )
-                await db["discovery"].find_one_and_replace(
-                    {"repository_identifier": public_json_ld["repository_identifier"]}, public_json_ld, upsert=True
-                )
+
+                if public_json_ld:
+                    await db["discovery"].find_one_and_replace(
+                        {"repository_identifier": public_json_ld["repository_identifier"]}, public_json_ld, upsert=True
+                    )
+                else:
+                    await db["discovery"].delete_one({"_id": change["documentKey"]["_id"]})
             else:
                 await db["discovery"].delete_one({"_id": change["documentKey"]["_id"]})
 
