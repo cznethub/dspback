@@ -5,7 +5,7 @@ import uvicorn as uvicorn
 
 from dspback.api import app as app_fastapi
 from dspback.scheduler import app as app_rocketry
-from dspback.triggers import watch_discovery, watch_submissions
+from dspback.triggers import watch_discovery_with_retry, watch_submissions_with_retry
 
 
 class Server(uvicorn.Server):
@@ -20,8 +20,8 @@ async def main():
 
     api = asyncio.create_task(server.serve())
     sched = asyncio.create_task(app_rocketry.serve())
-    discovery_trigger = asyncio.create_task(watch_discovery())
-    submissions_trigger = asyncio.create_task(watch_submissions())
+    discovery_trigger = asyncio.create_task(watch_discovery_with_retry())
+    submissions_trigger = asyncio.create_task(watch_submissions_with_retry())
 
     await asyncio.wait([api, discovery_trigger, submissions_trigger, sched])
 
