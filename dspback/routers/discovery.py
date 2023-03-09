@@ -130,7 +130,7 @@ async def typeahead(request: Request, term: str, pageSize: int = 30):
             }
         },
     ]
-    result = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
+    result = await request.app.db[get_settings().mongo_database]["typeahead"].aggregate(stages).to_list(pageSize)
     return result
 
 
