@@ -67,7 +67,7 @@ async def watch_submissions():
                 document = change["fullDocument"]
                 if document["repo_type"] == "external":
                     public_json_ld = (
-                        ExternalRecord(**json.loads(document["metadata_json"])).to_jsonld(document["identifier"]).dict()
+                        ExternalRecord(**json.loads(document["metadata_json"])).to_jsonld(document["identifier"]).dict(by_alias=True)
                     )
                 else:
                     public_json_ld = await retrieve_discovery_jsonld(
