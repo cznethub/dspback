@@ -15,28 +15,21 @@ logger = logging.getLogger()
 def sanitize(text):
     # remove urls form text
     text = re.sub(r'https?://\S+', '', text)
-
     # remove all single characters except "a"
     text = re.sub(r"\b[a-zA-Z](?<!a)\b", "", text)
-
     # replace parentheses and forward slash with space
     text = re.sub('[()/]', ' ', text)
-
     # remove double dashes
     text = re.sub('--', '', text)
-
     # remove special characters
-    text = re.sub('[^a-zA-Z0-9,\- ]', '', text)
-
+    text = re.sub('[^a-zA-Z0-9,\-_ ]', '', text)
     # remove leading/trailing hyphens
     words = text.split(' ')
     for i in range(len(words)):
         words[i] = words[i].strip("-")
     text = " ".join(words)
-
     # remove extra spaces
     text = " ".join(text.split())
-
     return text
 
 
@@ -69,6 +62,7 @@ async def watch_submissions():
     db = motor.motor_asyncio.AsyncIOMotorClient(get_settings().mongo_url)[get_settings().mongo_database]
     async with db["Submission"].watch(full_document="updateLookup") as stream:
         async for change in stream:
+            logger.warning(f"start with a {change}")
             if change["operationType"] != "delete":
                 document = change["fullDocument"]
                 if document["repo_type"] == "external":
@@ -85,7 +79,8 @@ async def watch_submissions():
                         {"repository_identifier": public_json_ld["repository_identifier"]}, public_json_ld, upsert=True
                     )
                 else:
-                    await db["discovery"].delete_one({"_id": change["documentKey"]["_id"]})
+                    document_id = change["fullDocument"]["_id"]
+                    await db["discovery"].delete_one({"_id": document_id})
             else:
                 await db["discovery"].delete_one({"_id": change["documentKey"]["_id"]})
 
