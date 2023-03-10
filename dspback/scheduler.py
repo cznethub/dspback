@@ -38,9 +38,10 @@ async def do_daily():
     async for submission in Submission.find_all():
         try:
             public_json_ld = await retrieve_submission_json_ld(submission)
-            await db["discovery"].find_one_and_replace(
-                {"repository_identifier": public_json_ld["repository_identifier"]}, public_json_ld, upsert=True
-            )
+            if public_json_ld:
+                await db["discovery"].find_one_and_replace(
+                    {"repository_identifier": public_json_ld["repository_identifier"]}, public_json_ld, upsert=True
+                )
         except:
             logger.exception(f"Failed to collect submission {submission.url}")
 
