@@ -79,10 +79,10 @@ async def watch_submissions():
                         {"repository_identifier": public_json_ld["repository_identifier"]}, public_json_ld, upsert=True
                     )
                 else:
-                    document_id = change["fullDocument"]["_id"]
-                    await db["discovery"].delete_one({"_id": document_id})
+                    result = await db["discovery"].delete_one({"repository_identifier": document["identifier"]})
+                    logger.warning(f"delete count {result.deleted_count}")
             else:
-                await db["discovery"].delete_one({"_id": change["documentKey"]["_id"]})
+                await db["discovery"].delete_one({"repository_identifier": document["identifier"]})
 
 
 async def watch_submissions_with_retry():
