@@ -11,9 +11,14 @@
         "fields": {
           "@list": {
             "fields": {
-              "name": {
-                "type": "string"
-              }
+              "name": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "autocomplete"
+                }
+              ]
             },
             "type": "document"
           }

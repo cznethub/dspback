@@ -7,6 +7,24 @@
         "searchAnalyzer": "lucene.keyword",
         "type": "string"
       },
+      "creator": {
+        "fields": {
+          "@list": {
+            "fields": {
+              "name": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "autocomplete"
+                }
+              ]
+            },
+            "type": "document"
+          }
+        },
+        "type": "document"
+      },
       "description": [
         {
           "analyzer": "lucene.simple",

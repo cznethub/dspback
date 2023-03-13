@@ -6,11 +6,18 @@ from fastapi import APIRouter, Query, Request
 from fastapi.responses import FileResponse
 
 from dspback.config import get_settings
+from dspback.schemas.discovery import DiscoveryResult, PathEnum, TypeAhead
 
 router = APIRouter()
 
 
-@router.get("/search")
+@router.get(
+    "/search",
+    response_model_exclude_unset=True,
+    response_model_exclude_none=True,
+    response_model_by_alias=True,
+    response_model=list[DiscoveryResult],
+)
 async def search(
     request: Request,
     term: str,
@@ -26,11 +33,9 @@ async def search(
     pageNumber: int = 1,
     pageSize: int = 30,
 ):
-    searchPaths = ['name', 'description', 'keywords']
-    highlightPaths = ['name', 'description', 'keywords', 'creator.@list.name']
-    autoCompletePaths = ['name', 'description', 'keywords']
+    search_paths = PathEnum.values()
 
-    should = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in autoCompletePaths]
+    should = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_paths]
     must = []
     stages = []
     filters = []
@@ -75,7 +80,7 @@ async def search(
             '$search': {
                 'index': 'fuzzy_search',
                 'compound': {'filter': filters, 'should': should, 'must': must},
-                'highlight': {'path': highlightPaths},
+                'highlight': {'path': search_paths},
             }
         }
     )
@@ -100,35 +105,29 @@ async def search(
     return result
 
 
-@router.get("/typeahead")
+@router.get("/typeahead", response_model=list[TypeAhead])
 async def typeahead(request: Request, term: str, pageSize: int = 30):
-    autoCompletePaths = ['name', 'description', 'keywords']
-    highlightsPaths = ['name', 'description', 'keywords']
-    should = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in autoCompletePaths]
+    search_terms = PathEnum.values()
+
+    should = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_terms]
+
+    project = {term: 1 for term in search_terms}
+    project["highlights"] = {'$meta': 'searchHighlights'}
+    project["_id"] = 0
+    project["name"] = 0
+    project["description"] = 0
+    project["keywords"] = 0
+    project["creator.@list.name"] = 0
 
     stages = [
         {
             '$search': {
                 'index': 'fuzzy_search',
-                'compound': {
-                    'should': [
-                        {'autocomplete': {'query': term, 'path': 'description', 'fuzzy': {'maxEdits': 1}}},
-                        {'autocomplete': {'query': term, 'path': 'name', 'fuzzy': {'maxEdits': 1}}},
-                        {'autocomplete': {'query': term, 'path': 'keywords', 'fuzzy': {'maxEdits': 1}}},
-                    ]
-                },
-                'highlight': {'path': ['description', 'name', 'keywords']},
+                'compound': {'should': should},
+                'highlight': {'path': search_terms},
             }
         },
-        {
-            '$project': {
-                'name': 1,
-                'description': 1,
-                'keywords': 1,
-                'highlights': {'$meta': 'searchHighlights'},
-                '_id': 0,
-            }
-        },
+        {'$project': project},
     ]
     result = await request.app.db[get_settings().mongo_database]["typeahead"].aggregate(stages).to_list(pageSize)
     return result

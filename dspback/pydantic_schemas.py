@@ -7,7 +7,7 @@ from geojson import Feature, Point
 from pydantic import BaseModel, EmailStr, Field, HttpUrl, root_validator, validator
 
 from dspback.config import get_settings
-from dspback.utils.jsonld.pydantic_schemas import JSONLD
+from dspback.schemas.discovery import JSONLD
 
 
 class ORCIDResponse(BaseModel):
@@ -162,7 +162,7 @@ class ZenodoRecord(BaseRecord):
             "description": self.description,
             "keywords": self.keywords,
             "creator": {'@list': [{'name': creator.name} for creator in self.creators]},
-            "funding": [{'name': self.notes, 'funder': [{'name': self.notes}]}],  # need to do some regex magic
+            "funding": [{'name': self.notes, 'funder': {'name': self.notes}}],  # need to do some regex magic
         }
         optional = {}
         if self.license:
@@ -254,7 +254,7 @@ class HydroShareRecord(BaseRecord):
             "keywords": self.subjects,
             "creator": {'@list': [{'name': creator.name} for creator in self.creators]},
             "funding": [
-                {"name": award.title, "number": award.number, "funder": [{"name": award.funding_agency_name}]}
+                {"name": award.title, "number": award.number, "funder": {"name": award.funding_agency_name}}
                 for award in self.awards
             ],
         }
@@ -334,7 +334,7 @@ class EarthChemRecord(BaseRecord):
             "keywords": self.keywords,
             "creator": {'@list': creators},
             "funding": [
-                {"number": funding.identifier, "funder": [{"name": funding.funder.name}]} for funding in self.fundings
+                {"number": funding.identifier, "funder": {"name": funding.funder.name}} for funding in self.fundings
             ],
         }
         optional = {}
@@ -421,7 +421,7 @@ class ExternalRecord(BaseRecord):
             "keywords": self.keywords,
             "creator": {'@list': self.creators},
             "funding": [
-                {"name": funder.awardName, "number": funder.awardNumber, "funder": [{"name": funder.fundingAgency}]}
+                {"name": funder.awardName, "number": funder.awardNumber, "funder": {"name": funder.fundingAgency}}
                 for funder in self.funders
             ],
         }
