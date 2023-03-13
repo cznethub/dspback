@@ -38,7 +38,7 @@ async def test_hydroshare_to_jsonld(hydroshare):
     }
     assert hs_jsonld.license.dict() == {'text': hs_record.rights.statement}
     assert hs_jsonld.dict()['funding'] == [
-        {"name": award.title, "number": award.number, "funder": [{"name": award.funding_agency_name}]}
+        {"name": award.title, "number": award.number, "funder": {"name": award.funding_agency_name}}
         for award in hs_record.awards
     ]
     assert hs_jsonld.datePublished == hs_record.published
@@ -72,7 +72,7 @@ async def test_zenodo_to_jsonld(zenodo):
         '@list': [{'name': creator.name} for creator in zenodo_record.creators]
     }
     assert zenodo_jsonld.license.text == zenodo_record.license
-    assert zenodo_jsonld.funding[0].funder[0].name == zenodo_record.notes
+    assert zenodo_jsonld.funding[0].funder.name == zenodo_record.notes
     assert zenodo_jsonld.funding[0].name == zenodo_record.notes
     assert zenodo_jsonld.datePublished == zenodo_record.publication_date
     assert zenodo_jsonld.dateCreated == zenodo_record.created
@@ -109,7 +109,7 @@ async def test_external_to_jsonld(external):
     }
     assert external_jsonld.license.dict() == {'text': external_record.license.description}
     assert external_jsonld.dict()['funding'] == [
-        {"name": funder.awardName, "number": funder.awardNumber, "funder": [{"name": funder.fundingAgency}]}
+        {"name": funder.awardName, "number": funder.awardNumber, "funder": {"name": funder.fundingAgency}}
         for funder in external_record.funders
     ]
     assert external_jsonld.datePublished == external_record.datePublished
@@ -146,7 +146,7 @@ async def test_earthchem_to_jsonld(earthchem):
     assert ecl_jsonld.creator.dict(by_alias=True) == {'@list': [creator for creator in creators]}
     assert ecl_jsonld.license.dict() == {'text': ecl_record.license.alternateName}
     assert ecl_jsonld.dict()['funding'] == [
-        {"name": None, "number": funding.identifier, "funder": [{"name": funding.funder.name}]}
+        {"name": None, "number": funding.identifier, "funder": {"name": funding.funder.name}}
         for funding in ecl_record.fundings
     ]
     assert ecl_jsonld.datePublished == ecl_record.datePublished

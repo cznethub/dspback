@@ -47,12 +47,6 @@ def format_fields(json_ld):
         if json_ld["keywords"] is None:
             json_ld["keywords"] = []
 
-    if "funding" in json_ld:
-        for funding in json_ld["funding"]:
-            if "funder" in funding:
-                if not isinstance(funding["funder"], list):
-                    funding["funder"] = [funding["funder"]]
-
     if "creator" in json_ld:
         if isinstance(json_ld["creator"], list):
             creators = json_ld["creator"]
