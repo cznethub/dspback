@@ -20,7 +20,7 @@ async def retrieve_submission_json_ld(submission):
             submission.identifier, submission.repo_type, submission.url
         )
     else:
-        public_json_ld = ExternalRecord(**json.loads(submission.metadata_json)).to_jsonld(submission.identifier).dict(by_alias=True)
+        public_json_ld = ExternalRecord(**json.loads(submission.metadata_json)).to_jsonld(submission.identifier).dict(by_alias=True, exclude_none=True)
     return public_json_ld
 
 
