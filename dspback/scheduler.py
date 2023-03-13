@@ -14,13 +14,16 @@ app = Rocketry(config={"task_execution": "async"})
 
 logger = logging.getLogger()
 
+
 async def retrieve_submission_json_ld(submission):
     if submission.repo_type != RepositoryType.EXTERNAL:
-        public_json_ld = await retrieve_discovery_jsonld(
-            submission.identifier, submission.repo_type, submission.url
-        )
+        public_json_ld = await retrieve_discovery_jsonld(submission.identifier, submission.repo_type, submission.url)
     else:
-        public_json_ld = ExternalRecord(**json.loads(submission.metadata_json)).to_jsonld(submission.identifier).dict(by_alias=True, exclude_none=True)
+        public_json_ld = (
+            ExternalRecord(**json.loads(submission.metadata_json))
+            .to_jsonld(submission.identifier)
+            .dict(by_alias=True, exclude_none=True)
+        )
     return public_json_ld
 
 
@@ -33,7 +36,9 @@ async def do_daily():
         submission = await Submission.find_one(Submission.identifier == jsonld["repository_identifier"])
         if not submission:
             # remove
-            await db["discovery"].delete_one({"repository_identifier": jsonld.repository_identifier})
+            await db["discovery"].delete_one(
+                {"repository_identifier": jsonld["repository_identifier"], "legacy": False}
+            )
 
     async for submission in Submission.find_all():
         try:
@@ -42,6 +47,8 @@ async def do_daily():
                 await db["discovery"].find_one_and_replace(
                     {"repository_identifier": public_json_ld["repository_identifier"]}, public_json_ld, upsert=True
                 )
+            else:
+                logger.info(f"Failed to collect submission {submission.url}")
         except:
             logger.exception(f"Failed to collect submission {submission.url}")
 

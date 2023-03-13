@@ -9,8 +9,8 @@ from dspback.config import get_settings
 from dspback.pydantic_schemas import ExternalRecord
 from dspback.utils.jsonld.scraper import retrieve_discovery_jsonld
 
-
 logger = logging.getLogger()
+
 
 def sanitize(text):
     # remove urls form text
@@ -49,6 +49,7 @@ async def watch_discovery():
             else:
                 await db["typeahead"].delete_one({"_id": change["documentKey"]["_id"]})
 
+
 async def watch_discovery_with_retry():
     while True:
         try:
@@ -67,7 +68,9 @@ async def watch_submissions():
                 document = change["fullDocument"]
                 if document["repo_type"] == "external":
                     public_json_ld = (
-                        ExternalRecord(**json.loads(document["metadata_json"])).to_jsonld(document["identifier"]).dict(by_alias=True, exclude_none=True)
+                        ExternalRecord(**json.loads(document["metadata_json"]))
+                        .to_jsonld(document["identifier"])
+                        .dict(by_alias=True, exclude_none=True)
                     )
                 else:
                     public_json_ld = await retrieve_discovery_jsonld(

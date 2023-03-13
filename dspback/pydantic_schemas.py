@@ -7,7 +7,7 @@ from geojson import Feature, Point
 from pydantic import BaseModel, EmailStr, Field, HttpUrl, root_validator, validator
 
 from dspback.config import get_settings
-from dspback.utils.jsonld.pydantic_schemas import JSONLD
+from dspback.schemas.discovery import JSONLD
 
 
 class ORCIDResponse(BaseModel):
@@ -421,7 +421,7 @@ class ExternalRecord(BaseRecord):
             "keywords": self.keywords,
             "creator": {'@list': self.creators},
             "funding": [
-                {"name": funder.awardName, "number": funder.awardNumber, "funder": [{"name": funder.fundingAgency}]}
+                {"name": funder.awardName, "number": funder.awardNumber, "funder": {"name": funder.fundingAgency}}
                 for funder in self.funders
             ],
         }

@@ -11,8 +11,9 @@ from dspback.utils.jsonld.formatter import format_fields
 def scrape_jsonld(resource_data, script_match):
     resource_soup = BeautifulSoup(resource_data, "html.parser")
     resource_json_ld = resource_soup.find("script", script_match)
-    resource_json_ld = json.loads(html.unescape(resource_json_ld.text))
-    resource_json_ld = format_fields(resource_json_ld)
+    if resource_json_ld:
+        resource_json_ld = json.loads(html.unescape(resource_json_ld.text))
+        resource_json_ld = format_fields(resource_json_ld)
 
     return resource_json_ld
 
@@ -33,6 +34,8 @@ async def retrieve_discovery_jsonld(identifier, repository_type, url):
         {"id": "schemaorg"} if repository_type == RepositoryType.HYDROSHARE else {"type": "application/ld+json"}
     )
     resource_json_ld = scrape_jsonld(resource_data, script_match=script_match)
+    if not resource_json_ld:
+        return None
     # only Zenodo does not have provider in the json ld
     if repository_type == RepositoryType.ZENODO:
         resource_json_ld['provider'] = {'name': 'Zenodo'}
