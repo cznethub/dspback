@@ -92,7 +92,6 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         if response.status_code >= 300:
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
-        # await self.submit(identifier)
         return await self.get_metadata_repository(request, identifier)
 
     async def _retrieve_metadata_from_repository(self, request: Request, identifier):
@@ -142,8 +141,8 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         summary="Register a Zenodo record",
         description="Creates a submission record of the Zenodo record.",
     )
-    async def submit_repository_record(self, identifier: str):
-        json_metadata = await self.submit(identifier)
+    async def submit_repository_record(self, request: Request, identifier: str):
+        json_metadata = await self.submit(request, identifier)
         return json_metadata["metadata"]
 
     @router.get(

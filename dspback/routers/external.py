@@ -67,16 +67,3 @@ class ExternalMetadataRoutes(MetadataRoutes):
     )
     async def delete_metadata_repository(self, identifier):
         await delete_submission(identifier, self.user)
-
-    @router.put(
-        '/submit/external/{identifier}',
-        name="submit",
-        response_model_exclude_unset=True,
-        response_model=response_model,
-        tags=["HydroShare"],
-        summary="Register an External resource",
-        description="Creates a submission record of the External resource.",
-    )
-    async def submit_repository_record(self, identifier: str):
-        json_metadata = await self.submit(identifier)
-        return json_metadata

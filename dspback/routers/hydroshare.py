@@ -171,8 +171,8 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         summary="Register a HydroShare resource",
         description="Creates a submission record of the HydroShare resource.",
     )
-    async def submit_repository_record(self, identifier: str):
-        json_metadata = await self.submit(identifier)
+    async def submit_repository_record(self, request: Request, identifier: str):
+        json_metadata = await self.submit(request, identifier)
         return json_metadata
 
     @router.get(
