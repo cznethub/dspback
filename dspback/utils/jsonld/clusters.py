@@ -59,3 +59,34 @@ def clusters(json_ld):
             clusters.append(cluster_by_id[f_id])
 
     return list(set(clusters))
+
+
+current_clusters = [
+    "Bedrock Cluster",
+    "Bedrock Cluster",
+    "Big Data Cluster",
+    "CINET Cluster",
+    "Coastal Cluster",
+    "Drylands Cluster",
+    "Dust^2 Cluster",
+    "Dynamic Water Cluster",
+    "GeoMicroBio Cluster",
+    "Urban Cluster",
+    "CZNet Hub",
+]
+
+legacy_clusters = [
+    "CZO Boulder",
+    "CZO Calhoun",
+    "CZO Sierra",
+    "CZO Catalina-Jemez",
+    "CZO Christina",
+    "CZO Eel",
+    "CZO IML",
+    "CZO Luquillo",
+    "CZO National",
+    "CZO Reynolds",
+    "CZO Shale-Hills",
+]
+
+all_clusters = current_clusters + legacy_clusters

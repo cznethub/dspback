@@ -1,3 +1,4 @@
+import functools
 import json
 from datetime import datetime
 
@@ -142,6 +143,18 @@ async def csv(request: Request):
     return FileResponse(filename, filename=filename, media_type='application/octet-stream')
 
 
+def compare(c1: str, c2: str):
+    if c1.startswith("CZO"):
+        if c2.startswith("CZO"):
+            return c1 < c2
+        else:
+            return 1
+    if c2.startswith("CZO"):
+        return -1
+    return c1 < c2
+
+
 @router.get("/clusters")
-async def clusters(request: Request):
-    return await request.app.db[get_settings().mongo_database]["discovery"].find().distinct('clusters')
+async def clusters(request: Request) -> list[str]:
+    existing_clusters = await request.app.db[get_settings().mongo_database]["discovery"].find().distinct('clusters')
+    return sorted(existing_clusters, key=functools.cmp_to_key(compare))
