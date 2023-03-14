@@ -1,3 +1,4 @@
+import functools
 import json
 from datetime import datetime
 
@@ -132,6 +133,33 @@ async def typeahead(request: Request, term: str, pageSize: int = 30):
     return result
 
 
+@router.get("/creators")
+async def creator_search(request: Request, name: str, pageSize: int = 30) -> list[str]:
+    stages = [
+        {
+            '$search': {
+                'index': 'fuzzy_search',
+                'autocomplete': {"query": name, "path": "creator.@list.name", 'fuzzy': {'maxEdits': 1}},
+                'highlight': {'path': 'creator.@list.name'},
+            }
+        },
+        {'$project': {"_id": 0, "creator.@list.name": 1, "highlights": {'$meta': 'searchHighlights'}}},
+    ]
+
+    results = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
+
+    names = []
+    for result in results:
+        for highlight in result['highlights']:
+            for text in highlight['texts']:
+                if text['type'] == 'hit':
+                    for creator in result['creator']['@list']:
+                        if text['value'] in creator['name']:
+                            names.append(creator['name'])
+
+    return set(names)
+
+
 @router.get("/csv")
 async def csv(request: Request):
     project = [{'$project': {'name': 1, 'description': 1, 'keywords': 1, '_id': 0}}]
@@ -142,6 +170,18 @@ async def csv(request: Request):
     return FileResponse(filename, filename=filename, media_type='application/octet-stream')
 
 
+def compare(c1: str, c2: str):
+    if c1.startswith("CZO"):
+        if c2.startswith("CZO"):
+            return c1 < c2
+        else:
+            return 1
+    if c2.startswith("CZO"):
+        return -1
+    return c1 < c2
+
+
 @router.get("/clusters")
-async def clusters(request: Request):
-    return await request.app.db[get_settings().mongo_database]["discovery"].find().distinct('clusters')
+async def clusters(request: Request) -> list[str]:
+    existing_clusters = await request.app.db[get_settings().mongo_database]["discovery"].find().distinct('clusters')
+    return sorted(existing_clusters, key=functools.cmp_to_key(compare))
