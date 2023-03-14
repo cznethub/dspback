@@ -3,7 +3,7 @@ from enum import Enum
 from typing import List, Optional, Union
 
 from beanie import Document, Link
-from geojson import Feature, Point
+from geojson import Feature, Point, Polygon
 from pydantic import BaseModel, EmailStr, Field, HttpUrl, root_validator, validator
 
 from dspback.config import get_settings
@@ -193,7 +193,18 @@ class HydroShareRecord(BaseRecord):
         @property
         def geojson(self):
             if self.type == 'box':
-                return [float(self.northlimit), float(self.southlimit), float(self.eastlimit), float(self.westlimit)]
+                return [
+                    Feature(
+                        geometry=Polygon(
+                            [
+                                float(self.northlimit),
+                                float(self.southlimit),
+                                float(self.eastlimit),
+                                float(self.westlimit),
+                            ]
+                        )
+                    )
+                ]
             else:
                 return [Feature(geometry=Point([float(self.east), float(self.north)]))]
 
@@ -371,7 +382,18 @@ class ExternalRecord(BaseRecord):
         @property
         def geojson(self):
             if self.type == 'box':
-                return [float(self.northlimit), float(self.southlimit), float(self.eastlimit), float(self.westlimit)]
+                return [
+                    Feature(
+                        geometry=Polygon(
+                            [
+                                float(self.northlimit),
+                                float(self.southlimit),
+                                float(self.eastlimit),
+                                float(self.westlimit),
+                            ]
+                        )
+                    )
+                ]
             else:
                 return [Feature(geometry=Point([float(self.east), float(self.north)]))]
 

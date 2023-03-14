@@ -1,4 +1,4 @@
-from geojson import Feature, Point
+from geojson import Feature, Point, Polygon
 
 from dspback.schemas.earthchem.model import Record
 from dspback.schemas.hydroshare.model import ResourceMetadata
@@ -7,7 +7,7 @@ from dspback.schemas.hydroshare.model import ResourceMetadata
 def hs_convert_to_jsonld(metadata: ResourceMetadata):
     def to_geojson(sc):
         if hasattr(sc, 'northlimit'):
-            return [sc.northlimit, sc.southlimit, sc.eastlimit, sc.westlimit]
+            return Feature(geometry=Polygon([sc.northlimit, sc.southlimit, sc.eastlimit, sc.westlimit]))
         else:
             return Feature(geometry=Point([float(sc.east), float(sc.north)]))
         pass

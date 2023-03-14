@@ -1,5 +1,5 @@
 import dateutil.parser
-from geojson import Feature, Point
+from geojson import Feature, Point, Polygon
 
 from dspback.utils.jsonld.clusters import clusters
 
@@ -33,7 +33,7 @@ def format_fields(json_ld):
                 spatial_coverage["geojson"].append(point)
             if sc["@type"] == "GeoShape":
                 south, west, north, east = sc["box"].split(" ")
-                bbox = [float(north), float(south), float(east), float(west)]
+                bbox = Feature(geometry=Polygon([float(north), float(south), float(east), float(west)]))
                 spatial_coverage["geojson"].append(bbox)
 
     # format temporal coverage
