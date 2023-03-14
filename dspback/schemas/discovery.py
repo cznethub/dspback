@@ -63,6 +63,7 @@ class JSONLD(BaseModel):
     legacy: Optional[bool] = Field(
         default=False, description="Indicates whether the record was submitted through the submission portal"
     )
+    clusters: Optional[List[str]]
 
     class Settings:
         name = "discovery"
@@ -100,6 +101,5 @@ class TypeAhead(BaseModel):
 
 
 class DiscoveryResult(JSONLD):
-    clusters: Optional[List[str]]
     score: float
     highlights: List[Highlight]

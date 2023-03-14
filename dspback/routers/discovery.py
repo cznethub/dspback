@@ -13,7 +13,6 @@ router = APIRouter()
 
 @router.get(
     "/search",
-    response_model_exclude_unset=True,
     response_model_exclude_none=True,
     response_model_by_alias=True,
     response_model=list[DiscoveryResult],

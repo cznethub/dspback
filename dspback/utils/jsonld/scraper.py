@@ -5,6 +5,7 @@ import aiohttp
 from bs4 import BeautifulSoup
 
 from dspback.pydantic_schemas import RepositoryType
+from dspback.schemas.discovery import JSONLD
 from dspback.utils.jsonld.formatter import format_fields
 
 
@@ -40,4 +41,5 @@ async def retrieve_discovery_jsonld(identifier, repository_type, url):
     if repository_type == RepositoryType.ZENODO:
         resource_json_ld['provider'] = {'name': 'Zenodo'}
     resource_json_ld["repository_identifier"] = identifier
-    return resource_json_ld
+    jsonld = JSONLD(**resource_json_ld)
+    return jsonld.dict(by_alias=True, exclude_none=True)
