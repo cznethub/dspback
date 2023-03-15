@@ -65,7 +65,7 @@
     },
     "rights": {
       "title": "Rights",
-      "description": "An object containing information about rights held in an over a resource",
+      "description": "An object containing information about rights held in and over a resource",
       "required": [
         "statement",
         "url"
