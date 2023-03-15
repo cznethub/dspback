@@ -77,14 +77,10 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         description="Validates the incoming metadata and updates the Zenodo record associated with the provided identifier.",
     )
     async def update_metadata(self, request: Request, metadata: request_model, identifier):
-        existing_metadata = await self.get_metadata_repository(request, identifier)
-        incoming_metadata = metadata.json(skip_defaults=True, exclude_unset=True)
-        merged_metadata = {**existing_metadata, **json.loads(incoming_metadata)}
-        merged_metadata = to_zenodo_format(merged_metadata)
         access_token = await self.access_token(request)
         response = requests.put(
             self.update_url % identifier,
-            json=merged_metadata,
+            json=metadata.json(),
             headers={"Content-Type": "application/json"},
             params={"access_token": access_token},
         )
