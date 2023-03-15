@@ -52,7 +52,6 @@
     "license": {
       "title": "License",
       "type": "object",
-      "options": { "flat": false },
       "description": "License under which the resource is released for access and reuse.",
       "additionalProperties": false,
       "properties": {
@@ -371,7 +370,6 @@
     "provider": {
       "title": "Provider",
       "type": "object",
-      "options": { "flat": false },
       "description": "The repository or organization that provides access to the resource.",
       "additionalProperties": false,
       "properties": {

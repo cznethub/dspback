@@ -59,7 +59,7 @@
       "scope": "#/properties/leadAuthor",
       "options": {
         "detail": {
-          "type": "Group",
+          "type": "Object",
           "elements": [
             {
               "type": "HorizontalLayout",

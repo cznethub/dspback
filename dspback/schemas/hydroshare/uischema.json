@@ -157,7 +157,7 @@
       "scope": "#/properties/period_coverage",
       "options": {
         "detail": {
-          "type": "Group",
+          "type": "Object",
           "label": "Period coverage",
           "elements": [
             {
