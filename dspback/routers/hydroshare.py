@@ -4,6 +4,8 @@ import requests
 from fastapi import Request
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
+from hsmodels.schemas import ResourceMetadata as Res_MD
+from hsmodels.schemas import rdf_string
 from starlette.responses import JSONResponse
 
 from dspback.database.procedures import delete_submission
@@ -95,7 +97,9 @@ class HydroShareMetadataRoutes(MetadataRoutes):
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         identifier = response.json()["resource_id"]
-        # hydroshare doesn't accept all of the metadata on create
+        # hydroshare doesn't accept all of the metadata on create, it also creates a creator with the user
+        new_md = await self._retrieve_metadata_from_repository(request, identifier)
+        metadata.creators = new_md["creators"]
         json_metadata = await self.update_metadata(request, metadata, identifier)
 
         return JSONResponse(json_metadata, status_code=201)
@@ -110,11 +114,12 @@ class HydroShareMetadataRoutes(MetadataRoutes):
     )
     async def update_metadata(self, request: Request, metadata: request_model, identifier):
         access_token = await self.access_token(request)
-        metadata_json = to_hydroshare_format(json.loads(metadata.json(skip_defaults=True)))
-        response = requests.put(
+        metadata_json = to_hydroshare_format(json.loads(metadata.json()))
+        url = self.settings.hydroshare_view_url % identifier
+        rdf = rdf_string(Res_MD(**metadata_json, identifier=url, url=url))
+        response = requests.post(
             self.update_url % identifier,
-            data=json.dumps(metadata_json),
-            headers={"Content-Type": "application/json"},
+            files={'file': ("resourcemetadata.xml", rdf)},
             params={"access_token": access_token},
         )
 
