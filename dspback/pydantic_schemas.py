@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from enum import Enum
 from typing import List, Optional, Union
 
@@ -314,7 +314,7 @@ class EarthChemRecord(BaseRecord):
     leadAuthor: Contributor
     license: Optional[License]
     fundings: List[Funding] = []
-    datePublished: Optional[datetime]
+    datePublished: Optional[date]
     relatedResources: Optional[List[RelatedResource]] = []
 
     def to_submission(self, identifier) -> Submission:
@@ -352,7 +352,7 @@ class EarthChemRecord(BaseRecord):
         if self.license:
             optional["license"] = {'text': self.license.alternateName}
         if self.datePublished:
-            optional["datePublished"] = self.datePublished
+            optional["datePublished"] = datetime.combine(self.datePublished, datetime.min.time())
         if self.relatedResources:
             optional["relations"] = [relation.bibliographicCitation for relation in self.relatedResources]
         return JSONLD(**required, **optional)
