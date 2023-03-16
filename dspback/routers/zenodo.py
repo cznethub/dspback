@@ -4,12 +4,13 @@ import requests
 from fastapi import Request
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
+from pydantic import BaseModel
 from starlette.responses import JSONResponse
 
 from dspback.database.procedures import delete_submission
 from dspback.dependencies import RepositoryException
 from dspback.pydantic_schemas import RepositoryType, Submission
-from dspback.routers.metadata_class import MetadataRoutes
+from dspback.routers.metadata_class import MetadataRoutes, exists_and_is
 from dspback.schemas.zenodo.model import ZenodoDatasetsSchemaForCzNetV100
 
 router = InferringRouter()
@@ -34,10 +35,15 @@ def from_zenodo_format(json_metadata):
     return json_metadata
 
 
+class ZenodoMetadataResponse(BaseModel):
+    metadata: ZenodoDatasetsSchemaForCzNetV100
+    published: bool
+
+
 @cbv(router)
 class ZenodoMetadataRoutes(MetadataRoutes):
     request_model = ZenodoDatasetsSchemaForCzNetV100
-    response_model = ZenodoDatasetsSchemaForCzNetV100
+    response_model = ZenodoMetadataResponse
     repository_type = RepositoryType.ZENODO
 
     @router.post(
@@ -102,7 +108,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         json_metadata = json.loads(response.text)
-        return json_metadata
+        return self.wrap_metadata(json_metadata, exists_and_is("publication_date", json_metadata))
 
     @router.get(
         '/metadata/zenodo/{identifier}',

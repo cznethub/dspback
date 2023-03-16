@@ -29,7 +29,7 @@ async def new_external_record(client_test, user_cookie, external):
     response = await client_test.post(prefix + "/metadata/external?access_token=" + user_cookie, json=external)
     assert response.status_code == 201
     response_json = response.json()
-    return response_json["identifier"]
+    return response_json["metadata"]["identifier"]
 
 
 async def test_create_external_record(client_test, user_cookie, external):
@@ -50,7 +50,7 @@ async def test_update_external_record(client_test, user_cookie, external):
     )
 
     assert response.status_code == 200
-    assert response.json()["name"] == "updated title"
+    assert response.json()["metadata"]["name"] == "updated title"
 
 
 async def test_get_external_record(client_test, user_cookie, external):
@@ -58,7 +58,7 @@ async def test_get_external_record(client_test, user_cookie, external):
 
     response = await client_test.get(prefix + "/metadata/external/" + identifier + "?access_token=" + user_cookie)
 
-    assert response.json()["name"] == "string"
+    assert response.json()["metadata"]["name"] == "string"
 
 
 async def test_delete_external_record(client_test, user_cookie, external):

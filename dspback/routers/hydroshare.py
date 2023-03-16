@@ -6,12 +6,13 @@ from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
 from hsmodels.schemas import ResourceMetadata as Res_MD
 from hsmodels.schemas import rdf_string
+from pydantic import BaseModel, create_model
 from starlette.responses import JSONResponse
 
 from dspback.database.procedures import delete_submission
 from dspback.dependencies import RepositoryException
 from dspback.pydantic_schemas import RepositoryType
-from dspback.routers.metadata_class import MetadataRoutes
+from dspback.routers.metadata_class import MetadataRoutes, exists_and_is
 from dspback.schemas.hydroshare.model import ResourceMetadata
 
 router = InferringRouter()
@@ -70,10 +71,15 @@ def from_hydroshare_format(metadata_json):
     return metadata_json
 
 
+class HydroShareMetadataResponse(BaseModel):
+    metadata: ResourceMetadata
+    published: bool
+
+
 @cbv(router)
 class HydroShareMetadataRoutes(MetadataRoutes):
     request_model = ResourceMetadata
-    response_model = ResourceMetadata
+    response_model = HydroShareMetadataResponse
     repository_type = RepositoryType.HYDROSHARE
 
     @router.post(
@@ -99,8 +105,8 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         identifier = response.json()["resource_id"]
         # hydroshare doesn't accept all of the metadata on create, it also creates a creator with the user
         new_md = await self._retrieve_metadata_from_repository(request, identifier)
-        metadata.creators = new_md["creators"]
-        json_metadata = await self.update_metadata(request, metadata, identifier)
+        metadata.creators = new_md["metadata"]["creators"]
+        json_metadata = await self.update_metadata(request, metadata["metadata"], identifier)
 
         return JSONResponse(json_metadata, status_code=201)
 
@@ -137,7 +143,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
 
         json_metadata = json.loads(response.text)
         json_metadata = from_hydroshare_format(json_metadata)
-        return json_metadata
+        return self.wrap_metadata(json_metadata, exists_and_is("published", json_metadata))
 
     @router.get(
         '/metadata/hydroshare/{identifier}',
@@ -188,4 +194,4 @@ class HydroShareMetadataRoutes(MetadataRoutes):
     )
     async def get_json_metadata_repository(self, request: Request, identifier):
         json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
-        return json_metadata
+        return {"metadata": json_metadata, "published": "published" in json_metadata}
