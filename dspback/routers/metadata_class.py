@@ -11,7 +11,7 @@ router = InferringRouter()
 
 
 def exists_and_is(property: str, dictionary: dict):
-    return property in dictionary and dictionary[property]
+    return property in dictionary and dictionary[property] is not None
 
 
 class MetadataRoutes:
