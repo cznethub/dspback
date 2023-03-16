@@ -194,4 +194,4 @@ class HydroShareMetadataRoutes(MetadataRoutes):
     )
     async def get_json_metadata_repository(self, request: Request, identifier):
         json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
-        return {"metadata": json_metadata, "published": "published" in json_metadata}
+        return json_metadata
