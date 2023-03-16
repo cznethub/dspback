@@ -31,7 +31,7 @@ def from_zenodo_format(json_metadata):
     Prepares Zenodo storage for our forms.  Notes is a string field we are using to store required funding
     information. Our forms only use properties within the metadata property.
     """
-    json_metadata = json_metadata["metadata"]
+    json_metadata["metadata"] = json_metadata["metadata"]["metadata"]
     return json_metadata
 
 
