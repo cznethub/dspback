@@ -17,7 +17,7 @@ async def delete_repository_access_token(repository, user: User):
 
 async def create_or_update_submission(identifier, record, user: User, metadata_json):
     submission = record.to_submission(identifier)
-    submission.metadata_json = json.dumps(metadata_json)
+    submission.metadata_json = json.dumps(metadata_json, default=str)
     existing_submission = user.submission(identifier)
     if existing_submission:
         await existing_submission.set(submission.dict(exclude_unset=True))
