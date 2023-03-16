@@ -149,5 +149,5 @@ async def test_earthchem_to_jsonld(earthchem):
         {"name": None, "number": funding.identifier, "funder": {"name": funding.funder.name}}
         for funding in ecl_record.fundings
     ]
-    assert ecl_jsonld.datePublished == ecl_record.datePublished
+    assert ecl_jsonld.datePublished == datetime.combine(ecl_record.datePublished, datetime.min.time())
     assert ecl_jsonld.relations == [relation.bibliographicCitation for relation in ecl_record.relatedResources]

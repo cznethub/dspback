@@ -1,6 +1,6 @@
 from fastapi import Depends
 from fastapi_restful.inferring_router import InferringRouter
-from requests import Session
+from pydantic import BaseModel
 
 from dspback.config import Settings, get_settings, repository_config
 from dspback.dependencies import get_current_repository_token, get_current_user
@@ -8,6 +8,10 @@ from dspback.pydantic_schemas import User
 from dspback.routers.submissions import submit_record
 
 router = InferringRouter()
+
+
+def exists_and_is(property: str, dictionary: dict):
+    return property in dictionary and dictionary[property] is not None
 
 
 class MetadataRoutes:
@@ -21,12 +25,15 @@ class MetadataRoutes:
     async def submit(self, request, identifier, json_metadata=None):
         if json_metadata is None:
             json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
-        await submit_record(self.repository_type, identifier, self.user, json_metadata)
+        await submit_record(self.repository_type, identifier, self.user, json_metadata["metadata"])
         return json_metadata
 
     async def access_token(self, request):
         repository_token = await get_current_repository_token(request, self.repository_type, self.user, self.settings)
         return repository_token.access_token
+
+    def wrap_metadata(self, metadata: dict, published: bool):
+        return {"metadata": metadata, "published": published}
 
     def __init__(self):
         if self.request_model is None:

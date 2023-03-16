@@ -4,12 +4,13 @@ import requests
 from fastapi import Request
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
+from pydantic import BaseModel
 from starlette.responses import JSONResponse
 
 from dspback.database.procedures import delete_submission
 from dspback.dependencies import RepositoryException
 from dspback.pydantic_schemas import RepositoryType
-from dspback.routers.metadata_class import MetadataRoutes
+from dspback.routers.metadata_class import MetadataRoutes, exists_and_is
 from dspback.schemas.earthchem.model import Record
 
 router = InferringRouter()
@@ -26,11 +27,16 @@ def prepare_metadata_for_ecl(json_metadata):
     return json_metadata
 
 
+class EarthChemMetadataResponse(BaseModel):
+    metadata: Record
+    published: bool
+
+
 @cbv(router)
 class EarthChemMetadataRoutes(MetadataRoutes):
     request_model = Record
     request_model_update = Record
-    response_model = Record
+    response_model = EarthChemMetadataResponse
     repository_type = RepositoryType.EARTHCHEM
 
     @router.post(
@@ -113,7 +119,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
                 json_metadata["leadAuthor"] = lead_author
                 json_metadata["contributors"] = all_contributors
 
-        return json_metadata
+        return self.wrap_metadata(json_metadata, exists_and_is("datePublished", json_metadata))  # always published
 
     @router.get(
         '/metadata/earthchem/{identifier}',

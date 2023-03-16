@@ -77,6 +77,10 @@ class Settings(BaseSettings):
     outside_host: str
 
     @property
+    def local_development(self):
+        return self.outside_host == "localhost"
+
+    @property
     def mongo_url(self):
         return f"{self.mongo_protocol}://{self.mongo_username}:{self.mongo_password}@{self.mongo_host}/?retryWrites=true&w=majority"
 
