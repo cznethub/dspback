@@ -119,7 +119,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
                 json_metadata["leadAuthor"] = lead_author
                 json_metadata["contributors"] = all_contributors
 
-        return self.wrap_metadata(json_metadata, exists_and_is("datePublished", json_metadata))  # always published
+        return self.wrap_metadata(json_metadata, "status" in json_metadata and json_metadata["status"] == "complete")
 
     @router.get(
         '/metadata/earthchem/{identifier}',
