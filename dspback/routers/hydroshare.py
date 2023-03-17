@@ -106,6 +106,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         # hydroshare doesn't accept all of the metadata on create, it also creates a creator with the user
         new_md = await self._retrieve_metadata_from_repository(request, identifier)
         metadata.creators = new_md["metadata"]["creators"]
+        metadata.citation = new_md["metadata"]["citation"]
         json_metadata = await self.update_metadata(request, metadata, identifier)
 
         return JSONResponse(json_metadata, status_code=201)
