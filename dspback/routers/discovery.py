@@ -1,10 +1,12 @@
 import functools
 import json
+import re
 from datetime import datetime
 
 import pandas
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import FileResponse
+from fuzzywuzzy import fuzz
 
 from dspback.config import get_settings
 from dspback.schemas.discovery import DiscoveryResult, PathEnum, TypeAhead
@@ -12,11 +14,25 @@ from dspback.schemas.discovery import DiscoveryResult, PathEnum, TypeAhead
 router = APIRouter()
 
 
+def is_one_char_off(str1, str2):
+    if str1 == str2:
+        return True
+    length_difference = abs(len(str1) - len(str2))
+    if length_difference > 1:
+        return False
+    mismatch_count = 0
+    for i in range(min(len(str1), len(str2))):
+        if str1[i] != str2[i]:
+            mismatch_count += 1
+            if mismatch_count > 1:
+                return False
+            if mismatch_count == 1 and length_difference == 1:
+                return False
+    return True
+
+
 @router.get(
-    "/search",
-    response_model_exclude_none=True,
-    response_model_by_alias=True,
-    response_model=list[DiscoveryResult],
+    "/search"
 )
 async def search(
     request: Request,
@@ -32,10 +48,11 @@ async def search(
     clusters: list[str] | None = Query(default=None),
     pageNumber: int = 1,
     pageSize: int = 30,
+    fuzzy_search_terms: bool = False
 ):
     search_paths = PathEnum.values()
 
-    should = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_paths]
+
     must = []
     stages = []
     filters = []
@@ -75,16 +92,6 @@ async def search(
     if contentType:
         must.append({'text': {'path': '@type', 'query': contentType}})
 
-    stages.append(
-        {
-            '$search': {
-                'index': 'fuzzy_search',
-                'compound': {'filter': filters, 'should': should, 'must': must},
-                'highlight': {'path': search_paths},
-            }
-        }
-    )
-
     if clusters:
         stages.append({'$match': {'clusters': {'$all': clusters}}})
 
@@ -101,8 +108,47 @@ async def search(
         {'$set': {'score': {'$meta': 'searchScore'}, 'highlights': {'$meta': 'searchHighlights'}}},
     )
 
-    result = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
-    return result
+    should = [{'autocomplete': {'query': term, 'path': key}} for key in search_paths]
+
+    stages.insert(0,
+        {
+            '$search': {
+                'index': 'fuzzy_search',
+                'compound': {'filter': filters, 'should': should, 'must': must},
+                'highlight': {'path': search_paths},
+            }
+        }
+    )
+
+    results = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
+
+    if len(results) == 0 and fuzzy_search_terms:
+        fuzzy_should = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_paths]
+        stages[0]['$search']['compound']['should'] = fuzzy_should
+        results = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
+        result_hits = await determine_fuzzy_result_terms(results, term)
+        return {"results": results, "fuzzy_search_terms": result_hits}
+
+    return {"results": results, "fuzzy_search_terms": []}
+
+
+async def determine_fuzzy_result_terms(results, term):
+    result_hits = set()
+    for result in results:
+        for highlight in result["highlights"]:
+            for text in highlight["texts"]:
+                if text["type"] == "hit":
+                    highest_score = 0
+                    highest_hit = None
+                    for term_word in term.split():
+                        for hit_word in text["value"].split():
+                            score = fuzz.ratio(term_word.lower(), hit_word.lower())
+                            if score > highest_score:
+                                highest_score = score
+                                highest_hit = hit_word.lower()
+                    if highest_hit:
+                        result_hits.add(re.sub(r"^\W+|\W+$", "", highest_hit.lower()))
+    return result_hits
 
 
 @router.get("/typeahead", response_model=list[TypeAhead])
