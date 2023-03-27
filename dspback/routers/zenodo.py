@@ -85,7 +85,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
     async def update_metadata(self, request: Request, metadata: request_model, identifier):
         existing_metadata = await self.get_metadata_repository(request, identifier)
         incoming_metadata = metadata.json(skip_defaults=True, exclude_unset=True)
-        merged_metadata = {**existing_metadata, **json.loads(incoming_metadata)}
+        merged_metadata = {**existing_metadata["metadata"], **json.loads(incoming_metadata)}
         merged_metadata = to_zenodo_format(merged_metadata)
         access_token = await self.access_token(request)
         response = requests.put(
