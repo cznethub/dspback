@@ -78,17 +78,14 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         description="Validates the incoming metadata and updates the EarthChem resource associated with the provided identifier.",
     )
     async def update_metadata(self, request: Request, metadata: request_model_update, identifier) -> response_model:
-        existing_metadata = await self.get_metadata_repository(request, identifier)
         incoming_metadata = metadata.json(skip_defaults=True, exclude_unset=True)
         json_metadata = json.loads(incoming_metadata)
-
-        merged_metadata = {**existing_metadata, **json_metadata}
-        merged_metadata = prepare_metadata_for_ecl(merged_metadata)
+        earthchem_metadata = prepare_metadata_for_ecl(json_metadata)
 
         access_token = await self.access_token(request)
         response = requests.put(
             self.update_url % identifier,
-            json=merged_metadata,
+            json=earthchem_metadata,
             headers={"Content-Type": "application/json", "Authorization": "Bearer " + str(access_token)},
         )
 
