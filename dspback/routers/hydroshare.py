@@ -24,7 +24,7 @@ def to_hydroshare_format(metadata_json):
     """
 
     def profile_url_to_user_id(user_json):
-        if "profile_url" in user_json:
+        if "profile_url" in user_json and user_json["profile_url"]:
             parts = user_json["profile_url"].strip('/').split('/')
             last_part = parts[-1]
             user_json["hydroshare_user_id"] = int(last_part)
