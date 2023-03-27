@@ -1,6 +1,7 @@
 import functools
 import json
 import re
+from collections import defaultdict
 from datetime import datetime
 
 import pandas
@@ -129,26 +130,41 @@ async def search(
         result_hits = await determine_fuzzy_result_terms(results, term)
         return {"results": results, "fuzzy_search_terms": result_hits}
 
-    return {"results": results, "fuzzy_search_terms": []}
+    return {"results": results, "fuzzy_search_terms": {}}
 
 
 async def determine_fuzzy_result_terms(results, term):
-    result_hits = set()
-    for result in results:
+    def sanitize(dirty_word):
+        return re.sub(r"^\W+|\W+$", "", dirty_word)
+    def highest_result_highlight(result):
+        highest_highlight = {"score": 0}
         for highlight in result["highlights"]:
-            for text in highlight["texts"]:
-                if text["type"] == "hit":
-                    highest_score = 0
-                    highest_hit = None
-                    for term_word in term.split():
-                        for hit_word in text["value"].split():
-                            score = fuzz.ratio(term_word.lower(), hit_word.lower())
-                            if score > highest_score:
-                                highest_score = score
-                                highest_hit = hit_word.lower()
-                    if highest_hit:
-                        result_hits.add(re.sub(r"^\W+|\W+$", "", highest_hit.lower()))
-    return result_hits
+            if highlight["score"] > highest_highlight["score"]:
+                highest_highlight = highlight
+        return highest_highlight
+    def determine_hit_text(highlight):
+        for text in highlight["texts"]:
+            if text["type"] == "hit":
+                return text
+    fuzzy_result_terms = defaultdict(set)
+    for result in results:
+        highlight = highest_result_highlight(result)
+        hit_text = determine_hit_text(highlight)
+        highest_score = 0
+        highest_hit = None
+        highest_term = None
+        for term_word in term.split():
+            for hit_word in hit_text["value"].split():
+                sanitized_term = sanitize(term_word.lower())
+                sanitized_hit = sanitize(hit_word.lower())
+                score = fuzz.ratio(sanitized_term, sanitized_hit)
+                if score > highest_score:
+                    highest_score = score
+                    highest_hit = sanitized_hit
+                    highest_term = sanitize(term_word)
+        if highest_hit:
+            fuzzy_result_terms[highest_term].add(highest_hit)
+    return fuzzy_result_terms
 
 
 @router.get("/typeahead", response_model=list[TypeAhead])
