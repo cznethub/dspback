@@ -492,8 +492,7 @@
     "additionalTypes",
     "community",
     "type",
-    "status",
-    "fundings"
+    "status"
   ],
   "definitions": {
     "Affiliation": {
