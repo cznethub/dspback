@@ -35,8 +35,8 @@ async def search(
 ):
     search_paths = PathEnum.values()
 
-    should = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_paths]
-    must = []
+    #should = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_paths]
+    must = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_paths]
     stages = []
     filters = []
 
@@ -79,7 +79,7 @@ async def search(
         {
             '$search': {
                 'index': 'fuzzy_search',
-                'compound': {'filter': filters, 'should': should, 'must': must},
+                'compound': {'filter': filters, 'must': must},
                 'highlight': {'path': search_paths},
             }
         }
@@ -109,7 +109,7 @@ async def search(
 async def typeahead(request: Request, term: str, pageSize: int = 30):
     search_terms = PathEnum.values()
 
-    should = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_terms]
+    must = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_terms]
 
     project = {term: 1 for term in search_terms}
     project["highlights"] = {'$meta': 'searchHighlights'}
@@ -123,7 +123,7 @@ async def typeahead(request: Request, term: str, pageSize: int = 30):
         {
             '$search': {
                 'index': 'fuzzy_search',
-                'compound': {'should': should},
+                'compound': {'must': must},
                 'highlight': {'path': search_terms},
             }
         },
