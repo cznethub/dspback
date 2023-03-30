@@ -109,7 +109,7 @@ async def search(
 async def typeahead(request: Request, term: str, pageSize: int = 30):
     search_terms = PathEnum.values()
 
-    must = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_terms]
+    should = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_terms]
 
     project = {term: 1 for term in search_terms}
     project["highlights"] = {'$meta': 'searchHighlights'}
@@ -123,7 +123,7 @@ async def typeahead(request: Request, term: str, pageSize: int = 30):
         {
             '$search': {
                 'index': 'fuzzy_search',
-                'compound': {'must': must},
+                'compound': {'should': should},
                 'highlight': {'path': search_terms},
             }
         },
