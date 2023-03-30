@@ -1,10 +1,13 @@
 import functools
 import json
+import re
+from collections import defaultdict
 from datetime import datetime
 
 import pandas
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import FileResponse
+from fuzzywuzzy import fuzz
 
 from dspback.config import get_settings
 from dspback.schemas.discovery import DiscoveryResult, PathEnum, TypeAhead
@@ -12,12 +15,24 @@ from dspback.schemas.discovery import DiscoveryResult, PathEnum, TypeAhead
 router = APIRouter()
 
 
-@router.get(
-    "/search",
-    response_model_exclude_none=True,
-    response_model_by_alias=True,
-    response_model=list[DiscoveryResult],
-)
+def is_one_char_off(str1, str2):
+    if str1 == str2:
+        return True
+    length_difference = abs(len(str1) - len(str2))
+    if length_difference > 1:
+        return False
+    mismatch_count = 0
+    for i in range(min(len(str1), len(str2))):
+        if str1[i] != str2[i]:
+            mismatch_count += 1
+            if mismatch_count > 1:
+                return False
+            if mismatch_count == 1 and length_difference == 1:
+                return False
+    return True
+
+
+@router.get("/search")
 async def search(
     request: Request,
     term: str,
@@ -33,13 +48,164 @@ async def search(
     pageNumber: int = 1,
     pageSize: int = 30,
 ):
-    search_paths = PathEnum.values()
+    filters, must, search_paths, stages = await base_search(
+        clusters,
+        contentType,
+        creatorName,
+        dataCoverageEnd,
+        dataCoverageStart,
+        pageNumber,
+        pageSize,
+        providerName,
+        publishedEnd,
+        publishedStart,
+        sortBy,
+        term,
+    )
+
+    should = [{'autocomplete': {'query': term, 'path': key}} for key in search_paths]
+
+    stages.insert(
+        0,
+        {
+            '$search': {
+                'index': 'fuzzy_search',
+                'compound': {'filter': filters, 'should': should, 'must': must, 'minimumShouldMatch': 1},
+                'highlight': {'path': search_paths},
+            }
+        },
+    )
+
+    results = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
+
+    return results
+
+
+@router.get("/search/fuzzy")
+async def search(
+    request: Request,
+    term: str,
+    sortBy: str = None,
+    contentType: str = None,
+    providerName: str = None,
+    creatorName: str = None,
+    dataCoverageStart: int = None,
+    dataCoverageEnd: int = None,
+    publishedStart: int = None,
+    publishedEnd: int = None,
+    clusters: list[str] | None = Query(default=None),
+    pageNumber: int = 1,
+    pageSize: int = 30,
+):
+    filters, must, search_paths, stages = await base_search(
+        clusters,
+        contentType,
+        creatorName,
+        dataCoverageEnd,
+        dataCoverageStart,
+        pageNumber,
+        pageSize,
+        providerName,
+        publishedEnd,
+        publishedStart,
+        sortBy,
+        term,
+    )
 
     should = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_paths]
+
+    stages.insert(
+        0,
+        {
+            '$search': {
+                'index': 'fuzzy_search',
+                'compound': {'filter': filters, 'should': should, 'must': must, 'minimumShouldMatch': 1},
+                'highlight': {'path': search_paths},
+            }
+        },
+    )
+
+    results = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
+
+    return results
+
+
+@router.get("/search/fuzzy/feedback")
+async def search_fuzzy_feedback(
+    request: Request,
+    term: str,
+    sortBy: str = None,
+    contentType: str = None,
+    providerName: str = None,
+    creatorName: str = None,
+    dataCoverageStart: int = None,
+    dataCoverageEnd: int = None,
+    publishedStart: int = None,
+    publishedEnd: int = None,
+    clusters: list[str] | None = Query(default=None),
+    pageNumber: int = 1,
+    pageSize: int = 30,
+):
+    filters, must, search_paths, stages = await base_search(
+        clusters,
+        contentType,
+        creatorName,
+        dataCoverageEnd,
+        dataCoverageStart,
+        pageNumber,
+        pageSize,
+        providerName,
+        publishedEnd,
+        publishedStart,
+        sortBy,
+        term,
+    )
+
+    should = [{'autocomplete': {'query': term, 'path': key}} for key in search_paths]
+
+    stages.insert(
+        0,
+        {
+            '$search': {
+                'index': 'fuzzy_search',
+                'compound': {'filter': filters, 'should': should, 'must': must, 'minimumShouldMatch': 1},
+                'highlight': {'path': search_paths},
+            }
+        },
+    )
+
+    results = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
+
+    if len(results) == 0:
+        fuzzy_should = [
+            {'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_paths
+        ]
+        stages[0]['$search']['compound']['should'] = fuzzy_should
+        results = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
+        result_hits = await determine_fuzzy_result_terms(results, term)
+        return {"results": results, "fuzzy_search_terms": result_hits}
+
+    return {"results": results, "fuzzy_search_terms": {}}
+
+
+async def base_search(
+    clusters,
+    contentType,
+    creatorName,
+    dataCoverageEnd,
+    dataCoverageStart,
+    pageNumber,
+    pageSize,
+    providerName,
+    publishedEnd,
+    publishedStart,
+    sortBy,
+    term,
+):
+    search_paths = PathEnum.values()
     must = []
     stages = []
     filters = []
-
     if publishedStart:
         filters.append(
             {
@@ -49,7 +215,6 @@ async def search(
                 },
             }
         )
-
     if publishedEnd:
         filters.append(
             {
@@ -59,39 +224,21 @@ async def search(
                 },
             }
         )
-
     if dataCoverageStart:
         filters.append({'range': {'path': 'temporalCoverage.start', 'gte': datetime(dataCoverageStart, 1, 1)}})
-
     if dataCoverageEnd:
         filters.append({'range': {'path': 'temporalCoverage.end', 'lt': datetime(dataCoverageEnd + 1, 1, 1)}})
-
     if creatorName:
         must.append({'text': {'path': 'creator.@list.name', 'query': creatorName}})
-
     if providerName:
         must.append({'text': {'path': 'provider.name', 'query': providerName}})
-
     if contentType:
         must.append({'text': {'path': '@type', 'query': contentType}})
-
-    stages.append(
-        {
-            '$search': {
-                'index': 'fuzzy_search',
-                'compound': {'filter': filters, 'should': should, 'must': must, 'minimumShouldMatch': 1},
-                'highlight': {'path': search_paths}
-            }
-        }
-    )
-
     if clusters:
         stages.append({'$match': {'clusters': {'$all': clusters}}})
-
     # Sort needs to happen before pagination
     if sortBy:
         stages.append({'$sort': {sortBy: 1}})
-
     stages.append({'$skip': (pageNumber - 1) * pageSize})
     stages.append(
         {'$limit': pageSize},
@@ -100,9 +247,44 @@ async def search(
     stages.append(
         {'$set': {'score': {'$meta': 'searchScore'}, 'highlights': {'$meta': 'searchHighlights'}}},
     )
+    return filters, must, search_paths, stages
 
-    result = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
-    return result
+
+async def determine_fuzzy_result_terms(results, term):
+    def sanitize(dirty_word):
+        return re.sub(r"^\W+|\W+$", "", dirty_word)
+
+    def highest_result_highlight(result):
+        highest_highlight = {"score": 0}
+        for highlight in result["highlights"]:
+            if highlight["score"] > highest_highlight["score"]:
+                highest_highlight = highlight
+        return highest_highlight
+
+    def determine_hit_text(highlight):
+        for text in highlight["texts"]:
+            if text["type"] == "hit":
+                return text
+
+    fuzzy_result_terms = defaultdict(set)
+    for result in results:
+        highlight = highest_result_highlight(result)
+        hit_text = determine_hit_text(highlight)
+        highest_score = 0
+        highest_hit = None
+        highest_term = None
+        for term_word in term.split():
+            for hit_word in hit_text["value"].split():
+                sanitized_term = sanitize(term_word.lower())
+                sanitized_hit = sanitize(hit_word.lower())
+                score = fuzz.ratio(sanitized_term, sanitized_hit)
+                if score > highest_score:
+                    highest_score = score
+                    highest_hit = sanitized_hit
+                    highest_term = sanitize(term_word)
+        if highest_hit:
+            fuzzy_result_terms[highest_term].add(highest_hit)
+    return fuzzy_result_terms
 
 
 @router.get("/typeahead", response_model=list[TypeAhead])
