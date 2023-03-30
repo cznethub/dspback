@@ -35,8 +35,8 @@ async def search(
 ):
     search_paths = PathEnum.values()
 
-    should = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_paths]
-    must = []
+    #should = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_paths]
+    must = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_paths]
     stages = []
     filters = []
 
@@ -79,7 +79,7 @@ async def search(
         {
             '$search': {
                 'index': 'fuzzy_search',
-                'compound': {'filter': filters, 'should': should, 'must': must},
+                'compound': {'filter': filters, 'must': must},
                 'highlight': {'path': search_paths},
             }
         }
