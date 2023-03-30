@@ -62,3 +62,4 @@ beanie==1.17.0
 aiohttp==3.8.3
 rocketry==2.5.1
 hsmodels
+fuzzywuzzy
