@@ -60,6 +60,4 @@ def format_fields(json_ld):
         for author_role in [author_list['author'] for author_list in json_ld['author']['@list']]:
             json_ld["creator"] = {'@list': author_role}
 
-    json_ld["clusters"] = clusters(json_ld)
-
     return json_ld

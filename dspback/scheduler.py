@@ -25,7 +25,7 @@ async def retrieve_submission_json_ld(submission):
             .to_jsonld(submission.identifier)
             .dict(by_alias=True, exclude_none=True)
         )
-        public_json_ld["clusters"] = clusters(public_json_ld)
+    public_json_ld["clusters"] = clusters(public_json_ld)
     return public_json_ld
 
 
