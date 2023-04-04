@@ -57,7 +57,7 @@ ids_and_cluster = [
 @pytest.mark.asyncio
 @pytest.mark.parametrize("identifier,cluster", ids_and_cluster)
 async def test_clusters(identifier, cluster):
-    jsonld = {"funding": [{"number": identifier}]}
+    jsonld = {"funding": [{"identifier": identifier}]}
     matched_clusters = clusters(jsonld)
     assert len(matched_clusters) == 1
     assert cluster in matched_clusters
@@ -65,7 +65,7 @@ async def test_clusters(identifier, cluster):
 
 @pytest.mark.asyncio
 async def test_substring_match():
-    jsonld = {"funding": [{"number": "EAR 2012073 EAR"}]}
+    jsonld = {"funding": [{"identifier": "EAR 2012073 EAR"}]}
     matched_clusters = clusters(jsonld)
     assert len(matched_clusters) == 1
     assert "Bedrock Cluster" in matched_clusters
@@ -73,7 +73,7 @@ async def test_substring_match():
 
 @pytest.mark.asyncio
 async def test_multiple_same_cluster():
-    jsonld = {"funding": [{"number": "2012073"}, {"number": "2012264"}]}
+    jsonld = {"funding": [{"identifier": "2012073"}, {"identifier": "2012264"}]}
     matched_clusters = clusters(jsonld)
     assert len(matched_clusters) == 1
     assert "Bedrock Cluster" in matched_clusters
@@ -81,7 +81,7 @@ async def test_multiple_same_cluster():
 
 @pytest.mark.asyncio
 async def test_many_clusters():
-    jsonld = {"funding": [{"number": "2012073"}, {"number": "2012264"}, {"number": "2011439"}]}
+    jsonld = {"funding": [{"identifier": "2012073"}, {"identifier": "2012264"}, {"identifier": "2011439"}]}
     matched_clusters = clusters(jsonld)
     assert len(matched_clusters) == 2
     assert "Bedrock Cluster" in matched_clusters

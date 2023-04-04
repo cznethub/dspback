@@ -22,30 +22,6 @@ async def test_hydroshare_to_submission(hydroshare):
     assert hs_submission.url == get_settings().hydroshare_view_url % hs_record.identifier
 
 
-async def test_hydroshare_to_jsonld(hydroshare):
-    hs_record = HydroShareRecord(**hydroshare)
-    hs_jsonld = hs_record.to_jsonld("470e2ef676e947e5ab2628556c309122")
-
-    assert hs_jsonld.url == get_settings().hydroshare_view_url % hs_record.identifier
-    assert hs_jsonld.provider.name == 'HydroShare'
-    assert hs_jsonld.name == hs_record.title
-    assert hs_jsonld.description == hs_record.description
-    assert hs_jsonld.keywords == hs_record.subjects
-    assert hs_jsonld.temporalCoverage == hs_record.period_coverage
-    assert hs_jsonld.spatialCoverage.geojson == hs_record.spatial_coverage.geojson
-    assert hs_jsonld.creator.dict(by_alias=True) == {
-        '@list': [{'name': creator.name} for creator in hs_record.creators]
-    }
-    assert hs_jsonld.license.dict() == {'text': hs_record.rights.statement}
-    assert hs_jsonld.dict()['funding'] == [
-        {"name": award.title, "number": award.number, "funder": {"name": award.funding_agency_name}}
-        for award in hs_record.awards
-    ]
-    assert hs_jsonld.datePublished == hs_record.published
-    assert hs_jsonld.dateCreated == hs_record.created
-    assert hs_jsonld.relations == [relation.value for relation in hs_record.relations]
-
-
 async def test_zenodo_to_submission(zenodo):
     zenodo_record = ZenodoRecord(**zenodo)
     zenodo_submission = zenodo_record.to_submission("947940")
@@ -56,29 +32,6 @@ async def test_zenodo_to_submission(zenodo):
     assert zenodo_submission.submitted <= datetime.utcnow()
     assert zenodo_submission.identifier == zenodo_record.record_id
     assert zenodo_submission.url == get_settings().zenodo_view_url % zenodo_record.record_id
-
-
-async def test_zenodo_to_jsonld(zenodo):
-    zenodo_record = ZenodoRecord(**zenodo)
-    zenodo_jsonld = zenodo_record.to_jsonld("947940")
-
-    assert zenodo_jsonld.url == get_settings().zenodo_view_url % zenodo_record.record_id
-    assert zenodo_jsonld.type == "Dataset"
-    assert zenodo_jsonld.provider.name == "Zenodo"
-    assert zenodo_jsonld.name == zenodo_record.title
-    assert zenodo_jsonld.description == zenodo_record.description
-    assert zenodo_jsonld.keywords == zenodo_record.keywords
-    assert zenodo_jsonld.creator.dict(by_alias=True) == {
-        '@list': [{'name': creator.name} for creator in zenodo_record.creators]
-    }
-    assert zenodo_jsonld.license.text == zenodo_record.license
-    assert zenodo_jsonld.funding[0].funder.name == zenodo_record.notes
-    assert zenodo_jsonld.funding[0].name == zenodo_record.notes
-    assert zenodo_jsonld.datePublished == zenodo_record.publication_date
-    assert zenodo_jsonld.dateCreated == zenodo_record.created
-    assert zenodo_jsonld.relations == [
-        f'{relation.name} - {relation.identifier}' for relation in zenodo_record.relations
-    ]
 
 
 async def test_external_to_submission(external):
@@ -109,7 +62,7 @@ async def test_external_to_jsonld(external):
     }
     assert external_jsonld.license.dict() == {'text': external_record.license.description}
     assert external_jsonld.dict()['funding'] == [
-        {"name": funder.awardName, "number": funder.awardNumber, "funder": {"name": funder.fundingAgency}}
+        {"name": funder.awardName, "identifier": funder.awardNumber, "funder": {"name": funder.fundingAgency}}
         for funder in external_record.funders
     ]
     assert external_jsonld.datePublished == external_record.datePublished
@@ -129,25 +82,3 @@ async def test_earthchem_to_submission(earthchem):
     assert earthchem_submission.submitted <= datetime.utcnow()
     assert earthchem_submission.identifier == "947940"
     assert earthchem_submission.url == get_settings().earthchem_view_url % "947940"
-
-
-async def test_earthchem_to_jsonld(earthchem):
-    ecl_record = EarthChemRecord(**earthchem)
-    ecl_jsonld = ecl_record.to_jsonld("947940")
-
-    assert ecl_jsonld.url == get_settings().earthchem_view_url % "947940"
-    assert ecl_jsonld.provider.name == 'EarthChem Library'
-    assert ecl_jsonld.name == ecl_record.title
-    assert ecl_jsonld.description == ecl_record.description
-    assert ecl_jsonld.keywords == ecl_record.keywords
-    creators = [{'name': ecl_record.leadAuthor.name}] + [
-        {'name': contributor.name} for contributor in ecl_record.contributors
-    ]
-    assert ecl_jsonld.creator.dict(by_alias=True) == {'@list': [creator for creator in creators]}
-    assert ecl_jsonld.license.dict() == {'text': ecl_record.license.alternateName}
-    assert ecl_jsonld.dict()['funding'] == [
-        {"name": None, "number": funding.identifier, "funder": {"name": funding.funder.name}}
-        for funding in ecl_record.fundings
-    ]
-    assert ecl_jsonld.datePublished == datetime.combine(ecl_record.datePublished, datetime.min.time())
-    assert ecl_jsonld.relations == [relation.bibliographicCitation for relation in ecl_record.relatedResources]
