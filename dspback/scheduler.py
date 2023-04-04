@@ -17,15 +17,18 @@ logger = logging.getLogger()
 
 
 async def retrieve_submission_json_ld(submission):
-    if submission.repo_type != RepositoryType.EXTERNAL:
-        public_json_ld = await retrieve_discovery_jsonld(submission.identifier, submission.repo_type, submission.url)
+    if submission["repo_type"] != RepositoryType.EXTERNAL:
+        public_json_ld = await retrieve_discovery_jsonld(
+            submission["identifier"], submission["repo_type"], submission["url"]
+        )
     else:
         public_json_ld = (
-            ExternalRecord(**json.loads(submission.metadata_json))
-            .to_jsonld(submission.identifier)
+            ExternalRecord(**json.loads(submission["metadata_json"]))
+            .to_jsonld(submission["identifier"])
             .dict(by_alias=True, exclude_none=True)
         )
-    public_json_ld["clusters"] = clusters(public_json_ld)
+    if public_json_ld:
+        public_json_ld["clusters"] = clusters(public_json_ld)
     return public_json_ld
 
 
@@ -44,7 +47,7 @@ async def do_daily():
 
     async for submission in Submission.find_all():
         try:
-            public_json_ld = await retrieve_submission_json_ld(submission)
+            public_json_ld = await retrieve_submission_json_ld(submission.dict())
             if public_json_ld:
                 await db["discovery"].find_one_and_replace(
                     {"repository_identifier": public_json_ld["repository_identifier"]}, public_json_ld, upsert=True

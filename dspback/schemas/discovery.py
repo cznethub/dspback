@@ -36,7 +36,7 @@ class Funder(BaseModel):
 
 class Funding(BaseModel):
     name: Optional[str] = Field(description="The name of the funding")
-    number: Optional[str] = Field(description="The funding number")
+    identifier: Optional[str] = Field(description="The funding number")
     funder: Optional[Funder] = Field(description="A list of funders")
 
 

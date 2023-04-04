@@ -151,30 +151,6 @@ class ZenodoRecord(BaseRecord):
             url=view_url,
         )
 
-    def to_jsonld(self, identifier) -> JSONLD:
-        settings = get_settings()
-        view_url = settings.zenodo_view_url % identifier
-        required = {
-            "repository_identifier": identifier,
-            "url": view_url,
-            "provider": {'name': 'Zenodo'},
-            "name": self.title,
-            "description": self.description,
-            "keywords": self.keywords,
-            "creator": {'@list': [{'name': creator.name} for creator in self.creators]},
-            "funding": [{'name': self.notes, 'funder': {'name': self.notes}}],  # need to do some regex magic
-        }
-        optional = {}
-        if self.license:
-            optional["license"] = {'text': self.license}
-        if self.publication_date:
-            optional["datePublished"] = self.publication_date
-        if self.created:
-            optional["dateCreated"] = self.created
-        if self.relations:
-            optional["relations"] = [f'{relation.name} - {relation.identifier}' for relation in self.relations]
-        return JSONLD(**required, **optional)
-
 
 class HydroShareRecord(BaseRecord):
     class PeriodCoverage(BaseModel):
@@ -253,37 +229,6 @@ class HydroShareRecord(BaseRecord):
             url=view_url,
         )
 
-    def to_jsonld(self, identifier) -> JSONLD:
-        settings = get_settings()
-        view_url = settings.hydroshare_view_url % identifier
-        required = {
-            "repository_identifier": identifier,
-            "url": view_url,
-            "provider": {'name': 'HydroShare'},
-            "name": self.title,
-            "description": self.description,
-            "keywords": self.subjects,
-            "creator": {'@list': [{'name': creator.name} for creator in self.creators]},
-            "funding": [
-                {"name": award.title, "number": award.number, "funder": {"name": award.funding_agency_name}}
-                for award in self.awards
-            ],
-        }
-        optional = {}
-        if self.period_coverage:
-            optional["temporalCoverage"] = self.period_coverage
-        if self.spatial_coverage:
-            optional["spatialCoverage"] = {"geojson": self.spatial_coverage.geojson}
-        if self.rights:
-            optional["license"] = {'text': self.rights.statement}
-        if self.published:
-            optional["datePublished"] = self.published
-        if self.created:
-            optional["dateCreated"] = self.created
-        if self.relations:
-            optional["relations"] = [relation.value for relation in self.relations]
-        return JSONLD(**required, **optional)
-
 
 class EarthChemRecord(BaseRecord):
     class Contributor(BaseModel):
@@ -331,31 +276,6 @@ class EarthChemRecord(BaseRecord):
             identifier=identifier,
             url=view_url,
         )
-
-    def to_jsonld(self, identifier) -> JSONLD:
-        settings = get_settings()
-        view_url = settings.earthchem_view_url % identifier
-        creators = [{'name': self.leadAuthor.name}] + [{'name': contributor.name} for contributor in self.contributors]
-        required = {
-            "repository_identifier": identifier,
-            "url": view_url,
-            "provider": {'name': 'EarthChem Library'},
-            "name": self.title,
-            "description": self.description,
-            "keywords": self.keywords,
-            "creator": {'@list': creators},
-            "funding": [
-                {"number": funding.identifier, "funder": {"name": funding.funder.name}} for funding in self.fundings
-            ],
-        }
-        optional = {}
-        if self.license:
-            optional["license"] = {'text': self.license.alternateName}
-        if self.datePublished:
-            optional["datePublished"] = datetime.combine(self.datePublished, datetime.min.time())
-        if self.relatedResources:
-            optional["relations"] = [relation.bibliographicCitation for relation in self.relatedResources]
-        return JSONLD(**required, **optional)
 
 
 class ExternalRecord(BaseRecord):
@@ -443,7 +363,7 @@ class ExternalRecord(BaseRecord):
             "keywords": self.keywords,
             "creator": {'@list': self.creators},
             "funding": [
-                {"name": funder.awardName, "number": funder.awardNumber, "funder": {"name": funder.fundingAgency}}
+                {"name": funder.awardName, "identifier": funder.awardNumber, "funder": {"name": funder.fundingAgency}}
                 for funder in self.funders
             ],
         }
