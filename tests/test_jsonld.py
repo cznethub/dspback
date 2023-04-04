@@ -132,6 +132,6 @@ async def test_external_jsonld():
     submission = MockSubmission(
         repo_type=RepositoryType.EXTERNAL, metadata_json=json.dumps(metadata_json), identifier="id"
     )
-    public_jsonld = await retrieve_submission_json_ld(submission)
+    public_jsonld = await retrieve_submission_json_ld(submission.dict())
     assert len(public_jsonld["clusters"]) == 1
     assert public_jsonld["clusters"][0] == "Drylands Cluster"

@@ -7,6 +7,7 @@ import motor
 
 from dspback.config import get_settings
 from dspback.pydantic_schemas import ExternalRecord
+from dspback.scheduler import retrieve_submission_json_ld
 from dspback.utils.jsonld.scraper import retrieve_discovery_jsonld
 
 logger = logging.getLogger()
@@ -66,16 +67,7 @@ async def watch_submissions():
             logger.warning(f"start with a {change}")
             if change["operationType"] != "delete":
                 document = change["fullDocument"]
-                if document["repo_type"] == "external":
-                    public_json_ld = (
-                        ExternalRecord(**json.loads(document["metadata_json"]))
-                        .to_jsonld(document["identifier"])
-                        .dict(by_alias=True, exclude_none=True)
-                    )
-                else:
-                    public_json_ld = await retrieve_discovery_jsonld(
-                        document["identifier"], document["repo_type"], document["url"]
-                    )
+                public_json_ld = retrieve_submission_json_ld(document)
 
                 if public_json_ld:
                     await db["discovery"].find_one_and_replace(
