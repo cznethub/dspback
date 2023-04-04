@@ -50,13 +50,13 @@ def clusters(json_ld):
     resource_funding_ids = []
     if "funding" in json_ld:
         for funding in json_ld["funding"]:
-            if "identifier" in funding:
-                resource_funding_ids.append(funding["identifier"])
+            if "number" in funding:
+                resource_funding_ids.append(funding["number"])
 
     clusters = []
     for cluster_funding_id, cluster in cluster_by_id.items():
         for resource_funding_id in resource_funding_ids:
-            if cluster_funding_id in resource_funding_id: # '2012669' in 'EAR 2012669.'
+            if cluster_funding_id in resource_funding_id:  # '2012669' in 'EAR 2012669.'
                 clusters.append(cluster)
 
     return list(set(clusters))

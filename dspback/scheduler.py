@@ -8,6 +8,7 @@ from rocketry.conds import daily
 
 from dspback.config import get_settings
 from dspback.pydantic_schemas import ExternalRecord, RepositoryType, Submission
+from dspback.utils.jsonld.clusters import clusters
 from dspback.utils.jsonld.scraper import retrieve_discovery_jsonld
 
 app = Rocketry(config={"task_execution": "async"})
@@ -24,6 +25,7 @@ async def retrieve_submission_json_ld(submission):
             .to_jsonld(submission.identifier)
             .dict(by_alias=True, exclude_none=True)
         )
+    public_json_ld["clusters"] = clusters(public_json_ld)
     return public_json_ld
 
 
