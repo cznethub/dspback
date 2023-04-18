@@ -1,10 +1,12 @@
 import datetime
 
+from beanie import WriteRules
 from fastapi import APIRouter
 from fastapi.params import Depends
 
+from dspback.config import get_settings
 from dspback.database.procedures import create_or_update_submission, delete_submission
-from dspback.dependencies import get_current_user
+from dspback.dependencies import get_current_user, get_user_from_token
 from dspback.pydantic_schemas import (
     EarthChemRecord,
     ExternalRecord,
@@ -43,6 +45,18 @@ async def delete_repository_record(repository: RepositoryType, identifier: str, 
 @router.get("/submissions")
 async def get_submissions(user: User = Depends(get_current_user)):
     return user.submissions
+
+
+@router.post("/submissions/transfer")
+async def transfer_submissions(from_user_access_token: str, to_user_access_token: str, settings=Depends(get_settings)):
+    from_user: User = await get_user_from_token(from_user_access_token, settings)
+    await from_user.fetch_all_links()
+    to_user: User = await get_user_from_token(to_user_access_token, settings)
+    await to_user.fetch_all_links()
+    to_user.submissions.extend(from_user.submissions)
+    await to_user.save(link_rule=WriteRules.WRITE)
+    from_user.submissions.clear()
+    await from_user.save(link_rule=WriteRules.WRITE)
 
 
 # The below commented out code was used for testing and debugging, keeping for later use
