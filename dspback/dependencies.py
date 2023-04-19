@@ -139,6 +139,33 @@ async def create_or_update_repository_token(user: User, repository, repository_r
     return user.repository_token(repository)
 
 
+class TokenException(Exception):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+
+
+async def get_user_from_token(token: str, settings) -> User:
+    try:
+        payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
+        token_data = TokenData(**payload)
+        if token_data.orcid is None:
+            raise TokenException(message="Token is missing the orcid")
+        if token_data.expiration < datetime.utcnow().timestamp():
+            # TODO register token in db for requested expiration
+            raise TokenException(message="Token is expired")
+    except JWTError as e:
+        raise TokenException(message=f"Exception occurred while decoding token [{str(e)}]")
+    user: User = await User.find_one(User.orcid == token_data.orcid)
+    if user is None:
+        raise TokenException(message=f"No user found for orcid {token_data.orcid}")
+    if not user.access_token:
+        raise TokenException(message="Access token is missing")
+    if user.access_token != token:
+        raise TokenException(message="Access token is invalid")
+    return user
+
+
 async def get_current_user(settings=Depends(get_settings), token: str = Depends(oauth2_scheme)) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -146,29 +173,11 @@ async def get_current_user(settings=Depends(get_settings), token: str = Depends(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
-        token_data = TokenData(**payload)
-        if token_data.orcid is None:
-            credentials_exception.detail = "Token is missing the orcid"
-            raise credentials_exception
-        if token_data.expiration < datetime.utcnow().timestamp():
-            # TODO register token in db for requested expiration
-            credentials_exception.detail = "Token is expired"
-            raise credentials_exception
-    except JWTError as e:
-        credentials_exception.detail = f"Exception occurred while decoding token [{str(e)}]"
+        user = await get_user_from_token(token, settings)
+    except TokenException as token_exception:
+        credentials_exception.detail = token_exception.message
         raise credentials_exception
-    user: User = await User.find_one(User.orcid == token_data.orcid)
     await user.fetch_all_links()
-    if user is None:
-        credentials_exception.detail = f"No user found for orcid {token_data.orcid}"
-        raise credentials_exception
-    if not user.access_token:
-        credentials_exception.detail = "Access token is missing"
-        raise credentials_exception
-    if user.access_token != token:
-        credentials_exception.detail = "Access token is invalid"
-        raise credentials_exception
     return user
 
 
