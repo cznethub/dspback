@@ -1,12 +1,13 @@
 import datetime
 
 from beanie import WriteRules
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends
+from starlette import status
 
 from dspback.config import get_settings
 from dspback.database.procedures import create_or_update_submission, delete_submission
-from dspback.dependencies import get_current_user, get_user_from_token
+from dspback.dependencies import TokenException, get_current_user, get_user_from_token
 from dspback.pydantic_schemas import (
     EarthChemRecord,
     ExternalRecord,
@@ -47,12 +48,23 @@ async def get_submissions(user: User = Depends(get_current_user)):
     return user.submissions
 
 
+async def get_user(token, settings) -> User:
+    try:
+        user = await get_user_from_token(token, settings)
+    except TokenException as token_exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=token_exception.message,
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    await user.fetch_all_links()
+    return user
+
+
 @router.post("/submissions/transfer")
 async def transfer_submissions(from_user_access_token: str, to_user_access_token: str, settings=Depends(get_settings)):
-    from_user: User = await get_user_from_token(from_user_access_token, settings)
-    await from_user.fetch_all_links()
-    to_user: User = await get_user_from_token(to_user_access_token, settings)
-    await to_user.fetch_all_links()
+    from_user: User = await get_user(from_user_access_token, settings)
+    to_user: User = await get_user(to_user_access_token, settings)
     to_user.submissions.extend(from_user.submissions)
     await to_user.save(link_rule=WriteRules.WRITE)
     from_user.submissions.clear()

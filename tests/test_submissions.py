@@ -33,3 +33,47 @@ async def test_submission_transfer(client_test, user_cookie, user_cookie_other, 
     assert len(response.json()) == 0
     response = await client_test.get(prefix + "/submissions?access_token=" + user_cookie_other)
     assert len(response.json()) == 1
+
+
+async def test_submission_transfer_bad_from_user(client_test, user_cookie, user_cookie_other, external):
+    response = await client_test.post(prefix + "/metadata/external?access_token=" + user_cookie, json=external)
+    assert response.status_code == 201
+
+    response = await client_test.get(prefix + "/submissions?access_token=" + user_cookie)
+    assert len(response.json()) == 1
+    response = await client_test.get(prefix + "/submissions?access_token=" + user_cookie_other)
+    assert len(response.json()) == 0
+
+    response = await client_test.post(
+        prefix
+        + "/submissions/transfer?from_user_access_token="
+        + "bad_cookie"
+        + "&to_user_access_token="
+        + user_cookie_other
+    )
+    assert response.status_code == 401
+
+    response = await client_test.get(prefix + "/submissions?access_token=" + user_cookie)
+    assert len(response.json()) == 1
+    response = await client_test.get(prefix + "/submissions?access_token=" + user_cookie_other)
+    assert len(response.json()) == 0
+
+
+async def test_submission_transfer_bad_to_user(client_test, user_cookie, user_cookie_other, external):
+    response = await client_test.post(prefix + "/metadata/external?access_token=" + user_cookie, json=external)
+    assert response.status_code == 201
+
+    response = await client_test.get(prefix + "/submissions?access_token=" + user_cookie)
+    assert len(response.json()) == 1
+    response = await client_test.get(prefix + "/submissions?access_token=" + user_cookie_other)
+    assert len(response.json()) == 0
+
+    response = await client_test.post(
+        prefix + "/submissions/transfer?from_user_access_token=" + user_cookie + "&to_user_access_token=" + "bad_cookie"
+    )
+    assert response.status_code == 401
+
+    response = await client_test.get(prefix + "/submissions?access_token=" + user_cookie)
+    assert len(response.json()) == 1
+    response = await client_test.get(prefix + "/submissions?access_token=" + user_cookie_other)
+    assert len(response.json()) == 0
