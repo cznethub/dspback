@@ -27,7 +27,7 @@ test-cov-gh-action:
 
 .PHONY: default-env
 default-env:
-	wget -N https://raw.githubusercontent.com/cznethub/dsp/jsonld-mongo/.env
+	wget -N https://raw.githubusercontent.com/cznethub/dsp/develop/.env
 
 .PHONY: up
 up:
