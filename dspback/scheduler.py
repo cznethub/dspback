@@ -53,9 +53,7 @@ async def do_daily():
                 rec_key_name = "repository_identifier"
                 if record_status == "Private":
                     # remove
-                    await db["discovery"].delete_one(
-                        {rec_key_name: public_json_ld[rec_key_name], "legacy": False}
-                    )
+                    await db["discovery"].delete_one({rec_key_name: public_json_ld[rec_key_name], "legacy": False})
                 else:
                     # update or create
                     await db["discovery"].find_one_and_replace(

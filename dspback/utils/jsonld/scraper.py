@@ -47,4 +47,3 @@ async def retrieve_discovery_jsonld(identifier, repository_type, url):
     if repository_type == RepositoryType.HYDROSHARE:
         jsonld_dict["creativeWorkStatus"] = resource_json_ld["creativeWorkStatus"]
     return jsonld_dict
-

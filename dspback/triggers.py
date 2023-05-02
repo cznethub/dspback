@@ -75,9 +75,7 @@ async def watch_submissions():
                     if record_status == "Private":
                         await db["discovery"].delete_one(match_filter)
                     else:
-                        await db["discovery"].find_one_and_replace(
-                            match_filter, public_json_ld, upsert=True
-                        )
+                        await db["discovery"].find_one_and_replace(match_filter, public_json_ld, upsert=True)
                 else:
                     result = await db["discovery"].delete_one({"repository_identifier": document["identifier"]})
                     logger.warning(f"delete count {result.deleted_count}")
