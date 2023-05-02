@@ -70,9 +70,14 @@ async def watch_submissions():
                 public_json_ld = retrieve_submission_json_ld(document)
 
                 if public_json_ld:
-                    await db["discovery"].find_one_and_replace(
-                        {"repository_identifier": public_json_ld["repository_identifier"]}, public_json_ld, upsert=True
-                    )
+                    record_status = public_json_ld.pop("creativeWorkStatus", "Public")
+                    match_filter = {"repository_identifier": public_json_ld["repository_identifier"]}
+                    if record_status == "Private":
+                        await db["discovery"].delete_one(match_filter)
+                    else:
+                        await db["discovery"].find_one_and_replace(
+                            match_filter, public_json_ld, upsert=True
+                        )
                 else:
                     result = await db["discovery"].delete_one({"repository_identifier": document["identifier"]})
                     logger.warning(f"delete count {result.deleted_count}")

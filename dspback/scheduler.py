@@ -49,9 +49,18 @@ async def do_daily():
         try:
             public_json_ld = await retrieve_submission_json_ld(submission.dict())
             if public_json_ld:
-                await db["discovery"].find_one_and_replace(
-                    {"repository_identifier": public_json_ld["repository_identifier"]}, public_json_ld, upsert=True
-                )
+                record_status = public_json_ld.pop("creativeWorkStatus", "Public")
+                rec_key_name = "repository_identifier"
+                if record_status == "Private":
+                    # remove
+                    await db["discovery"].delete_one(
+                        {rec_key_name: public_json_ld[rec_key_name], "legacy": False}
+                    )
+                else:
+                    # update or create
+                    await db["discovery"].find_one_and_replace(
+                        {rec_key_name: public_json_ld[rec_key_name]}, public_json_ld, upsert=True
+                    )
             else:
                 logger.info(f"Failed to collect submission {submission.url}")
         except:
