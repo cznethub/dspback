@@ -37,13 +37,12 @@ async def retrieve_discovery_jsonld(identifier, repository_type, url):
     resource_json_ld = scrape_jsonld(resource_data, script_match=script_match)
     if not resource_json_ld:
         return None
+    if repository_type == RepositoryType.HYDROSHARE and resource_json_ld["creativeWorkStatus"] == "Private":
+        return None
+
     # only Zenodo does not have provider in the json ld
     if repository_type == RepositoryType.ZENODO:
         resource_json_ld['provider'] = {'name': 'Zenodo'}
     resource_json_ld["repository_identifier"] = identifier
     jsonld = JSONLD(**resource_json_ld)
-    jsonld_dict = jsonld.dict(by_alias=True, exclude_none=True)
-    jsonld_dict["creativeWorkStatus"] = "Public"
-    if repository_type == RepositoryType.HYDROSHARE:
-        jsonld_dict["creativeWorkStatus"] = resource_json_ld["creativeWorkStatus"]
-    return jsonld_dict
+    return jsonld.dict(by_alias=True, exclude_none=True)
