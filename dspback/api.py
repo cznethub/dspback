@@ -9,7 +9,7 @@ from starlette.responses import PlainTextResponse
 
 from dspback.config import get_settings
 from dspback.dependencies import RepositoryException
-from dspback.pydantic_schemas import RepositoryToken, Submission, User
+from dspback.pydantic_schemas import Discovery, RepositoryToken, Submission, User
 from dspback.routers import (
     authentication,
     discovery,
@@ -55,7 +55,7 @@ async def http_exception_handler(request, exc):
 async def startup_db_client():
     app.db = motor.motor_asyncio.AsyncIOMotorClient(get_settings().mongo_url)
     await init_beanie(
-        database=app.db[get_settings().mongo_database], document_models=[User, Submission, RepositoryToken]
+        database=app.db[get_settings().mongo_database], document_models=[User, Submission, RepositoryToken, Discovery]
     )
 
 

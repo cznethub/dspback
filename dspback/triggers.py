@@ -76,8 +76,6 @@ async def watch_submissions():
                 else:
                     result = await db["discovery"].delete_one({"repository_identifier": document["identifier"]})
                     logger.warning(f"delete count {result.deleted_count}")
-            else:
-                await db["discovery"].delete_one({"repository_identifier": document["identifier"]})
 
 
 async def watch_submissions_with_retry():

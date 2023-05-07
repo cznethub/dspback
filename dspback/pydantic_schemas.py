@@ -2,7 +2,7 @@ from datetime import date, datetime
 from enum import Enum
 from typing import List, Optional, Union
 
-from beanie import Document, Link
+from beanie import Document, Link, before_event, Delete
 from geojson import Feature, Point, Polygon
 from pydantic import BaseModel, EmailStr, Field, HttpUrl, root_validator, validator
 
@@ -60,6 +60,10 @@ class RepositoryToken(Document):
     expires_at: int = None
 
 
+class Discovery(Document):
+    """Used only for deleting a discovery entry when a submission is deleted"""
+    repository_identifier: str = None
+
 class Submission(Document):
     title: str = None
     authors: List[str] = []
@@ -78,6 +82,10 @@ class Submission(Document):
             else:
                 authors.append(author)
         return authors
+
+    @before_event(Delete)
+    async def delete_discovery_entry(self):
+        await Discovery.find_one(Discovery.repository_identifier == self.identifier).delete()
 
 
 class User(Document):
