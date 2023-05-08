@@ -1,14 +1,11 @@
 import asyncio
-import json
 import logging
 import re
 
 import motor
 
 from dspback.config import get_settings
-from dspback.pydantic_schemas import ExternalRecord
 from dspback.scheduler import retrieve_submission_json_ld
-from dspback.utils.jsonld.scraper import retrieve_discovery_jsonld
 
 logger = logging.getLogger()
 
