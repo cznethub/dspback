@@ -62,12 +62,14 @@ async def watch_discovery_with_retry():
 
 async def watch_submissions():
     db = motor.motor_asyncio.AsyncIOMotorClient(get_settings().mongo_url)[get_settings().mongo_database]
-    async with db["Submission"].watch(full_document="updateLookup") as stream:
+    async with db["Submission"].watch(
+        full_document="updateLookup", full_document_before_change="whenAvailable"
+    ) as stream:
         async for change in stream:
             logger.warning(f"start with a {change}")
             if change["operationType"] != "delete":
                 document = change["fullDocument"]
-                public_json_ld = retrieve_submission_json_ld(document)
+                public_json_ld = await retrieve_submission_json_ld(document)
 
                 if public_json_ld:
                     await db["discovery"].find_one_and_replace(
@@ -77,6 +79,7 @@ async def watch_submissions():
                     result = await db["discovery"].delete_one({"repository_identifier": document["identifier"]})
                     logger.warning(f"delete count {result.deleted_count}")
             else:
+                document = change["fullDocumentBeforeChange"]
                 await db["discovery"].delete_one({"repository_identifier": document["identifier"]})
 
 
