@@ -14,6 +14,7 @@ async def main():
     # discovery records when a submission is deleted
     await db[get_settings().mongo_database].command(
         ({'collMod': Submission.get_collection_name(), "changeStreamPreAndPostImages": {'enabled': True}}))
+    db.close()
 
 if __name__ == "__main__":
     asyncio.run(main())
