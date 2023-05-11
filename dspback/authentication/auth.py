@@ -5,6 +5,7 @@ from json.decoder import JSONDecodeError
 import logging
 from urllib.parse import quote
 
+from beanie.odm.operators.update.general import Set
 from fastapi import Request
 import jwt
 from jwt.exceptions import DecodeError, InvalidTokenError
@@ -13,9 +14,16 @@ from starlette.responses import RedirectResponse
 
 from dspback.authentication.exceptions import OpenIDConnectException
 from dspback.config import get_settings
+from dspback.pydantic_schemas import User
 
 logger = logging.getLogger(__name__)
 
+
+
+async def create_or_update_user(preferred_username: str) -> User:
+    user = await User.find_one(User.preferred_username == preferred_username)\
+        .upsert(Set({'preferred_username': preferred_username}), on_insert=User(preferred_username=preferred_username))
+    return user
 
 class OpenIDConnect:
     well_known_pattern = "{}/realms/{}/.well-known/openid-configuration"
@@ -66,8 +74,7 @@ class OpenIDConnect:
     def logout(self, request: Request) -> RedirectResponse:
         callback_uri = self.rediret_uri
         return RedirectResponse(
-            f"{self.logout_endpoint}?response_type=code&scope={self.scope}&client_id=myclient&"
-            f"redirect_uri={quote(callback_uri)}"
+            f"{self.logout_endpoint}?response_type=code&scope={self.scope}&client_id={self.client_id}"
         )
 
     def get_auth_redirect_uri(self, callback_uri: str) -> str:
@@ -164,29 +171,6 @@ class OpenIDConnect:
             raise OpenIDConnectException("Was not able to retrieve data from the response.")
 
     def require_login(self, view_func):
-        # TODO propogate window_close
-        # TODO set/remove authorization cookie
-        '''
-            try:
-        keycloak_response = await oauth.keycloak.authorize_access_token(request)
-        print(json.dumps(keycloak_response))
-        keycloak_response = KeycloakResponse(**keycloak_response)
-    except OAuthError as error:
-        return HTMLResponse(f'<h1>{error.error}</h1>')
-    headers = {"Authorization": "Bearer " + keycloak_response.access_token}
-    user_response = requests.get("https://auth.cuahsi.io/realms/HydroShare/protocol/openid-connect/userinfo", headers=headers)
-    user_response = KeycloakUserResponse(**user_response.json())
-    user: User = await create_or_update_user(user_response)
-    token = keycloak_response.access_token
-    if window_close:
-        responseHTML = '<html><head><title>CzHub Sign In</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
-        responseHTML = responseHTML.replace(
-            "%value%", json.dumps({'token': token, 'expiresIn': keycloak_response.expires_in})
-        )
-        return HTMLResponse(responseHTML)
-
-    return Response(token)
-        '''
         @wraps(view_func)
         async def decorated(request: Request, get_user_info: bool = False, *args, **kwargs):
             callback_uri = self.rediret_uri

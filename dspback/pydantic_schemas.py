@@ -32,28 +32,6 @@ class StringEnum(str, Enum):
     pass
 
 
-class KeycloakResponse(BaseModel):
-    access_token: str
-    token_type: str
-    refresh_token: str
-    refresh_expires_in: int
-    expires_in: int
-    scope: str
-    id_token: str
-    expires_at: str
-    session_state: str
-
-
-class KeycloakUserResponse(BaseModel):
-    sub: str
-    email_verified: bool
-    name: str
-    preferred_username: str
-    given_name: str
-    family_name: str
-    email: str
-
-
 class Submission(Document):
     title: str = None
     authors: List[str] = []
@@ -74,12 +52,7 @@ class Submission(Document):
 
 
 class User(Document):
-    name: str
-    email: Optional[EmailStr]
-    keycloak_access_token: Optional[str]
-    refresh_token: Optional[str]
-    expires_in: Optional[int]
-    expires_at: Optional[int]
+    preferred_username: str
     submissions: List[Link[Submission]] = []
 
     def submission(self, identifier: str) -> Submission:

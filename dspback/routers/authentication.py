@@ -16,7 +16,7 @@ oidc = get_oidc()
 @router.get('/')
 @oidc.require_login
 async def home(request: Request):
-    return f"{request.user_info['name']} is logged in"
+    return f"{request.user_info['preferred_username']} is logged in"
 
 
 @router.get('/login')
@@ -26,7 +26,6 @@ async def login(request: Request, get_user_info=True):
 
 
 @router.get('/logout')
-@oidc.require_login
 async def logout(request: Request):
     return oidc.logout(request)
 
