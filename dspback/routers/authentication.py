@@ -6,18 +6,21 @@ from starlette import status
 from dspback.authentication.auth import get_oidc
 from dspback.config import Settings, get_settings
 from dspback.dependencies import get_current_user
-from dspback.pydantic_schemas import User
 
 router = APIRouter()
 
 oidc = get_oidc()
-
 
 @router.get('/')
 @oidc.require_login
 async def home(request: Request):
     return f"{request.user_info['preferred_username']} is logged in"
 
+@router.get('/user')
+@oidc.require_login
+async def home_user(request: Request):
+    user = await get_current_user(request)
+    return f"{user.preferred_username} is logged in"
 
 @router.get('/login')
 @oidc.require_login
