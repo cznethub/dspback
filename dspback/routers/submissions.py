@@ -9,23 +9,11 @@ from dspback.config import get_settings
 from dspback.database.procedures import create_or_update_submission, delete_submission
 from dspback.dependencies import TokenException, get_current_user, get_user_from_token
 from dspback.pydantic_schemas import (
-    EarthChemRecord,
     ExternalRecord,
-    HydroShareRecord,
-    RepositoryType,
     User,
-    ZenodoRecord,
 )
 
 router = APIRouter()
-
-
-record_type_by_repo_type = {
-    RepositoryType.ZENODO: ZenodoRecord,
-    RepositoryType.HYDROSHARE: HydroShareRecord,
-    RepositoryType.EXTERNAL: ExternalRecord,
-    RepositoryType.EARTHCHEM: EarthChemRecord,
-}
 
 
 def convert_timestamp(item_date_object):
@@ -33,13 +21,13 @@ def convert_timestamp(item_date_object):
         return item_date_object.timestamp()
 
 
-async def submit_record(repository, identifier, user: User, metadata_json):
-    record = record_type_by_repo_type[repository](**metadata_json)
+async def submit_record(identifier, user: User, metadata_json):
+    record = ExternalRecord(**metadata_json)
     return await create_or_update_submission(identifier, record, user, metadata_json)
 
 
 @router.delete('/submit/{repository}/{identifier}')
-async def delete_repository_record(repository: RepositoryType, identifier: str, user: User = Depends(get_current_user)):
+async def delete_repository_record(identifier: str, user: User = Depends(get_current_user)):
     await delete_submission(identifier, user)
 
 

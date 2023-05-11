@@ -7,9 +7,7 @@ from rocketry import Rocketry
 from rocketry.conds import daily
 
 from dspback.config import get_settings
-from dspback.pydantic_schemas import ExternalRecord, RepositoryType, Submission
-from dspback.utils.jsonld.clusters import clusters
-from dspback.utils.jsonld.scraper import retrieve_discovery_jsonld
+from dspback.pydantic_schemas import ExternalRecord, Submission
 
 app = Rocketry(config={"task_execution": "async"})
 
@@ -17,18 +15,11 @@ logger = logging.getLogger()
 
 
 async def retrieve_submission_json_ld(submission):
-    if submission["repo_type"] != RepositoryType.EXTERNAL:
-        public_json_ld = await retrieve_discovery_jsonld(
-            submission["identifier"], submission["repo_type"], submission["url"]
-        )
-    else:
-        public_json_ld = (
-            ExternalRecord(**json.loads(submission["metadata_json"]))
-            .to_jsonld(submission["identifier"])
-            .dict(by_alias=True, exclude_none=True)
-        )
-    if public_json_ld:
-        public_json_ld["clusters"] = clusters(public_json_ld)
+    public_json_ld = (
+        ExternalRecord(**json.loads(submission["metadata_json"]))
+        .to_jsonld(submission["identifier"])
+        .dict(by_alias=True, exclude_none=True)
+    )
     return public_json_ld
 
 

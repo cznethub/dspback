@@ -1,16 +1,12 @@
-import functools
-import json
 import re
 from collections import defaultdict
 from datetime import datetime
 
-import pandas
 from fastapi import APIRouter, Query, Request
-from fastapi.responses import FileResponse
 from fuzzywuzzy import fuzz
 
 from dspback.config import get_settings
-from dspback.schemas.discovery import DiscoveryResult, PathEnum, TypeAhead
+from dspback.schemas.discovery import PathEnum, TypeAhead
 
 router = APIRouter()
 
@@ -342,16 +338,6 @@ async def creator_search(request: Request, name: str, pageSize: int = 30) -> lis
     return set(names)
 
 
-@router.get("/csv")
-async def csv(request: Request):
-    project = [{'$project': {'name': 1, 'description': 1, 'keywords': 1, '_id': 0}}]
-    json_response = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(project).to_list(None)
-    df = pandas.read_json(json.dumps(json_response))
-    filename = "file.csv"
-    df.to_csv(filename)
-    return FileResponse(filename, filename=filename, media_type='application/octet-stream')
-
-
 def compare(c1: str, c2: str):
     if c1.startswith("CZO"):
         if c2.startswith("CZO"):
@@ -361,9 +347,3 @@ def compare(c1: str, c2: str):
     if c2.startswith("CZO"):
         return -1
     return c1 < c2
-
-
-@router.get("/clusters")
-async def clusters(request: Request) -> list[str]:
-    existing_clusters = await request.app.db[get_settings().mongo_database]["discovery"].find().distinct('clusters')
-    return sorted(existing_clusters, key=functools.cmp_to_key(compare))

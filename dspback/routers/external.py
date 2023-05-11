@@ -8,7 +8,6 @@ from pydantic import BaseModel
 from starlette.responses import JSONResponse
 
 from dspback.database.procedures import delete_submission
-from dspback.pydantic_schemas import RepositoryType
 from dspback.routers.metadata_class import MetadataRoutes
 from dspback.schemas.external.model import GenericDatasetSchemaForCzNetDataSubmissionPortalV100
 
@@ -24,7 +23,6 @@ class ExternalMetadataResponse(BaseModel):
 class ExternalMetadataRoutes(MetadataRoutes):
     request_model = GenericDatasetSchemaForCzNetDataSubmissionPortalV100
     response_model = ExternalMetadataResponse
-    repository_type = RepositoryType.EXTERNAL
 
     @router.post(
         '/metadata/external',

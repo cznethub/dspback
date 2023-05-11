@@ -10,11 +10,6 @@ async def delete_submission(identifier: str, user: User):
     await submission.delete(link_rule=DeleteRules.DELETE_LINKS)
 
 
-async def delete_repository_access_token(repository, user: User):
-    repository_token = user.repository_token(repository)
-    await repository_token.delete(link_rule=DeleteRules.DELETE_LINKS)
-
-
 async def create_or_update_submission(identifier, record, user: User, metadata_json):
     submission = record.to_submission(identifier)
     submission.metadata_json = json.dumps(metadata_json, default=str)

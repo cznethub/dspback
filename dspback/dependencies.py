@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Any, Optional
 
-from beanie import WriteRules
 from beanie.odm.operators.update.general import Set
 from fastapi import Depends, HTTPException, Request
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
@@ -12,23 +11,8 @@ from pydantic import BaseModel
 from starlette import status
 from starlette.status import HTTP_403_FORBIDDEN
 
-from dspback.config import Settings, get_settings, oauth
-from dspback.database.procedures import delete_repository_access_token
-from dspback.pydantic_schemas import ORCIDResponse, RepositoryToken, RepositoryType, TokenData, User
-
-
-class RepositoryException(Exception):
-    def __init__(self, status_code: int, detail: str):
-        self._status_code = status_code
-        self._detail = detail
-
-    @property
-    def detail(self):
-        return self._detail
-
-    @property
-    def status_code(self):
-        return self._status_code
+from dspback.config import get_settings
+from dspback.pydantic_schemas import KeycloakResponse, TokenData, User, KeycloakUserResponse
 
 
 class OAuth2AuthorizationBearerToken(OAuth2):
@@ -105,38 +89,17 @@ def encode_access_token(orcid: str) -> str:
     return encoded_jwt
 
 
-async def create_or_update_user(orcid_response: ORCIDResponse) -> User:
-    access_token = encode_access_token(orcid_response.orcid)
+async def create_or_update_user(keycloak_response: KeycloakUserResponse) -> User:
     user_dict = {
-        'name': orcid_response.name,
-        'orcid': orcid_response.orcid,
-        'access_token': access_token,
-        'orcid_access_token': orcid_response.access_token,
-        'refresh_token': orcid_response.refresh_token,
-        'expires_in': orcid_response.expires_in,
-        'expires_at': orcid_response.expires_at,
+        'name': keycloak_response.name,
+        'keycloak_access_token': keycloak_response.access_token,
+        'refresh_token': keycloak_response.refresh_token,
+        'expires_in': keycloak_response.expires_in,
+        'expires_at': keycloak_response.expires_at,
     }
-    await User.find_one(User.orcid == orcid_response.orcid).upsert(Set(user_dict), on_insert=User(**user_dict))
-    user = await User.find_one(User.orcid == orcid_response.orcid)
+    await User.find_one(User.orcid == keycloak_response.orcid).upsert(Set(user_dict), on_insert=User(**user_dict))
+    user = await User.find_one(User.orcid == keycloak_response.orcid)
     return user
-
-
-async def create_or_update_repository_token(user: User, repository, repository_response) -> RepositoryToken:
-    repository_token_dict = {
-        'type': repository,
-        'access_token': repository_response['access_token'],
-        'user_id': user.id,
-        'refresh_token': repository_response.get('refresh_token', None),
-        'expires_in': repository_response.get('expires_in', None),
-        'expires_at': repository_response.get('expires_at', None),
-    }
-    repository_token = user.repository_token(repository)
-    if repository_token:
-        await repository_token.update(Set(repository_token_dict))
-    else:
-        user.repository_tokens.append(RepositoryToken(**repository_token_dict))
-        await user.save(link_rule=WriteRules.WRITE)
-    return user.repository_token(repository)
 
 
 class TokenException(Exception):
@@ -179,28 +142,3 @@ async def get_current_user(settings=Depends(get_settings), token: str = Depends(
         raise credentials_exception
     await user.fetch_all_links()
     return user
-
-
-async def get_current_repository_token(
-    request: Request,
-    repository: RepositoryType,
-    user: User = Depends(get_current_user),
-    settings: Settings = Depends(get_settings),
-) -> RepositoryToken:
-    repository_token: RepositoryToken = user.repository_token(repository)
-    if not repository_token:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"User has not authorized with {repository}")
-    expiration_buffer: int = settings.access_token_expiration_buffer_seconds
-    now = int(datetime.utcnow().timestamp())
-
-    if now > repository_token.expires_at:
-        await delete_repository_access_token(repository, user)
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"User token for {repository} has expired")
-    if now > repository_token.expires_at - expiration_buffer:
-        if repository_token.refresh_token:
-            client = getattr(oauth, repository)
-            repository_token = await client.authorize_access_token(
-                request, grant_type='refresh_token', refresh_token=repository_token.refresh_token
-            )
-            repository_token = await create_or_update_repository_token(user, repository, repository_token)
-    return repository_token
