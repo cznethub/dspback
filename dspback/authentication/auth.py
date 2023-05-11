@@ -1,5 +1,5 @@
 from base64 import b64encode
-from functools import wraps
+from functools import wraps, lru_cache
 import json
 from json.decoder import JSONDecodeError
 import logging
@@ -12,6 +12,7 @@ import requests
 from starlette.responses import RedirectResponse
 
 from dspback.authentication.exceptions import OpenIDConnectException
+from dspback.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -163,6 +164,29 @@ class OpenIDConnect:
             raise OpenIDConnectException("Was not able to retrieve data from the response.")
 
     def require_login(self, view_func):
+        # TODO propogate window_close
+        # TODO set/remove authorization cookie
+        '''
+            try:
+        keycloak_response = await oauth.keycloak.authorize_access_token(request)
+        print(json.dumps(keycloak_response))
+        keycloak_response = KeycloakResponse(**keycloak_response)
+    except OAuthError as error:
+        return HTMLResponse(f'<h1>{error.error}</h1>')
+    headers = {"Authorization": "Bearer " + keycloak_response.access_token}
+    user_response = requests.get("https://auth.cuahsi.io/realms/HydroShare/protocol/openid-connect/userinfo", headers=headers)
+    user_response = KeycloakUserResponse(**user_response.json())
+    user: User = await create_or_update_user(user_response)
+    token = keycloak_response.access_token
+    if window_close:
+        responseHTML = '<html><head><title>CzHub Sign In</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
+        responseHTML = responseHTML.replace(
+            "%value%", json.dumps({'token': token, 'expiresIn': keycloak_response.expires_in})
+        )
+        return HTMLResponse(responseHTML)
+
+    return Response(token)
+        '''
         @wraps(view_func)
         async def decorated(request: Request, get_user_info: bool = False, *args, **kwargs):
             callback_uri = self.rediret_uri
@@ -174,24 +198,12 @@ class OpenIDConnect:
                 request.__setattr__("user_info", user_info)
                 return await view_func(request, *args, **kwargs)
             except OpenIDConnectException:
-                raise
-                #return RedirectResponse(self.get_auth_redirect_uri(callback_uri))
+                return RedirectResponse(self.get_auth_redirect_uri(callback_uri))
 
         return decorated
 
-host = "https://auth.cuahsi.io"
-realm = "HydroShare"
-client_id = "local_iguide_api"
-client_secret = "AyPQBiRP1FAJ7bU8rIUopgtFExc6ySkR"
-app_uri = "https://localhost/api/"
-redirect_uri = "https://localhost/api/"
-
-#host = "http://keycloak:8080/auth"
-#realm = "master"
-#client_id = "test-client"
-#client_secret = "jC8NwfW8KHMv0ww0WEFvpYSv9R5ddjAD"
-#app_uri = "https://localhost/api/"
-#redirect_uri = "https://localhost/api"
-
-
-oidc = OpenIDConnect(host, realm, app_uri, client_id, client_secret, redirect_uri)
+@lru_cache()
+def get_oidc():
+    settings = get_settings()
+    return OpenIDConnect(settings.keycloak_host, settings.keycloak_realm, settings.keycloak_app_uri,
+                         settings.keycloak_client_id, settings.keycloak_client_secret, settings.keycloak_redirect_uri)

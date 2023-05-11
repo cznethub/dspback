@@ -12,7 +12,7 @@ from starlette import status
 from starlette.status import HTTP_403_FORBIDDEN
 
 from dspback.config import get_settings
-from dspback.pydantic_schemas import KeycloakResponse, TokenData, User, KeycloakUserResponse
+from dspback.pydantic_schemas import TokenData, User, KeycloakUserResponse
 
 
 class OAuth2AuthorizationBearerToken(OAuth2):

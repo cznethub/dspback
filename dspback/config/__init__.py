@@ -8,11 +8,12 @@ dotenv_file = ".env"
 
 
 class Settings(BaseSettings):
-    keycloak_client_id: str
-    keycloak_client_secret: str
-    keycloak_authorize_url: HttpUrl
-    keycloak_token_url: HttpUrl
-    keycloak_health_url: HttpUrl
+    keycloak_host: str = "https://auth.cuahsi.io"
+    keycloak_realm: str = "HydroShare"
+    keycloak_client_id: str = "local_iguide_api"
+    keycloak_client_secret: str = "AyPQBiRP1FAJ7bU8rIUopgtFExc6ySkR"
+    keycloak_app_uri: str = "https://localhost/api"
+    keycloak_redirect_uri: str = "https://localhost/api"
 
     mongo_username: str
     mongo_password: str
@@ -44,14 +45,3 @@ class Settings(BaseSettings):
 @lru_cache()
 def get_settings():
     return Settings()
-
-
-settings = get_settings()
-config = Config(dotenv_file)
-oauth = OAuth(config)
-oauth.register(
-    name='keycloak',
-    authorize_url=settings.keycloak_authorize_url,
-    token_endpoint=settings.keycloak_token_url,
-    client_kwargs={'scope': 'openid profile email'},
-)

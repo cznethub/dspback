@@ -1,7 +1,10 @@
 version: '3'
 
-services:
+volumes:
+  mongo_data:
+    driver: local
 
+services:
   dspfront:
     image: dspfront
     container_name: dsp_dev_dspfront
@@ -43,7 +46,7 @@ services:
     ports:
       - '27017:27017'
     volumes:
-      - ./mongo-data:/data/db
+      - mongo_data:/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=AzureDiamond
       - MONGO_INITDB_ROOT_PASSWORD=hunter2
