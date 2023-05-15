@@ -1,0 +1,531 @@
+{
+  "title": "Zenodo Datasets Schema for CZ Net v1.0.0",
+  "type": "object",
+  "properties": {
+    "access_conditions": {
+      "title": "Access conditions",
+      "type": "string",
+      "description": "Conditions under which access is given if record is restricted."
+    },
+    "access_right": {
+      "title": "Access right",
+      "type": "string",
+      "description": "Access right for record",
+      "default": "open",
+      "enum": [
+        "open",
+        "embargoed"
+      ]
+    },
+    "communities": {
+      "title": "Communities",
+      "type": "array",
+      "description": "List of community identifiers.",
+      "uniqueItems": true,
+      "items": {
+        "title": "Community identifier",
+        "type": "object",
+        "properties": {
+          "identifier": {
+            "title": "Identifier",
+            "type": "string",
+            "description": "The community identifier"
+          }
+        },
+        "default": [{ "identifier": "czdata" }],
+        "contains": {
+          "enum": [{ "identifier": "czdata" }]
+        }
+      }
+    },
+    "contributors": {
+      "title": "Contributors",
+      "type": "array",
+      "description": "Contributors in order of importance.",
+      "items": {
+        "title": "Contributor",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "affiliation": {
+            "title": "Affiliation",
+            "type": "string",
+            "description": "Affiliation for the purpose of this specific record."
+          },
+          "name": {
+            "title": "Full name",
+            "type": "string",
+            "description": "Full name of person or organisation. Personal name format: family, given.",
+            "options": {
+              "placeholder": "e.g. 'Horsburgh, Jeffery S.'"
+            }
+          },
+          "orcid": {
+            "title": "ORCID",
+            "description": "ORCID identifier for contributor.",
+            "type": "string",
+            "pattern": "\\b\\d{4}-\\d{4}-\\d{4}-\\d{3}[0-9X]\\b",
+            "options": {
+              "placeholder": "e.g. '0000-0001-2345-6789'"
+            },
+            "errorMessage": {
+              "pattern": "must match the ORCID pattern. e.g. '0000-0001-2345-6789'"
+            }
+          },
+          "type": {
+            "title": "Contribution type",
+            "type": "string",
+            "enum": [
+              "ContactPerson",
+              "DataCollector",
+              "DataCurator",
+              "DataManager",
+              "Distributor",
+              "Editor",
+              "HostingInstitution",
+              "Other",
+              "Producer",
+              "ProjectLeader",
+              "ProjectManager",
+              "ProjectMember",
+              "RegistrationAgency",
+              "RegistrationAuthority",
+              "RelatedPerson",
+              "Researcher",
+              "ResearchGroup",
+              "RightsHolder",
+              "Sponsor",
+              "Supervisor",
+              "WorkPackageLeader"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "affiliation",
+          "type"
+        ]
+      }
+    },
+    "creators": {
+      "title": "Creators",
+      "type": "array",
+      "description": "Creators of record in order of importance.",
+      "items": {
+        "title": "Creator",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "affiliation": {
+            "title": "Affiliation",
+            "type": "string",
+            "description": "Affiliation for the purpose of this specific record."
+          },
+          "name": {
+            "title": "Full name",
+            "type": "string",
+            "description": "Full name of person or organisation. Personal name format: family, given.",
+            "options": {
+              "placeholder": "e.g. 'Horsburgh, Jeffery S.'"
+            }
+          },
+          "orcid": {
+            "title": "ORCID",
+            "description": "ORCID identifier for creator.",
+            "type": "string",
+            "pattern": "\\b\\d{4}-\\d{4}-\\d{4}-\\d{3}[0-9X]\\b",
+            "options": {
+              "placeholder": "e.g. '0000-0001-2345-6789'"
+            },
+            "errorMessage": {
+              "pattern": "must match the ORCID pattern. e.g. '0000-0001-2345-6789'"
+            }
+          }
+        },
+        "required": [
+          "affiliation",
+          "name"
+        ]
+      }
+    },
+    "description": {
+      "title": "Description/Abstract",
+      "type": "string",
+      "description": "Description/abstract for record.",
+      "options": { "stripHTML": true }
+    },
+    "embargo_date": {
+      "title": "Embargo date",
+      "type": "string",
+      "format": "date",
+      "description": "Embargo date of record (ISO8601 formatted date)",
+      "options": { "placeholder": "YYYY-MM-DD", "min": { "amount": 1, "unit": "day" } },
+      "if": {
+        "properties": {
+          "access_right": {
+            "const": "embargoed"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "embargo_date"
+        ]
+      }
+    },
+    "notes": {
+      "title": "Funding Agency Metadata",
+      "description": "Add metadata associated with funding agency credits for a resource in the format provided. Please separate multiple entries with an empty line.",
+      "type": "string",
+      "default": "Funding Agency Name: \nAward Title: \nAward Number: \nFunding Agency URL: ",
+      "options": { "placeholder": "Funding Agency Name: \nAward Title: \nAward Number: \nFunding Agency URL: \n\nFunding Agency Name: \nAward Title: \nAward Number: \nFunding Agency URL: " }
+    },
+    "keywords": {
+      "title": "Keywords",
+      "type": "array",
+      "description": "Free text keywords.",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "title": "Keyword",
+        "type": "string"
+      },
+      "default": ["CZNet"],
+      "contains": {
+        "enum": ["CZNet"]
+      }
+    },
+    "license": {
+      "title": "License",
+      "type": "string",
+      "description": "License for embargoed/open access content.",
+      "options": { "hasAutoComplete": true, "placeholder": "Start typing a license name..." },
+      "oneOf": [
+        { "const": "AAL", "title": "Attribution Assurance Licenses"},
+        { "const": "AFL-3.0", "title": "Academic Free License 3.0"},
+        { "const": "AGPL-3.0", "title": "GNU Affero General Public License v3"},
+        { "const": "APL-1.0", "title": "Adaptive Public License 1.0"},
+        { "const": "APSL-2.0", "title": "Apple Public Source License 2.0"},
+        { "const": "Against-DRM", "title": "Against DRM"},
+        { "const": "Apache-1.1", "title": "Apache Foundation"},
+        { "const": "Apache-2.0", "title": "Apache Software License 2.0"},
+        { "const": "Artistic-2.0", "title": "Artistic License 2.0"},
+        { "const": "BSD-2-Clause", "title": "BSD 2-Clause \"Simplified\" or \"FreeBSD\" License (BSD-2-Clause)"},
+        { "const": "BSD-3-Clause", "title": "BSD 3-Clause \"New\" or \"Revised\" License (BSD-3-Clause)"},
+        { "const": "BSL-1.0", "title": "Boost Software License 1.0"},
+        { "const": "BitTorrent-1.1", "title": "BitTorrent Open Source License 1.1"},
+        { "const": "CATOSL-1.1", "title": "Computer Associates Trusted Open Source License 1.1 (CATOSL-1.1)"},
+        { "const": "CC-BY-4.0", "title": "Creative Commons Attribution 4.0" },
+        { "const": "CC-BY-NC-4.0", "title": "Creative Commons Attribution-NonCommercial 4.0" },
+        { "const": "CC-BY-NC-ND-4.0", "title": "Attribution-NonCommercial-NoDerivatives 4.0 International" },
+        { "const": "CC-BY-NC-SA-4.0", "title": "Attribution-NonCommercial-ShareAlike 4.0 International" },
+        { "const": "CC-BY-ND-4.0", "title": "Attribution-NoDerivatives 4.0 International" },
+        { "const": "CC-BY-SA-4.0", "title": "Creative Commons Attribution Share-Alike 4.0" },
+        { "const": "CC0-1.0", "title": "CC0 1.0"},
+        { "const": "CDDL-1.0", "title": "Common Development and Distribution License 1.0"},
+        { "const": "CECILL-2.1", "title": "CeCILL License 2.1"},
+        { "const": "CNRI-Python", "title": "CNRI Python License"},
+        { "const": "CPAL-1.0", "title": "Common Public Attribution License 1.0"},
+        { "const": "CUA-OPL-1.0", "title": "CUA Office Public License 1.0"},
+        { "const": "DSL", "title": "Design Science License"},
+        { "const": "ECL-2.0", "title": "Educational Community License 2.0"},
+        { "const": "EFL-2.0", "title": "Eiffel Forum License 2.0"},
+        { "const": "EPL-1.0", "title": "Eclipse Public License 1.0"},
+        { "const": "EPL-2.0", "title": "Eclipse Public License 2.0"},
+        { "const": "EUDatagrid", "title": "EU DataGrid Software License"},
+        { "const": "EUPL-1.1", "title": "European Union Public License 1.1"},
+        { "const": "Entessa", "title": "Entessa Public License"},
+        { "const": "FAL-1.3", "title": "Free Art License 1.3"},
+        { "const": "Fair", "title": "Fair License"},
+        { "const": "Frameworx-1.0", "title": "Frameworx License 1.0"},
+        { "const": "GFDL-1.3-no-cover-texts-no-invariant-sections", "title": "GNU Free Documentation License 1.3 with no cover texts and no invariant sections"},
+        { "const": "GPL-2.0", "title": "GNU General Public License 2.0"},
+        { "const": "GPL-3.0", "title": "GNU General Public License 3.0"},
+        { "const": "HPND", "title": "Historical Permission Notice and Disclaimer"},
+        { "const": "IPA", "title": "IPA Font License"},
+        { "const": "IPL-1.0", "title": "IBM Public License 1.0"},
+        { "const": "ISC", "title": "ISC License"},
+        { "const": "Intel", "title": "Intel Open Source License"},
+        { "const": "LGPL-2.1", "title": "GNU Lesser General Public License 2.1"},
+        { "const": "LGPL-3.0", "title": "GNU Lesser General Public License 3.0"},
+        { "const": "LO-FR-2.0", "title": "Open License 2.0"},
+        { "const": "LPL-1.0", "title": "Lucent Public License (\"Plan9\") 1.0"},
+        { "const": "LPL-1.02", "title": "Lucent Public License 1.02"},
+        { "const": "LPPL-1.3c", "title": "LaTeX Project Public License 1.3c"},
+        { "const": "MIT", "title": "MIT License"},
+        { "const": "MPL-1.0", "title": "Mozilla Public License 1.0"},
+        { "const": "MPL-1.1", "title": "Mozilla Public License 1.1"},
+        { "const": "MPL-2.0", "title": "Mozilla Public License 2.0"},
+        { "const": "MS-PL", "title": "Microsoft Public License"},
+        { "const": "MS-RL", "title": "Microsoft Reciprocal License"},
+        { "const": "MirOS", "title": "MirOS Licence"},
+        { "const": "Motosoto", "title": "Motosoto License"},
+        { "const": "Multics", "title": "Multics License"},
+        { "const": "NASA-1.3", "title": "NASA Open Source Agreement 1.3"},
+        { "const": "NCSA", "title": "University of Illinois/NCSA Open Source License"},
+        { "const": "NGPL", "title": "Nethack General Public License"},
+        { "const": "NPOSL-3.0", "title": "Non-Profit Open Software License 3.0"},
+        { "const": "NTP", "title": "NTP License"},
+        { "const": "Naumen", "title": "Naumen Public License"},
+        { "const": "Nokia", "title": "Nokia Open Source License"},
+        { "const": "OCLC-2.0", "title": "OCLC Research Public License 2.0"},
+        { "const": "ODC-BY-1.0", "title": "Open Data Commons Attribution License 1.0"},
+        { "const": "ODbL-1.0", "title": "Open Data Commons Open Database License 1.0"},
+        { "const": "OFL-1.1", "title": "Open Font License 1.1"},
+        { "const": "OGL-Canada-2.0", "title": "Open Government License 2.0 (Canada)"},
+        { "const": "OGL-UK-1.0", "title": "Open Government Licence 1.0 (United Kingdom)"},
+        { "const": "OGL-UK-2.0", "title": "Open Government Licence 2.0 (United Kingdom)"},
+        { "const": "OGL-UK-3.0", "title": "Open Government Licence 3.0 (United Kingdom)"},
+        { "const": "OGTSL", "title": "Open Group Test Suite License"},
+        { "const": "OSL-3.0", "title": "Open Software License 3.0"},
+        { "const": "PDDL-1.0", "title": "Open Data Commons Public Domain Dedication and Licence 1.0"},
+        { "const": "PHP-3.0", "title": "PHP License 3.0"},
+        { "const": "PostgreSQL", "title": "PostgreSQL License"},
+        { "const": "Python-2.0", "title": "Python License 2.0"},
+        { "const": "QPL-1.0", "title": "Q Public License 1.0"},
+        { "const": "RPL-1.5", "title": "Reciprocal Public License 1.5"},
+        { "const": "RPSL-1.0", "title": "RealNetworks Public Source License 1.0"},
+        { "const": "RSCPL", "title": "Ricoh Source Code Public License"},
+        { "const": "SISSL", "title": "Sun Industry Standards Source License 1.1"},
+        { "const": "SPL-1.0", "title": "Sun Public License 1.0"},
+        { "const": "SimPL-2.0", "title": "Simple Public License 2.0"},
+        { "const": "Sleepycat", "title": "Sleepycat License"},
+        { "const": "Talis", "title": "Talis Community License"},
+        { "const": "Unlicense", "title": "Unlicense"},
+        { "const": "VSL-1.0", "title": "Vovida Software License 1.0"},
+        { "const": "W3C", "title": "W3C License"},
+        { "const": "WXwindows", "title": "wxWindows Library License"},
+        { "const": "Watcom-1.0", "title": "Sybase Open Watcom Public License 1.0"},
+        { "const": "Xnet", "title": "X.Net License"},
+        { "const": "ZPL-2.0", "title": "Zope Public License 2.0"},
+        { "const": "Zlib", "title": "zlib/libpng license"},
+        { "const": "dli-model-use", "title": "Statistics Canada: Data Liberation Initiative (DLI) - Model Data Use Licence"},
+        { "const": "geogratis", "title": "Geogratis"},
+        { "const": "hesa-withrights", "title": "Higher Education Statistics Agency Copyright with data.gov.uk rights"},
+        { "const": "localauth-withrights", "title": "Local Authority Copyright with data.gov.uk rights"},
+        { "const": "met-office-cp", "title": "Met Office UK Climate Projections Licence Agreement"},
+        { "const": "mitre", "title": "MITRE Collaborative Virtual Workspace License (CVW License)"},
+        { "const": "notspecified", "title": "License Not Specified"},
+        { "const": "other-at", "title": "Other (Attribution)"},
+        { "const": "other-closed", "title": "Other (Not Open)"},
+        { "const": "other-nc", "title": "Other (Non-Commercial)"},
+        { "const": "other-open", "title": "Other (Open)"},
+        { "const": "other-pd", "title": "Other (Public Domain)"},
+        { "const": "ukclickusepsi", "title": "UK Click Use PSI"},
+        { "const": "ukcrown", "title": "UK Crown Copyright"},
+        { "const": "ukcrown-withrights", "title": "UK Crown Copyright with data.gov.uk rights"},
+        { "const": "ukpsi", "title": "UK PSI Public Sector Information"}
+      ],
+      "default": "CC-BY-4.0"
+    },
+    "publication_date": {
+      "title": "Publication date",
+      "type": "string",
+      "description": "",
+      "format": "date"
+    },
+    "references": {
+      "title": "References",
+      "type": "array",
+      "options": { "delimeter": false, "placeholder": "e.g. 'Cranmer, Kyle et al. (2014). Decouple software associated to arXiv:1401.0080.'" },
+      "description": "Raw textual references for related publications and datasets when identifier is not known.",
+      "items": {
+        "title": "Reference string",
+        "type": "string",
+        "description": "A string providing the full reference for the related item."
+      }
+    },
+    "related_identifiers": {
+      "title": "Related identifiers",
+      "type": "array",
+      "description": "Identifiers of related publications and datasets.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "identifier": {
+            "title": "Identifier",
+            "type": "string",
+            "description": "Identifier of the related publication or dataset.",
+            "options": {
+              "placeholder": "e.g. '10.1234/foobar.567890'"
+            }
+          },
+          "relation": {
+            "title": "Relationship type",
+            "type": "string",
+            "description": "The type of relationship between this item and the related item.",
+            "options": { "hasAutoComplete": true, "placeholder": "Start typing to autocomplete..." },
+            "oneOf": [
+              { "const": "isCitedBy", "title": "cites this upload"},
+              { "const": "cites", "title": "is cited by this upload"},
+              { "const": "isSupplementTo", "title": "is supplemented by this upload"},
+              { "const": "isSupplementedBy", "title": "is a supplement to this upload"},
+              { "const": "isContinuedBy", "title": "continues this upload"},
+              { "const": "continues", "title": "is continued by this upload"},
+              { "const": "isDescribedBy", "title": "describes this upload"},
+              { "const": "describes", "title": "is described by this upload"},
+              { "const": "hasMetadata", "title": "has additional metadata from this upload"},
+              { "const": "isMetadataFor", "title": "is additional metadata for this upload"},
+              { "const": "isNewVersionOf", "title": "is previous version of this upload"},
+              { "const": "isPreviousVersionOf", "title": "is new version of this upload"},
+              { "const": "isPartOf", "title": "has this upload as part"},
+              { "const": "hasPart", "title": "is part of this upload"},
+              { "const": "isReferencedBy", "title": "references this upload"},
+              { "const": "references", "title": "is referenced by this upload"},
+              { "const": "isDocumentedBy", "title": "documents this upload"},
+              { "const": "documents", "title": "is documented by this upload"},
+              { "const": "isCompiledBy", "title": "compiled/created this upload"},
+              { "const": "compiles", "title": "is compiled/created by this upload"},
+              { "const": "isVariantFormOf", "title": "is a variant or different form of this upload"},
+              { "const": "isOrignialFormOf", "title": "is an original form of this upload"},
+              { "const": "isIdenticalTo", "title": "is identical to this upload"},
+              { "const": "isReviewedBy", "title": "reviews this upload"},
+              { "const": "reviews", "title": "is reviewed by this upload"},
+              { "const": "isDerivedFrom", "title": "is the source this upload is derived from"},
+              { "const": "isSourceOf", "title": "has this upload as its source"},
+              { "const": "requires", "title": "is required by this upload"},
+              { "const": "isRequiredBy", "title": "requires this upload"},
+              { "const": "isObsoletedBy", "title": "replaces this upload"},
+              { "const": "obsoletes", "title": "is replaced by this upload"},
+              { "const": "isPublishedIn", "title": "published this upload"}
+            ]
+          },
+          "resource_type": {
+            "title": "Resource type",
+            "type": "string",
+            "description": "Resource type of the related identifier.",
+            "options": { },
+            "oneOf": [
+              { "const": "undefined", "title": "N/A" },
+              { "const": "", "title": "", "divider": true },
+              { "const": "", "title": "", "header": "Publication" },
+              { "const": "publication-annotationcollection", "title": "Annotation collection" },
+              { "const": "publication-book", "title": "Book" },
+              { "const": "publication-section", "title": "Book section" },
+              { "const": "publication-conferencepaper", "title": "Conference paper" },
+              { "const": "publication-datamanagementplan", "title": "Data management plan" },
+              { "const": "publication-article", "title": "Journal article" },
+              { "const": "publication-other", "title": "Other" },
+              { "const": "publication-patent", "title": "Patent" },
+              { "const": "publication-preprint", "title": "Preprint" },
+              { "const": "publication-deliverable", "title": "Project deliverable" },
+              { "const": "publication-milestone", "title": "Project milestone" },
+              { "const": "publication-proposal", "title": "Proposal" },
+              { "const": "publication-report", "title": "Report" },
+              { "const": "publication-softwaredocumentation", "title": "Software documentation" },
+              { "const": "publication-taxonomictreatment", "title": "Taxonomic treatment" },
+              { "const": "publication-technicalnote", "title": "Technical note" },
+              { "const": "publication-thesis", "title": "Thesis" },
+              { "const": "publication-workingpaper", "title": "Working paper" },
+              { "const": "", "title": "", "divider": true },
+              { "const": "", "title": "", "header": "Image" },
+              { "const": "image-diagram", "title": "Diagram" },
+              { "const": "image-drawing", "title": "Drawing" },
+              { "const": "image-figure", "title": "Figure" },
+              { "const": "image-other", "title": "Other" },
+              { "const": "image-photo", "title": "Photo" },
+              { "const": "image-plot", "title": "Plot" },
+              { "const": "", "title": "", "divider": true },
+              { "const": "lesson", "title": "Lesson" },
+              { "const": "other", "title": "Other" },
+              { "const": "physicalobject", "title": "Physical object" },
+              { "const": "poster", "title": "Poster" },
+              { "const": "presentation", "title": "Presentation" },
+              { "const": "software", "title": "Software" },
+              { "const": "video", "title": "Video/Audio" },
+              { "const": "workflow", "title": "Workflow" }
+            ]
+          }
+        },
+        "required": [
+          "identifier",
+          "relation"
+        ]
+      }
+    },
+    "resource_type": {
+      "title": "Resource type",
+      "type": "object",
+      "description": "Record resource type.",
+      "additionalProperties": false,
+      "properties": {
+        "openaire_subtype": {
+          "title": "OpenAIRE subtype",
+          "type": "string",
+          "description": "OpenAIRE-specific resource type."
+        },
+        "subtype": {
+          "title": "Subtype",
+          "type": "string",
+          "description": "Specific resource type."
+        },
+        "type": {
+          "title": "General resource type",
+          "type": "string",
+          "description": "General resource type.",
+          "default": "publication"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "subjects": {
+      "title": "Subjects from specific vocabularies",
+      "type": "array",
+      "description": "Subjects from a taxonomy or controlled vocabulary.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "identifier": {
+            "title": "Term identifier",
+            "type": "string",
+            "description": "Subjects term identifier (e.g., a URL)."
+          },
+          "term": {
+            "title": "Subject term",
+            "type": "string",
+            "description": "Subject term value."
+          }
+        }
+      }
+    },
+    "title": {
+      "title": "Title",
+      "type": "string",
+      "description": "Descriptive title for the record."
+    },
+    "version": {
+      "title": "Version",
+      "type": "string",
+      "description": "Record version tag. Mostly relevant for software and dataset uploads. Any string will be accepted, but semantically-versioned tag is recommended."
+    },
+    "upload_type": {
+      "additionalProperties": false,
+      "default": "dataset",
+      "description": "Record upload type.",
+      "enum": [
+        "publication",
+        "poster",
+        "presentation",
+        "dataset",
+        "image",
+        "video",
+        "software",
+        "lesson",
+        "physicalobject",
+        "other"
+      ],
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "description",
+    "keywords",
+    "notes",
+    "access_right",
+    "license"
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Control",
+      "scope": "#/properties/status"
+    },
+    {
+      "type": "Group",
+      "label": "Data File Release Information",
+      "description": "The maximum date in the future is two years forward from the date of dataset submission. Before the release date, its metadata will be available and searchable in the EarthChem Library, but the data file will not be available for download.",
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/datePublished"
+        }
+      ]
+    },
+    {
+      "type": "Group",
+      "label": "Basic Information",
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/title"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/description",
+          "options": {
+            "multi": true
+          }
+        },
+        {
+          "type": "HorizontalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/type"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/additionalTypes"
+            }
+          ]
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/keywords"
+        }
+      ]
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/community"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/leadAuthor",
+      "options": {
+        "detail": {
+          "type": "Object",
+          "elements": [
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/givenName"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/additionalName"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/familyName"
+                }
+              ]
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/email"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/identifiers",
+              "options": { "useTableLayout": true }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/contributors",
+      "options": {
+        "showSortButtons": true,
+        "restrict": true,
+        "elementLabelProp": ["givenName", "additionalName", "familyName"],
+        "detail": {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/givenName"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/additionalName"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/familyName"
+                }
+              ]
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/email"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/identifiers",
+              "options": { "useTableLayout": true }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/spatialCoverage"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/relatedResources",
+      "options": {
+        "elementLabelProp": "-",
+        "childLabelProp": "-",
+        "detail": {
+          "type": "Control",
+          "scope": "#/properties/identifiers",
+          "options": {
+            "restrict": true,
+            "elementLabelProp": "scheme",
+            "childLabelProp": "scheme"
+          }
+        }
+      }
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/fundings",
+      "options": {
+        "elementLabelProp": "identifier",
+        "childLabelProp": "identifier"
+      }
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/license"
+    }
+  ]
+}
