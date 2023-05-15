@@ -15,6 +15,11 @@ from dspback.routers import (
     submissions,
 )
 
+with open('dspback/swagger_plugin/nonce.js', 'r') as f:
+    nonce_plugin = f.read()
+
+swagger_ui_parameters = {'plugins': [nonce_plugin]}
+
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=get_settings().session_secret_key)
 

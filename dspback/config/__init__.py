@@ -1,3 +1,5 @@
+import random
+import string
 from functools import lru_cache
 
 from authlib.integrations.starlette_client import OAuth
@@ -26,7 +28,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 12 * 60
     access_token_expiration_buffer_seconds: int = 30 * 60
 
-    session_secret_key: str
+    session_secret_key: str# = "".join(random.choice(string.ascii_letters) for _ in range(16))
 
     outside_host: str
 
