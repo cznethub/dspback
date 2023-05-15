@@ -1,27 +1,19 @@
-from http.client import HTTPException
-from typing import Any, Optional
+from typing import Any
 
-from authlib.integrations.starlette_client import OAuth
 from beanie.odm.operators.update.general import Set
-from fastapi import Request, Depends, Security
+from fastapi import Request, Security
 
-from dspback.authentication.fastapi_resource_server import JwtDecodeOptions, OidcResourceServer
+from dspback.authentication.fastapi_resource_server import JwtDecodeOptions, OidcResourceServer, GrantType
 from dspback.config import get_settings
 from dspback.pydantic_schemas import User
-
-
-def url_for(request: Request, name: str, **path_params: Any) -> str:
-    url_path = request.app.url_path_for(name, **path_params)
-    # TODO - get the parent router path instead of hardcoding /api
-    return "https://{}{}".format(get_settings().outside_host, url_path)
 
 
 decode_options = JwtDecodeOptions(verify_aud=False)
 
 auth_scheme = OidcResourceServer(
     "https://auth.cuahsi.io/realms/HydroShare",
-    scheme_name="Keycloak",
     jwt_decode_options=decode_options,
+    allowed_grant_types=[GrantType.IMPLICIT]
 )
 
 

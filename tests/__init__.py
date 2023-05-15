@@ -14,7 +14,7 @@ from starlette.testclient import TestClient
 
 from dspback.api import app
 from dspback.config import get_settings
-from dspback.pydantic_schemas import JSONLD, RepositoryToken, Submission, User
+from dspback.pydantic_schemas import JSONLD, Submission, User
 
 prefix = "/api"
 
@@ -103,18 +103,6 @@ async def authorize_response_expired():
 
 
 @pytest.fixture
-async def authorize_response_hydroshare():
-    return {
-        'access_token': 'ASbna3fKiyb2wZWZBKnIipircDPVwa',
-        'expires_in': 2592000,
-        'token_type': 'Bearer',
-        'scope': 'read write',
-        'refresh_token': 'lJtWoBkGwdfjRpg7PCu4R9XpPbYTG3',
-        'expires_at': 1648834993,
-    }
-
-
-@pytest.fixture
 async def user_cookie(client_test, authorize_response):
     with patch.object(StarletteRemoteApp, 'authorize_access_token', return_value=authorize_response):
         response = await client_test.get(prefix + "/auth")
@@ -138,24 +126,6 @@ async def change_test_dir(request):
 
 
 @pytest.fixture
-async def hydroshare(change_test_dir):
-    with open("data/hydroshare.json", "r") as f:
-        return json.loads(f.read())
-
-
-@pytest.fixture
-async def zenodo(change_test_dir):
-    with open("data/zenodo.json", "r") as f:
-        return json.loads(f.read())
-
-
-@pytest.fixture
 async def external(change_test_dir):
     with open("data/external.json", "r") as f:
-        return json.loads(f.read())
-
-
-@pytest.fixture
-async def earthchem(change_test_dir):
-    with open("data/earthchem.json", "r") as f:
         return json.loads(f.read())

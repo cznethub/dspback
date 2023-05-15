@@ -9,7 +9,6 @@ from starlette.middleware.sessions import SessionMiddleware
 from dspback.config import get_settings
 from dspback.pydantic_schemas import Submission, User
 from dspback.routers import (
-    authentication,
     discovery,
     external,
     submissions,
@@ -33,7 +32,6 @@ app.add_middleware(
 
 app.mount("/api/schema", StaticFiles(directory="dspback/schemas"), name="schemas")
 
-app.include_router(authentication.router, prefix="/api", tags=["Authentication"], include_in_schema=False)
 app.include_router(external.router, prefix="/api")
 app.include_router(submissions.router, prefix="/api", tags=["Submissions"])
 app.include_router(discovery.router, prefix="/api/discovery", tags=["Discovery"])
