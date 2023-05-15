@@ -2,7 +2,7 @@ from fastapi import Depends
 from fastapi_restful.inferring_router import InferringRouter
 
 from dspback.config import Settings, get_settings
-from dspback.dependencies import get_current_user
+from dspback.authentication.user import get_current_user
 from dspback.pydantic_schemas import User
 from dspback.routers.submissions import submit_record
 

@@ -1,9 +1,15 @@
 import json
 
 from beanie import DeleteRules, WriteRules
+from beanie.odm.operators.update.general import Set
 
 from dspback.pydantic_schemas import User
 
+
+async def create_or_update_user(preferred_username: str) -> User:
+    await User.find_one(User.preferred_username == preferred_username)\
+        .upsert(Set({'preferred_username': preferred_username}), on_insert=User(preferred_username=preferred_username))
+    return await User.find_one(User.preferred_username == preferred_username)
 
 async def delete_submission(identifier: str, user: User):
     submission = user.submission(identifier)

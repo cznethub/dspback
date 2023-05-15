@@ -14,11 +14,6 @@ from dspback.routers import (
     submissions,
 )
 
-with open('dspback/swagger_plugin/nonce.js', 'r') as f:
-    nonce_plugin = f.read()
-
-swagger_ui_parameters = {'plugins': [nonce_plugin]}
-
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=get_settings().session_secret_key)
 
@@ -35,7 +30,6 @@ app.mount("/api/schema", StaticFiles(directory="dspback/schemas"), name="schemas
 app.include_router(external.router, prefix="/api")
 app.include_router(submissions.router, prefix="/api", tags=["Submissions"])
 app.include_router(discovery.router, prefix="/api/discovery", tags=["Discovery"])
-
 
 @app.on_event("startup")
 async def startup_db_client():

@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from fastapi.params import Depends
 
 from dspback.database.procedures import create_or_update_submission, delete_submission
-from dspback.dependencies import get_current_user
+from dspback.authentication.user import get_current_user
 from dspback.pydantic_schemas import (
     ExternalRecord,
     User,
