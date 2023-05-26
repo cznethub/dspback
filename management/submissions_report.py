@@ -29,6 +29,7 @@ async def main():
     test_submission_count_by_repository = {}
     submission_count_by_cluster = {}
     funding_by_cluster = {}
+    submission_count_by_funding = {}
     private_document_count = 0
     discoverable_documents_count = 0
     for submission in await Submission.all().to_list():
@@ -61,16 +62,20 @@ async def main():
                         funding_ids = funding_by_cluster.get(cluster, set())
                         funding_ids.update([funding_id_match])
                         funding_by_cluster[cluster_match] = funding_ids
+                        submission_count = submission_count_by_funding.get(cluster_match, 0)
+                        submission_count_by_funding[cluster_match] = submission_count + 1
         else:
             private_document_count = private_document_count + 1
-    print("Submission Count By Repository")
+    print("Submission Count By Repository (Discoverable and private)")
     print(submission_count_by_repository)
     print("\nTest submission count by repository")
     print(test_submission_count_by_repository)
-    print("\nSubmission count by cluster")
+    print("\nSubmission count by cluster (Discoverable Submissions)")
     print(submission_count_by_cluster)
-    print("\nSubmission Funding identifiers by cluster")
+    print("\nSubmission Funding identifiers by cluster (Discoverable Submissions)")
     print(funding_by_cluster)
+    print("\nSubmission count by funding identifier (Discoverable Submissions)")
+    print(submission_count_by_funding)
     print("\nNumber of documents not discoverable")
     print(private_document_count)
     print("\nNumber of documents discoverable")
