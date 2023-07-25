@@ -100,5 +100,5 @@ def test_create_hydroshare_record(user_cookie, hydroshare, authorize_response_hy
 
 async def test_unauthorized_hydroshare(client_test, user_cookie, hydroshare):
     response = await client_test.post(prefix + "/metadata/hydroshare?access_token=" + user_cookie, json=hydroshare)
-    assert response.status_code == 403
+    assert response.status_code == 401
     assert response.text == '{"detail":"User has not authorized with hydroshare"}'

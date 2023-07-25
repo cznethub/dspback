@@ -10,7 +10,6 @@ from fastapi.security.utils import get_authorization_scheme_param
 from jose import JWTError, jwt
 from pydantic import BaseModel
 from starlette import status
-from starlette.status import HTTP_403_FORBIDDEN
 
 from dspback.config import Settings, get_settings, oauth
 from dspback.database.procedures import delete_repository_access_token
@@ -74,7 +73,7 @@ class OAuth2AuthorizationBearerToken(OAuth2):
 
         if not authorization:
             if self.auto_error:
-                raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Not authenticated")
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
             else:
                 return None
         return param
@@ -189,13 +188,15 @@ async def get_current_repository_token(
 ) -> RepositoryToken:
     repository_token: RepositoryToken = user.repository_token(repository)
     if not repository_token:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"User has not authorized with {repository}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail=f"User has not authorized with {repository}"
+        )
     expiration_buffer: int = settings.access_token_expiration_buffer_seconds
     now = int(datetime.utcnow().timestamp())
 
     if now > repository_token.expires_at:
         await delete_repository_access_token(repository, user)
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"User token for {repository} has expired")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"User token for {repository} has expired")
     if now > repository_token.expires_at - expiration_buffer:
         if repository_token.refresh_token:
             client = getattr(oauth, repository)
