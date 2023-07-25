@@ -24,9 +24,13 @@
       "items": {
         "type": "string"
       },
-      "default": ["CZNet"],
+      "default": [
+        "CZNet"
+      ],
       "contains": {
-        "enum": ["CZNet"]
+        "enum": [
+          "CZNet"
+        ]
       }
     },
     "creators": {
@@ -156,14 +160,21 @@
           "description": "A datetime object containing the instant corresponding to the commencement of the time interval (ISO8601 formatted date) - YYYY-MM-DDTHH:MM.",
           "type": "string",
           "format": "date-time",
-          "options": { "placeholder": "YYYY-MM-DDTHH:MM" }
+          "options": {
+            "placeholder": "YYYY-MM-DDTHH:MM"
+          }
         },
         "end": {
           "title": "End",
           "description": "A datetime object containing the instant corresponding to the termination of the time interval (ISO8601 formatted date) - YYYY-MM-DDTHH:MM.",
           "type": "string",
           "format": "date-time",
-          "options": { "placeholder": "YYYY-MM-DDTHH:MM" }
+          "options": {
+            "placeholder": "YYYY-MM-DDTHH:MM"
+          },
+          "formatMinimum": {
+            "$data": "1/start"
+          }
         }
       },
       "required": [
@@ -179,7 +190,7 @@
           "title": "Point Coverage Metadata",
           "description": "Geographic coverage metadata for a resource or aggregation expressed as a point location",
           "type": "object",
-          "options": { 
+          "options": {
             "detail": {
               "type": "VerticalLayout",
               "elements": [
@@ -190,7 +201,11 @@
                 {
                   "type": "MapLayout",
                   "options": {
-                    "map": { "type": "point", "north": "north", "east": "east" }
+                    "map": {
+                      "type": "point",
+                      "north": "north",
+                      "east": "east"
+                    }
                   },
                   "elements": [
                     {
@@ -271,7 +286,13 @@
                 {
                   "type": "MapLayout",
                   "options": {
-                    "map": { "type": "box", "northlimit": "northlimit", "eastlimit": "eastlimit", "southlimit": "southlimit", "westlimit": "westlimit" }
+                    "map": {
+                      "type": "box",
+                      "northlimit": "northlimit",
+                      "eastlimit": "eastlimit",
+                      "southlimit": "southlimit",
+                      "westlimit": "westlimit"
+                    }
                   },
                   "elements": [
                     {
@@ -300,7 +321,6 @@
                   "type": "Control",
                   "scope": "#/properties/projection"
                 }
-                
               ]
             }
           },
@@ -391,14 +411,18 @@
       "title": "Date created",
       "type": "string",
       "format": "date-time",
-      "options": { "placeholder": "YYYY-MM-DDTHH:MM" },
+      "options": {
+        "placeholder": "YYYY-MM-DDTHH:MM"
+      },
       "description": "The date on which the resource was originally created (ISO8601 formatted date) - YYYY-MM-DDTHH:MM."
     },
     "dateModified": {
       "title": "Date modified",
       "type": "string",
       "format": "date-time",
-      "options": { "placeholder": "YYYY-MM-DDTHH:MM" },
+      "options": {
+        "placeholder": "YYYY-MM-DDTHH:MM"
+      },
       "description": "The date on which the resource was last modified (ISO8601 formatted date) - YYYY-MM-DDTHH:MM."
     },
     "datePublished": {
@@ -408,21 +432,25 @@
         {
           "title": "Year",
           "type": "integer",
-          "options": { "placeholder": "YYYY" },
+          "options": {
+            "placeholder": "YYYY"
+          },
           "description": "Publication year (YYYY)."
         },
         {
           "title": "Date",
           "type": "string",
           "format": "date-time",
-          "options": { "placeholder": "YYYY-MM-DDTHH:MM" },
+          "options": {
+            "placeholder": "YYYY-MM-DDTHH:MM"
+          },
           "description": "ISO8601 formatted date (YYYY-MM-DDTHH:MM)."
         }
       ]
     },
     "status": {
       "title": "Data collection is ongoing",
-      "type":  "boolean",
+      "type": "boolean",
       "description": "Indicate whether data collection is ongoing for this dataset",
       "default": false
     }
