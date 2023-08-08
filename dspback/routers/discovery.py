@@ -344,7 +344,7 @@ async def creator_search(request: Request, name: str, pageSize: int = 30) -> lis
 
 @router.get("/csv")
 async def csv(request: Request):
-    project = [{'$project': {'name': 1, 'description': 1, 'keywords': 1, '_id': 0}}]
+    project = [{'$project': {'name': 1, 'description': 1, 'keywords': 1, 'datePublished': 1, 'url': 1, '_id': 0}}]
     json_response = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(project).to_list(None)
     df = pandas.read_json(json.dumps(json_response))
     filename = "file.csv"
