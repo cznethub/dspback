@@ -5,7 +5,9 @@ from pydantic import BaseModel
 
 from dspback.pydantic_schemas import RepositoryType, Submission
 from dspback.scheduler import retrieve_submission_json_ld
+from dspback.schemas.discovery import JSONLD
 from dspback.utils.jsonld.clusters import clusters
+from dspback.utils.jsonld.scraper import format_fields
 
 ids_and_cluster = [
     ("2012073", "Bedrock Cluster"),
@@ -135,3 +137,134 @@ async def test_external_jsonld():
     public_jsonld = await retrieve_submission_json_ld(submission.dict())
     assert len(public_jsonld["clusters"]) == 1
     assert public_jsonld["clusters"][0] == "Drylands Cluster"
+
+
+@pytest.mark.asyncio
+async def test_earthchem_jsonld():
+    metadata_json = {
+        "@context": {"@vocab": "https://schema.org/", "datacite": "http://purl.org/spar/datacite/"},
+        "@id": "https://doi.org/10.1594/IEDA/100243",
+        "@type": "Dataset",
+        "name": "Susquehanna Shale Hills Critical Zone Observatory Stream Water Chemistry (2010)",
+        "sameAs": "https://ecl.earthchem.org/view.php?id=523",
+        "isAccessibleForFree": True,
+        "citation": ["https://doi.org/10.2136/vzj2010.0133"],
+        "author": {
+            "@list": [
+                {
+                    "@type": "Role",
+                    "author": [
+                        {"@type": "Person", "name": "Susan L. Brantley", "givenName": "Susan", "familyName": "Brantley"}
+                    ],
+                    "roleName": "Lead Author",
+                },
+                {
+                    "@type": "Role",
+                    "author": [
+                        {
+                            "@type": "Person",
+                            "name": "Pamela L. Sullivan",
+                            "givenName": "Pamela",
+                            "familyName": "Sullivan",
+                        },
+                        {
+                            "@type": "Person",
+                            "name": "Danielle  Andrews",
+                            "givenName": "Danielle",
+                            "familyName": "Andrews",
+                        },
+                        {"@type": "Person", "name": "George  Holmes", "givenName": "George", "familyName": "Holmes"},
+                        {"@type": "Person", "name": "Molly  Holleran", "givenName": "Molly", "familyName": "Holleran"},
+                        {
+                            "@type": "Person",
+                            "name": "Jennifer Z. Williams",
+                            "givenName": "Jennifer",
+                            "familyName": "Williams",
+                        },
+                        {
+                            "@type": "Person",
+                            "name": "Elizabeth  Herndon",
+                            "givenName": "Elizabeth",
+                            "familyName": "Herndon",
+                        },
+                        {"@type": "Person", "name": "Maya  Bhatt", "givenName": "Maya", "familyName": "Bhatt"},
+                        {
+                            "@type": "Person",
+                            "name": "Ekaterina  Bazilevskaya",
+                            "givenName": "Ekaterina",
+                            "familyName": "Bazilevskaya",
+                        },
+                        {
+                            "@type": "Person",
+                            "name": "Tiffany  Yesavage",
+                            "givenName": "Tiffany",
+                            "familyName": "Yesavage",
+                        },
+                        {"@type": "Person", "name": "Evan  Thomas", "givenName": "Evan", "familyName": "Thomas"},
+                        {"@type": "Person", "name": "Chris J. Duffy", "givenName": "Chris", "familyName": "Duffy"},
+                    ],
+                    "roleName": "Coauthor",
+                },
+            ]
+        },
+        "description": "Stream water chemistry at Susquehanna Shale Hills Critical Zone Observatory in 2010. Weekly to monthly grab samples were collected at three locations along the first order Stream: at the Headwater (SH), Middle (SM) and adjacent to the Weir (SW). Daily stream water sample were also collected adjacent to the weir from using automatic samplers (2700 series, Teledyne Isco, Lincoln, NE) and were referenced as SW-ISCO. ",
+        "distribution": {
+            "datePublished": "2013-02-05 00:00:00",
+            "contentUrl": "https://ecl.earthchem.org/view.php?id=523",
+            "@type": "DataDownload",
+            "encodingFormat": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        },
+        "license": "https://spdx.org/licenses/CC-BY-SA-4.0",
+        "dateCreated": "2013-02-04",
+        "inLanguage": "English",
+        "keywords": [
+            "Susquehanna Shale Hills",
+            "Pennsylvania",
+            "Regional (Continents, Oceans)",
+            "Stream water",
+            "geochemistry",
+            "DOC",
+            "trace elements",
+            "major ions",
+        ],
+        "publisher": {
+            "contactPoint": {
+                "@type": "ContactPoint",
+                "name": "Information Desk",
+                "contactType": "Customer Service",
+                "email": "info@earthchem.org",
+                "url": "https://www.earthchem.org/contact/",
+            },
+            "@type": "Organization",
+            "name": "EarthChem Library",
+            "@id": "https://www.earthchem.org",
+            "url": "https://www.earthchem.org/library",
+        },
+        "provider": {"@type": "Organization", "name": "EarthChem Library"},
+        "spatialCoverage": {
+            "@type": "Place",
+            "geo": [
+                {"@type": "GeoCoordinates", "latitude": "40.6644474", "longitude": "-77.9056298"},
+                {"@type": "GeoCoordinates", "latitude": "40.6647643", "longitude": "-77.9040381"},
+                {"@type": "GeoCoordinates", "latitude": "40.664841", "longitude": "-77.9072532"},
+                {"@type": "GeoCoordinates", "latitude": "40.6648488", "longitude": "-77.9072458"},
+            ],
+        },
+        "url": "https://doi.org/10.1594/IEDA/100243",
+        "funder": {
+            "@type": "MonetaryGrant",
+            "fundedItem": {"@id": "https://doi.org/10.1594/IEDA/100243"},
+            "funder": [
+                {
+                    "@type": "Organization",
+                    "name": "National Science Foundation",
+                    "url": "http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=0725019",
+                }
+            ],
+        },
+    }
+
+    scraped_jsonld = format_fields(metadata_json)
+    jsonld = JSONLD(**scraped_jsonld)
+    assert jsonld.provider.name == "EarthChem Library"
+    assert jsonld.context == "https://schema.org/"
