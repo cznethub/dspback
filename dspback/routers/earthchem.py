@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 
 import requests
 from fastapi import Request
@@ -7,11 +8,13 @@ from fastapi_restful.inferring_router import InferringRouter
 from pydantic import BaseModel
 from starlette.responses import JSONResponse
 
-from dspback.database.procedures import delete_submission
+from dspback.config import get_settings
+from dspback.database.procedures import create_or_update_submission_ecl_registration, delete_submission
 from dspback.dependencies import RepositoryException
 from dspback.pydantic_schemas import RepositoryType
 from dspback.routers.metadata_class import MetadataRoutes, exists_and_is
 from dspback.schemas.earthchem.model import Record
+from dspback.utils.jsonld.scraper import scrape_jsonld
 
 router = InferringRouter()
 
@@ -28,7 +31,7 @@ def prepare_metadata_for_ecl(json_metadata):
 
 
 class EarthChemMetadataResponse(BaseModel):
-    metadata: Record
+    metadata: Optional[Record]
     published: bool
 
 
@@ -158,7 +161,19 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         description="Creates a submission record of the EarthChem record.",
     )
     async def submit_repository_record(self, request: Request, identifier: str):
-        json_metadata = await self.submit(request, identifier)
+        try:
+            json_metadata = await self.submit(request, identifier)
+        except:
+            response = requests.get(
+                get_settings().earthchem_public_view_url % identifier,
+                headers={"accept": "application/json"},
+            )
+            if response.status_code >= 300:
+                raise
+
+            jsonld = scrape_jsonld(response.text, {"type": "application/ld+json"})
+            await create_or_update_submission_ecl_registration(self.user, jsonld, identifier)
+            return {"published": True}
         return json_metadata
 
     @router.get(

@@ -57,8 +57,13 @@ def format_fields(json_ld):
             json_ld["license"] = {"text": json_ld["license"]}
 
     if "author" in json_ld:
-        for author_role in [author_list['author'] for author_list in json_ld['author']['@list']]:
-            json_ld["creator"] = {'@list': author_role}
+        author_roles = [author_list for author_list in json_ld['author']['@list']]
+        author_list = []
+        for author_role in author_roles:
+            if author_role:
+                author_list = author_list + author_role["author"]
+
+        json_ld["creator"] = {'@list': author_list}
 
     if "@context" in json_ld:
         if not isinstance(json_ld["@context"], str):

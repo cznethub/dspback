@@ -67,7 +67,7 @@ class Submission(Document):
     identifier: str = None
     submitted: datetime = datetime.utcnow()
     url: HttpUrl = None
-    metadata_json: str = {}
+    metadata_json: str = "{}"
 
     @validator('authors', pre=True, allow_reuse=True)
     def extract_author_names(cls, values):
