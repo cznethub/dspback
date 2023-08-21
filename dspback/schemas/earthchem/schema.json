@@ -14,9 +14,15 @@
       "format": "date",
       "options": {
         "placeholder": "YYYY-MM-DD",
-        "max": { "amount": 2, "unit": "year" },
+        "max": {
+          "amount": 2,
+          "unit": "year"
+        },
         "min": "today",
-        "default": { "amount": 3, "unit": "day" }
+        "default": {
+          "amount": 3,
+          "unit": "day"
+        }
       }
     },
     "description": {
@@ -30,8 +36,7 @@
       "type": "string",
       "default": "CZNet",
       "const": "CZNet",
-      "readOnly": true,
-      "options": { "hidden": true }
+      "readOnly": true
     },
     "leadAuthor": {
       "type": "object",
@@ -55,7 +60,9 @@
         },
         "identifiers": {
           "type": "array",
-          "items": { "$ref": "#/definitions/AuthorIdentifier" },
+          "items": {
+            "$ref": "#/definitions/AuthorIdentifier"
+          },
           "default": []
         }
       },
@@ -69,7 +76,9 @@
       "title": "Co-Authors",
       "type": "array",
       "maxItems": 3,
-      "items": { "$ref": "#/definitions/Contributor" }
+      "items": {
+        "$ref": "#/definitions/Contributor"
+      }
     },
     "type": {
       "title": "Dataset Type",
@@ -95,7 +104,6 @@
       "type": "string",
       "description": "Indication of the progress status of the resource.",
       "default": "incomplete",
-      "options": { "hidden": true },
       "enum": [
         "incomplete",
         "submitted"
@@ -133,10 +141,14 @@
       "title": "Keywords",
       "type": "array",
       "description": "A list of non-geographic keywords. (e.g. volatiles, ultra-slow spreading ridges, mantle melting, CO2 fluxes)",
-      "default": ["CZNet"],
+      "default": [
+        "CZNet"
+      ],
       "minItems": 2,
       "contains": {
-        "enum": ["CZNet"]
+        "enum": [
+          "CZNet"
+        ]
       },
       "items": {
         "type": "string"
@@ -146,7 +158,30 @@
       "type": "string"
     },
     "spatialCoverage": {
-      "$ref": "#/definitions/SpatialCoverage"
+      "title": "Spatial Coverage Information",
+      "type": "object",
+      "properties": {
+        "coverage": {
+          "title": "Spatial Coverage",
+          "type": "string",
+          "enum": [
+            "Global",
+            "Regional (Continents, Oceans)",
+            "Space/Planetary"
+          ]
+        },
+        "keywords": {
+          "title": "Geographic Keywords",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Provide appropriate geographic keywords for searches. (e.g. Pacific Ocean, Aleutian Islands)"
+        }
+      },
+      "required": [
+        "coverage"
+      ]
     },
     "relatedResources": {
       "title": "Related Resources",
@@ -161,20 +196,9 @@
       "type": "array",
       "items": {
         "title": "Funding Source",
-        "options": { "flat": true },
-        "required": [
-          "identifier",
-          "funder"
-        ],
         "anyOf": [
           {
             "title": "Select one",
-            "options": { 
-              "dropdown": true,
-              "flat": true,
-              "title": "Funder",
-              "description": "Name of the agency or organization that funded the creation of the resource"
-            },
             "anyOf": [
               {
                 "type": "object",
@@ -186,9 +210,12 @@
                   },
                   "funder": {
                     "type": "object",
-                    "options": { "hidden": true },
-                    "default": { "alternateName": "NSF" },
-                    "const": { "alternateName": "NSF" },
+                    "const": {
+                      "alternateName": "NSF"
+                    },
+                    "default": {
+                      "alternateName": "NSF"
+                    },
                     "properties": {
                       "alternateName": {
                         "type": "string"
@@ -198,10 +225,14 @@
                   "url": {
                     "type": "string",
                     "default": "https://ror.org/021nxhr62",
-                    "const": "https://ror.org/021nxhr62",
-                    "options": { "hidden": true }
+                    "const": "https://ror.org/021nxhr62"
                   }
-                }
+                },
+                "required": [
+                  "identifier",
+                  "funder",
+                  "url"
+                ]
               },
               {
                 "type": "object",
@@ -213,9 +244,12 @@
                   },
                   "funder": {
                     "type": "object",
-                    "options": { "hidden": true },
-                    "default": { "alternateName": "SLOAN" },
-                    "const": { "alternateName": "SLOAN" },
+                    "default": {
+                      "alternateName": "SLOAN"
+                    },
+                    "const": {
+                      "alternateName": "SLOAN"
+                    },
                     "properties": {
                       "alternateName": {
                         "type": "string"
@@ -225,10 +259,14 @@
                   "url": {
                     "type": "string",
                     "default": "https://ror.org/052csg198",
-                    "const": "https://ror.org/052csg198",
-                    "options": { "hidden": true }
+                    "const": "https://ror.org/052csg198"
                   }
-                }
+                },
+                "required": [
+                  "identifier",
+                  "funder",
+                  "url"
+                ]
               },
               {
                 "type": "object",
@@ -240,9 +278,12 @@
                   },
                   "funder": {
                     "type": "object",
-                    "options": { "hidden": true },
-                    "default": { "alternateName": "DOE" },
-                    "const": { "alternateName": "DOE" },
+                    "default": {
+                      "alternateName": "DOE"
+                    },
+                    "const": {
+                      "alternateName": "DOE"
+                    },
                     "properties": {
                       "alternateName": {
                         "type": "string"
@@ -252,10 +293,14 @@
                   "url": {
                     "type": "string",
                     "default": "https://ror.org/01bj3aw27",
-                    "const": "https://ror.org/01bj3aw27",
-                    "options": { "hidden": true }
+                    "const": "https://ror.org/01bj3aw27"
                   }
-                }
+                },
+                "required": [
+                  "identifier",
+                  "funder",
+                  "url"
+                ]
               },
               {
                 "type": "object",
@@ -267,9 +312,12 @@
                   },
                   "funder": {
                     "type": "object",
-                    "options": { "hidden": true },
-                    "default": { "alternateName": "NASA" },
-                    "const": { "alternateName": "NASA" },
+                    "default": {
+                      "alternateName": "NASA"
+                    },
+                    "const": {
+                      "alternateName": "NASA"
+                    },
                     "properties": {
                       "alternateName": {
                         "type": "string"
@@ -279,10 +327,14 @@
                   "url": {
                     "type": "string",
                     "default": "https://ror.org/027ka1x80",
-                    "const": "https://ror.org/027ka1x80",
-                    "options": { "hidden": true }
+                    "const": "https://ror.org/027ka1x80"
                   }
-                }
+                },
+                "required": [
+                  "identifier",
+                  "funder",
+                  "url"
+                ]
               },
               {
                 "type": "object",
@@ -294,9 +346,12 @@
                   },
                   "funder": {
                     "type": "object",
-                    "options": { "hidden": true },
-                    "default": { "alternateName": "ERC" },
-                    "const": { "alternateName": "ERC" },
+                    "default": {
+                      "alternateName": "ERC"
+                    },
+                    "const": {
+                      "alternateName": "ERC"
+                    },
                     "properties": {
                       "alternateName": {
                         "type": "string"
@@ -306,10 +361,14 @@
                   "url": {
                     "type": "string",
                     "default": "https://ror.org/0472cxd90",
-                    "const": "https://ror.org/0472cxd90",
-                    "options": { "hidden": true }
+                    "const": "https://ror.org/0472cxd90"
                   }
-                }
+                },
+                "required": [
+                  "identifier",
+                  "funder",
+                  "url"
+                ]
               },
               {
                 "type": "object",
@@ -321,9 +380,12 @@
                   },
                   "funder": {
                     "type": "object",
-                    "options": { "hidden": true },
-                    "default": { "alternateName": "DFG" },
-                    "const": { "alternateName": "DFG" },
+                    "default": {
+                      "alternateName": "DFG"
+                    },
+                    "const": {
+                      "alternateName": "DFG"
+                    },
                     "properties": {
                       "alternateName": {
                         "type": "string"
@@ -333,10 +395,14 @@
                   "url": {
                     "type": "string",
                     "default": "https://ror.org/018mejw64",
-                    "const": "https://ror.org/018mejw64",
-                    "options": { "hidden": true }
+                    "const": "https://ror.org/018mejw64"
                   }
-                }
+                },
+                "required": [
+                  "identifier",
+                  "funder",
+                  "url"
+                ]
               },
               {
                 "type": "object",
@@ -348,9 +414,12 @@
                   },
                   "funder": {
                     "type": "object",
-                    "options": { "hidden": true },
-                    "default": { "alternateName": "NSFC" },
-                    "const": { "alternateName": "NSFC" },
+                    "default": {
+                      "alternateName": "NSFC"
+                    },
+                    "const": {
+                      "alternateName": "NSFC"
+                    },
                     "properties": {
                       "alternateName": {
                         "type": "string"
@@ -360,10 +429,14 @@
                   "url": {
                     "type": "string",
                     "default": "https://ror.org/01h0zpd94",
-                    "const": "https://ror.org/01h0zpd94",
-                    "options": { "hidden": true }
+                    "const": "https://ror.org/01h0zpd94"
                   }
-                }
+                },
+                "required": [
+                  "identifier",
+                  "funder",
+                  "url"
+                ]
               },
               {
                 "type": "object",
@@ -375,9 +448,12 @@
                   },
                   "funder": {
                     "type": "object",
-                    "options": { "hidden": true },
-                    "default": { "alternateName": "ARC" },
-                    "const": { "alternateName": "ARC" },
+                    "default": {
+                      "alternateName": "ARC"
+                    },
+                    "const": {
+                      "alternateName": "ARC"
+                    },
                     "properties": {
                       "alternateName": {
                         "type": "string"
@@ -387,10 +463,14 @@
                   "url": {
                     "type": "string",
                     "default": "https://ror.org/05mmh0f86",
-                    "const": "https://ror.org/05mmh0f86",
-                    "options": { "hidden": true }
+                    "const": "https://ror.org/05mmh0f86"
                   }
-                }
+                },
+                "required": [
+                  "identifier",
+                  "funder",
+                  "url"
+                ]
               },
               {
                 "type": "object",
@@ -402,9 +482,12 @@
                   },
                   "funder": {
                     "type": "object",
-                    "options": { "hidden": true },
-                    "default": { "alternateName": "RSCF" },
-                    "const": { "alternateName": "RSCF" },
+                    "default": {
+                      "alternateName": "RSCF"
+                    },
+                    "const": {
+                      "alternateName": "RSCF"
+                    },
                     "properties": {
                       "alternateName": {
                         "type": "string"
@@ -414,10 +497,14 @@
                   "url": {
                     "type": "string",
                     "default": "https://ror.org/03y2gwe85",
-                    "const": "https://ror.org/03y2gwe85",
-                    "options": { "hidden": true }
+                    "const": "https://ror.org/03y2gwe85"
                   }
-                }
+                },
+                "required": [
+                  "identifier",
+                  "funder",
+                  "url"
+                ]
               },
               {
                 "type": "object",
@@ -429,9 +516,12 @@
                   },
                   "funder": {
                     "type": "object",
-                    "options": { "hidden": true },
-                    "default": { "alternateName": "NERC" },
-                    "const": { "alternateName": "NERC" },
+                    "default": {
+                      "alternateName": "NERC"
+                    },
+                    "const": {
+                      "alternateName": "NERC"
+                    },
                     "properties": {
                       "alternateName": {
                         "type": "string"
@@ -441,16 +531,24 @@
                   "url": {
                     "type": "string",
                     "default": "https://ror.org/02b5d8509",
-                    "const": "https://ror.org/02b5d8509",
-                    "options": { "hidden": true }
+                    "const": "https://ror.org/02b5d8509"
                   }
-                }
+                },
+                "required": [
+                  "identifier",
+                  "funder",
+                  "url"
+                ]
               }
             ]
           },
-          { 
+          {
             "type": "object",
             "title": "Other",
+            "required": [
+              "identifier",
+              "funder"
+            ],
             "properties": {
               "identifier": {
                 "type": "string",
@@ -461,20 +559,24 @@
                 "title": "Funder",
                 "description": "A person or organization that provides money for a particular purpose",
                 "type": "object",
-                "const": { "alternateName": "Other" },
-                "default": { "alternateName": "Other" },
-                "options": { "hidden": true },
+                "default": {
+                  "alternateName": "Other"
+                },
+                "const": {
+                  "alternateName": "Other"
+                },
                 "properties": {
                   "alternateName": {
-                    "type": "string"
+                    "type": "string",
+                    "default": "Other"
                   }
                 }
               }
             }
-          } 
+          }
         ],
         "errorMessage": {
-          "anyOf": "selected item is incomplete"
+          "anyOf": "is a required property"
         }
       }
     },
@@ -532,7 +634,9 @@
         },
         "identifiers": {
           "type": "array",
-          "items": { "$ref": "#/definitions/AuthorIdentifier" }
+          "items": {
+            "$ref": "#/definitions/AuthorIdentifier"
+          }
         }
       },
       "required": [
@@ -540,7 +644,6 @@
         "givenName"
       ]
     },
-    
     "Cordinate": {
       "type": "object",
       "properties": {
@@ -615,20 +718,19 @@
     "AuthorIdentifier": {
       "title": "Identifier",
       "type": "object",
+      "required": [
+        "identifier"
+      ],
       "properties": {
         "scheme": {
           "type": "string",
           "default": "ORCID",
-          "const": "ORCID",
-          "readOnly": true,
-          "options": { "hidden": true }
+          "const": "ORCID"
         },
         "schemeURI": {
           "type": "string",
           "default": "https://orcid.org/",
-          "const": "https://orcid.org/",
-          "readOnly": true,
-          "options": { "hidden": true }
+          "const": "https://orcid.org/"
         },
         "identifier": {
           "title": "ORCID",
@@ -646,7 +748,6 @@
     "License": {
       "title": "License",
       "type": "object",
-      "options": { "dropdown": true, "flat": true },
       "anyOf": [
         {
           "title": "(CC-BY-NC-SA-3.0) - Creative Commons Attribution-NonCommercial-Share Alike 3.0 United States",
@@ -655,7 +756,9 @@
               "type": "string",
               "default": "CC-BY-NC-SA-3.0",
               "const": "CC-BY-NC-SA-3.0",
-              "options": { "hidden": true }
+              "options": {
+                "hidden": true
+              }
             }
           }
         },
@@ -666,7 +769,9 @@
               "type": "string",
               "default": "CC-BY-4.0",
               "const": "CC-BY-4.0",
-              "options": { "hidden": true }
+              "options": {
+                "hidden": true
+              }
             }
           }
         },
@@ -677,7 +782,9 @@
               "type": "string",
               "default": "CC-BY-SA-4.0",
               "const": "CC-BY-SA-4.0",
-              "options": { "hidden": true }
+              "options": {
+                "hidden": true
+              }
             }
           }
         },
@@ -688,7 +795,9 @@
               "type": "string",
               "default": "CC-BY-NC-SA-4.0",
               "const": "CC-BY-NC-SA-4.0",
-              "options": { "hidden": true }
+              "options": {
+                "hidden": true
+              }
             }
           }
         },
@@ -699,13 +808,15 @@
               "type": "string",
               "default": "CC0-1.0",
               "const": "CC0-1.0",
-              "options": { "hidden": true }
+              "options": {
+                "hidden": true
+              }
             }
           }
         }
       ],
       "errorMessage": {
-        "anyOf": "selected item is incomplete"
+        "anyOf": "is a required property"
       }
     },
     "RecordFile": {
@@ -742,28 +853,30 @@
     "RelatedResource": {
       "title": "Related Resource",
       "type": "object",
-      "required": ["identifiers"],
+      "required": [
+        "identifiers"
+      ],
       "properties": {
         "identifiers": {
           "title": "Related Information",
           "type": "array",
           "items": {
             "title": "Related Information",
-            "options": { "flat": true, "dropdown": true },
             "maxItems": 1,
-            "required": ["identifier"],
             "anyOf": [
               {
                 "type": "object",
                 "title": "(DOI) - Publication DOI",
                 "description": "Select a related identifier from the dropdown",
+                "required": [
+                  "identifier",
+                  "scheme"
+                ],
                 "properties": {
                   "scheme": {
                     "type": "string",
                     "default": "DOI",
-                    "const": "DOI",
-                    "readOnly": true,
-                    "options": { "hidden": true  }
+                    "const": "DOI"
                   },
                   "identifier": {
                     "type": "string",
@@ -785,7 +898,9 @@
                     "default": "IGSN",
                     "const": "IGSN",
                     "readOnly": true,
-                    "options": { "hidden": true }
+                    "options": {
+                      "hidden": true
+                    }
                   },
                   "identifier": {
                     "type": "string",
@@ -804,7 +919,9 @@
                     "default": "OCDOI",
                     "const": "OCDOI",
                     "readOnly": true,
-                    "options": { "hidden": true }
+                    "options": {
+                      "hidden": true
+                    }
                   },
                   "identifier": {
                     "type": "string",
@@ -823,7 +940,9 @@
                     "default": "VNum",
                     "const": "VNum",
                     "readOnly": true,
-                    "options": { "hidden": true }
+                    "options": {
+                      "hidden": true
+                    }
                   },
                   "identifier": {
                     "type": "string",
@@ -832,10 +951,7 @@
                   }
                 }
               }
-            ],
-            "errorMessage": {
-              "anyOf": "selected item is incomplete"
-            }
+            ]
           }
         }
       }
@@ -862,7 +978,9 @@
           "description": "Provide appropriate geographic keywords for searches. (e.g. Pacific Ocean, Aleutian Islands)"
         }
       },
-      "required": ["coverage"]
+      "required": [
+        "coverage"
+      ]
     }
   }
 }

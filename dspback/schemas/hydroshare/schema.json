@@ -17,10 +17,14 @@
     "subjects": {
       "title": "Subject keywords",
       "description": "A list of keyword strings expressing the topic of a resource",
-      "default": ["CZNet"],
+      "default": [
+        "CZNet"
+      ],
       "minItems": 2,
       "contains": {
-        "enum": ["CZNet"]
+        "enum": [
+          "CZNet"
+        ]
       },
       "type": "array",
       "items": {
@@ -73,11 +77,6 @@
       "anyOf": [
         {
           "title": "Choose a License",
-          "options": { 
-            "dropdown": true,
-            "flat": true,
-            "title": "License"
-          },
           "required": [
             "license"
           ],
@@ -93,21 +92,17 @@
               "properties": {
                 "license": {
                   "type": "string",
-                  "const": "Creative Commons Attribution CC BY",
-                  "default": "Creative Commons Attribution CC BY",
-                  "options": { "hidden": true }
+                  "default": "Creative Commons Attribution CC BY"
                 },
                 "statement": {
                   "type": "string",
-                  "const": "This resource is shared under the Creative Commons Attribution CC BY.",
                   "default": "This resource is shared under the Creative Commons Attribution CC BY.",
-                  "options": { "hidden": true }
+                  "readOnly": true
                 },
                 "url": {
                   "type": "string",
-                  "const": "http://creativecommons.org/licenses/by/4.0/",
                   "default": "http://creativecommons.org/licenses/by/4.0/",
-                  "options": { "hidden": true }
+                  "readOnly": true
                 }
               }
             },
@@ -117,21 +112,17 @@
               "properties": {
                 "license": {
                   "type": "string",
-                  "const": "Creative Commons Attribution-ShareAlike CC BY-SA",
-                  "default": "Creative Commons Attribution-ShareAlike CC BY-SA",
-                  "options": { "hidden": true }
+                  "default": "Creative Commons Attribution-ShareAlike CC BY-SA"
                 },
                 "statement": {
                   "type": "string",
-                  "const": "This resource is shared under the Creative Commons Attribution-ShareAlike CC BY-SA.",
                   "default": "This resource is shared under the Creative Commons Attribution-ShareAlike CC BY-SA.",
-                  "options": { "hidden": true }
+                  "readOnly": true
                 },
                 "url": {
                   "type": "string",
-                  "const": "http://creativecommons.org/licenses/by-sa/4.0/",
                   "default": "http://creativecommons.org/licenses/by-sa/4.0/",
-                  "options": { "hidden": true }
+                  "readOnly": true
                 }
               }
             },
@@ -141,21 +132,17 @@
               "properties": {
                 "license": {
                   "type": "string",
-                  "const": "Creative Commons Attribution-NoDerivs CC BY-ND",
-                  "default": "Creative Commons Attribution-NoDerivs CC BY-ND",
-                  "options": { "hidden": true }
+                  "default": "Creative Commons Attribution-NoDerivs CC BY-ND"
                 },
                 "statement": {
                   "type": "string",
-                  "const": "This resource is shared under the Creative Commons Attribution-NoDerivs CC BY-ND.",
                   "default": "This resource is shared under the Creative Commons Attribution-NoDerivs CC BY-ND.",
-                  "options": { "hidden": true }
+                  "readOnly": true
                 },
                 "url": {
                   "type": "string",
-                  "const": "http://creativecommons.org/licenses/by-nd/4.0/",
                   "default": "http://creativecommons.org/licenses/by-nd/4.0/",
-                  "options": { "hidden": true }
+                  "readOnly": true
                 }
               }
             },
@@ -165,21 +152,17 @@
               "properties": {
                 "license": {
                   "type": "string",
-                  "const": "Creative Commons Attribution-NoCommercial-ShareAlike CC BY-NC-SA",
-                  "default": "Creative Commons Attribution-NoCommercial-ShareAlike CC BY-NC-SA",
-                  "options": { "hidden": true }
+                  "default": "Creative Commons Attribution-NoCommercial-ShareAlike CC BY-NC-SA"
                 },
                 "statement": {
                   "type": "string",
-                  "const": "This resource is shared under the Creative Commons Attribution-NoCommercial-ShareAlike CC BY-NC-SA.",
                   "default": "This resource is shared under the Creative Commons Attribution-NoCommercial-ShareAlike CC BY-NC-SA.",
-                  "options": { "hidden": true }
+                  "readOnly": true
                 },
                 "url": {
                   "type": "string",
-                  "const": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
                   "default": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
-                  "options": { "hidden": true }
+                  "readOnly": true
                 }
               }
             },
@@ -189,21 +172,17 @@
               "properties": {
                 "license": {
                   "type": "string",
-                  "const": "Creative Commons Attribution-NoCommercial CC BY-NC",
-                  "default": "Creative Commons Attribution-NoCommercial CC BY-NC",
-                  "options": { "hidden": true }
+                  "default": "Creative Commons Attribution-NoCommercial CC BY-NC"
                 },
                 "statement": {
                   "type": "string",
-                  "const": "This resource is shared under the Creative Commons Attribution-NoCommercial CC BY-NC.",
                   "default": "This resource is shared under the Creative Commons Attribution-NoCommercial CC BY-NC.",
-                  "options": { "hidden": true }
+                  "readOnly": true
                 },
                 "url": {
                   "type": "string",
-                  "const": "http://creativecommons.org/licenses/by-nc/4.0/",
                   "default": "http://creativecommons.org/licenses/by-nc/4.0/",
-                  "options": { "hidden": true }
+                  "readOnly": true
                 }
               }
             },
@@ -213,22 +192,17 @@
               "properties": {
                 "license": {
                   "type": "string",
-                  "const": "Creative Commons Attribution-NoCommercial-NoDerivs CC BY-NC-ND",
-                  "default": "Creative Commons Attribution-NoCommercial-NoDerivs CC BY-NC-ND",
-                  "options": { "hidden": true }
-
+                  "default": "Creative Commons Attribution-NoCommercial-NoDerivs CC BY-NC-ND"
                 },
                 "statement": {
                   "type": "string",
-                  "const": "This resource is shared under the Creative Commons Attribution-NoCommercial-NoDerivs CC BY-NC-ND.",
                   "default": "This resource is shared under the Creative Commons Attribution-NoCommercial-NoDerivs CC BY-NC-ND.",
-                  "options": { "hidden": true }
+                  "readOnly": true
                 },
                 "url": {
                   "type": "string",
-                  "const": "http://creativecommons.org/licenses/by-nc/4.0/",
                   "default": "http://creativecommons.org/licenses/by-nc/4.0/",
-                  "options": { "hidden": true }
+                  "readOnly": true
                 }
               }
             }
@@ -249,7 +223,7 @@
               "title": "URL",
               "description": "URL pointing to a description of the license or rights statement",
               "minLength": 1,
-              "maxLength": 65536,
+              "maxLength": 2047,
               "pattern": "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$",
               "errorMessage": {
                 "pattern": "must match format \"url\""
@@ -279,41 +253,6 @@
           "title": "Point Coverage Metadata",
           "description": "A class used to represent geographic coverage metadata for a resource or aggregation expressed as a\npoint location",
           "type": "object",
-          "options": { 
-            "detail": {
-              "type": "VerticalLayout",
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/name"
-                },
-                {
-                  "type": "MapLayout",
-                  "options": {
-                    "map": { "type": "point", "north": "north", "east": "east" }
-                  },
-                  "elements": [
-                    {
-                      "type": "Control",
-                      "scope": "#/properties/east"
-                    },
-                    {
-                      "type": "Control",
-                      "scope": "#/properties/north"
-                    }
-                  ]
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/units"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/projection"
-                }
-              ]
-            }
-          },
           "properties": {
             "name": {
               "title": "Name",
@@ -339,7 +278,6 @@
               "description": "The units applying to the unlabelled numeric values of north and east",
               "type": "string",
               "default": "Decimal degrees",
-              "const": "Decimal degrees",
               "readOnly": true
             },
             "projection": {
@@ -347,7 +285,6 @@
               "description": "The name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
               "type": "string",
               "default": "WGS 84 EPSG:4326",
-              "const": "WGS 84 EPSG:4326",
               "readOnly": true
             }
           },
@@ -360,50 +297,6 @@
           "title": "Box Coverage Metadata",
           "description": "A class used to represent geographic coverage metadata for a resource or aggregation expressed as a\nlatitude-longitude bounding box",
           "type": "object",
-          "options": {
-            "detail": {
-              "type": "VerticalLayout",
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/name"
-                },
-                {
-                  "type": "MapLayout",
-                  "options": {
-                    "map": { "type": "box", "northlimit": "northlimit", "eastlimit": "eastlimit", "southlimit": "southlimit", "westlimit": "westlimit" }
-                  },
-                  "elements": [
-                    {
-                      "type": "Control",
-                      "scope": "#/properties/northlimit"
-                    },
-                    {
-                      "type": "Control",
-                      "scope": "#/properties/eastlimit"
-                    },
-                    {
-                      "type": "Control",
-                      "scope": "#/properties/southlimit"
-                    },
-                    {
-                      "type": "Control",
-                      "scope": "#/properties/westlimit"
-                    }
-                  ]
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/units"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/projection"
-                }
-                
-              ]
-            }
-          },
           "properties": {
             "name": {
               "title": "Name",
@@ -443,7 +336,6 @@
               "description": "A string containing the units applying to the unlabelled numeric values of northlimit, eastlimit, southlimit, and westlimit",
               "type": "string",
               "default": "Decimal degrees",
-              "const": "Decimal degrees",
               "readOnly": true
             },
             "projection": {
@@ -451,7 +343,6 @@
               "description": "A string containing the name of the projection used with any parameters required, such as ellipsoid parameters, datum, standard parallels and meridians, zone, etc.",
               "type": "string",
               "default": "WGS 84 EPSG:4326",
-              "const": "WGS 84 EPSG:4326",
               "readOnly": true
             }
           },
@@ -553,7 +444,9 @@
           "$ref": "#/definitions/ProfileUrlPattern"
         }
       },
-      "required": ["name"]
+      "required": [
+        "name"
+      ]
     },
     "Contributor": {
       "title": "Contributor Metadata",
@@ -612,7 +505,9 @@
           "$ref": "#/definitions/ProfileUrlPattern"
         }
       },
-      "required": ["name"]
+      "required": [
+        "name"
+      ]
     },
     "Relation": {
       "title": "Related Resource Metadata",
@@ -621,7 +516,7 @@
       "properties": {
         "type": {
           "title": "RelationType",
-          "description": "An enumeration.",
+          "description": "",
           "enum": [
             "The content of this resource is part of",
             "This resource includes",
@@ -718,14 +613,21 @@
           "description": "A datetime object containing the instant corresponding to the commencement of the time interval",
           "type": "string",
           "format": "date-time",
-          "options": { "placeholder": "YYYY-MM-DDTHH:MM" }
+          "options": {
+            "placeholder": "YYYY-MM-DDTHH:MM"
+          }
         },
         "end": {
           "title": "End",
           "description": "A datetime object containing the instant corresponding to the termination of the time interval",
           "type": "string",
           "format": "date-time",
-          "options": { "placeholder": "YYYY-MM-DDTHH:MM" }
+          "options": {
+            "placeholder": "YYYY-MM-DDTHH:MM"
+          },
+          "formatMinimum": {
+            "$data": "1/start"
+          }
         }
       },
       "required": [
@@ -748,7 +650,7 @@
           "title": "Publisher URL",
           "description": "An object containing a URL that points to the publisher website",
           "minLength": 1,
-          "maxLength": 65536,
+          "maxLength": 2047,
           "$ref": "#/definitions/UrlPattern"
         }
       },
