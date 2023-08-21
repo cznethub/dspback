@@ -161,19 +161,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         description="Creates a submission record of the EarthChem record.",
     )
     async def submit_repository_record(self, request: Request, identifier: str):
-        try:
-            json_metadata = await self.submit(request, identifier)
-        except:
-            response = requests.get(
-                get_settings().earthchem_public_view_url % identifier,
-                headers={"accept": "application/json"},
-            )
-            if response.status_code >= 300:
-                raise
-
-            jsonld = scrape_jsonld(response.text, {"type": "application/ld+json"})
-            await create_or_update_submission_ecl_registration(self.user, jsonld, identifier)
-            return {"published": True}
+        json_metadata = await self.submit(request, identifier)
         return json_metadata
 
     @router.get(
