@@ -755,10 +755,7 @@
             "alternateName": {
               "type": "string",
               "default": "CC-BY-NC-SA-3.0",
-              "const": "CC-BY-NC-SA-3.0",
-              "options": {
-                "hidden": true
-              }
+              "const": "CC-BY-NC-SA-3.0"
             }
           }
         },
@@ -768,10 +765,7 @@
             "alternateName": {
               "type": "string",
               "default": "CC-BY-4.0",
-              "const": "CC-BY-4.0",
-              "options": {
-                "hidden": true
-              }
+              "const": "CC-BY-4.0"
             }
           }
         },
@@ -781,10 +775,7 @@
             "alternateName": {
               "type": "string",
               "default": "CC-BY-SA-4.0",
-              "const": "CC-BY-SA-4.0",
-              "options": {
-                "hidden": true
-              }
+              "const": "CC-BY-SA-4.0"
             }
           }
         },
@@ -794,10 +785,7 @@
             "alternateName": {
               "type": "string",
               "default": "CC-BY-NC-SA-4.0",
-              "const": "CC-BY-NC-SA-4.0",
-              "options": {
-                "hidden": true
-              }
+              "const": "CC-BY-NC-SA-4.0"
             }
           }
         },
@@ -807,17 +795,11 @@
             "alternateName": {
               "type": "string",
               "default": "CC0-1.0",
-              "const": "CC0-1.0",
-              "options": {
-                "hidden": true
-              }
+              "const": "CC0-1.0"
             }
           }
         }
-      ],
-      "errorMessage": {
-        "anyOf": "is a required property"
-      }
+      ]
     },
     "RecordFile": {
       "type": "object",
