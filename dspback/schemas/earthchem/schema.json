@@ -879,10 +879,7 @@
                     "type": "string",
                     "default": "IGSN",
                     "const": "IGSN",
-                    "readOnly": true,
-                    "options": {
-                      "hidden": true
-                    }
+                    "readOnly": true
                   },
                   "identifier": {
                     "type": "string",
@@ -900,10 +897,7 @@
                     "type": "string",
                     "default": "OCDOI",
                     "const": "OCDOI",
-                    "readOnly": true,
-                    "options": {
-                      "hidden": true
-                    }
+                    "readOnly": true
                   },
                   "identifier": {
                     "type": "string",
@@ -921,10 +915,7 @@
                     "type": "string",
                     "default": "VNum",
                     "const": "VNum",
-                    "readOnly": true,
-                    "options": {
-                      "hidden": true
-                    }
+                    "readOnly": true
                   },
                   "identifier": {
                     "type": "string",
