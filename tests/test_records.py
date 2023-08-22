@@ -81,4 +81,4 @@ async def test_earthchem_to_submission(earthchem):
     assert earthchem_submission.repo_type == RepositoryType.EARTHCHEM
     assert earthchem_submission.submitted <= datetime.utcnow()
     assert earthchem_submission.identifier == "947940"
-    assert earthchem_submission.url == get_settings().earthchem_view_url % "947940"
+    assert earthchem_submission.url == get_settings().earthchem_public_view_url % "947940"
