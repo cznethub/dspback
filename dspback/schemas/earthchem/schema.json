@@ -189,6 +189,7 @@
                     "type": "object",
                     "options": { "hidden": true },
                     "default": { "alternateName": "NSF" },
+                    "const": { "alternateName": "NSF" },
                     "properties": {
                       "alternateName": {
                         "type": "string"
