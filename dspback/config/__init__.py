@@ -59,6 +59,7 @@ class Settings(BaseSettings):
     earthchem_file_delete_url: HttpUrl
     earthchem_file_read_url: HttpUrl
     earthchem_view_url: HttpUrl
+    earthchem_public_view_url: HttpUrl
     earthchem_health_url: HttpUrl
 
     mongo_username: str

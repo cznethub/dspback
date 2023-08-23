@@ -67,7 +67,7 @@ class Submission(Document):
     identifier: str = None
     submitted: datetime = datetime.utcnow()
     url: HttpUrl = None
-    metadata_json: str = {}
+    metadata_json: str = "{}"
 
     @validator('authors', pre=True, allow_reuse=True)
     def extract_author_names(cls, values):
@@ -264,8 +264,7 @@ class EarthChemRecord(BaseRecord):
 
     def to_submission(self, identifier) -> Submission:
         settings = get_settings()
-        view_url = settings.earthchem_view_url
-        view_url = view_url % identifier
+        view_url = settings.earthchem_public_view_url % identifier
         authors = [contributor.name for contributor in self.contributors]
         authors.insert(0, self.leadAuthor.name)
         return Submission(
