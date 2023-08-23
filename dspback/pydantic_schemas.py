@@ -288,6 +288,14 @@ class ExternalRecord(BaseRecord):
         start: datetime
         end: datetime
 
+        @validator('end')
+        def validate_end_date(cls, v, values, **kwargs):
+            if 'start' in values:
+                start = values.get('start')
+                if v < start:
+                    raise ValueError('end date must be greater or equal to start date')
+            return v
+
     class SpatialCoverage(BaseModel):
         type: Optional[str]
         name: Optional[str]

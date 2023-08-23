@@ -13,7 +13,7 @@ from tests import authorize_response, client_test
 async def test_submissions_not_logged_in(client_test):
     response = await client_test.get(url_for(client_test, "get_urls", repository="hydroshare"))
     assert response.json() == {"detail": "Not authenticated"}
-    assert response.status_code == 403
+    assert response.status_code == 401
 
 
 async def test_login(client_test):
@@ -51,4 +51,4 @@ async def test_logout(client_test, authorize_response):
     logged_out_response = await client_test.get(
         url_for(client_test, "get_urls", repository="hydroshare"), follow_redirects=False
     )
-    assert logged_out_response.status_code == 403
+    assert logged_out_response.status_code == 401
