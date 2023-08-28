@@ -159,3 +159,9 @@ async def external(change_test_dir):
 async def earthchem(change_test_dir):
     with open("data/earthchem.json", "r") as f:
         return json.loads(f.read())
+
+
+@pytest.fixture
+async def earthchem_jsonld(change_test_dir):
+    with open("data/earthchem_jsonld.json", "r") as f:
+        return json.loads(f.read())
