@@ -69,4 +69,8 @@ def format_fields(json_ld):
         if not isinstance(json_ld["@context"], str):
             json_ld["@context"] = json_ld["@context"]["@vocab"]
 
+    if "funder" in json_ld and "funder" in json_ld["funder"]:
+        json_ld["funding"] = json_ld["funder"]["funder"]
+        del json_ld["funder"]
+
     return json_ld
