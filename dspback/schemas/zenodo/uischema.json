@@ -42,7 +42,9 @@
         {
           "type": "Control",
           "scope": "#/properties/communities",
-          "options": { "useTableLayout": true }
+          "options": {
+            "useTableLayout": true
+          }
         }
       ]
     },
@@ -50,32 +52,40 @@
       "type": "Control",
       "scope": "#/properties/creators",
       "options": {
-        "elementLabelProp": ["name"]
+        "elementLabelProp": [
+          "name"
+        ],
+        "showSortButtons": true
       }
     },
     {
       "type": "Control",
       "scope": "#/properties/contributors",
       "options": {
-        "elementLabelProp": ["name"]
+        "elementLabelProp": [
+          "name"
+        ],
+        "showSortButtons": true
       }
     },
     {
       "type": "Group",
       "label": "Related Resource Information",
-      "elements":[
+      "elements": [
         {
           "type": "Control",
           "scope": "#/properties/references",
-          "options": { 
-            "useArrayLayout": true, 
+          "options": {
+            "useArrayLayout": true,
             "showSortButtons": true
           }
         },
         {
           "type": "Control",
           "scope": "#/properties/related_identifiers",
-          "options": { "useTableLayout": true }
+          "options": {
+            "useTableLayout": true
+          }
         }
       ]
     },
@@ -104,7 +114,9 @@
                     "condition": {
                       "scope": "#/properties/access_right",
                       "schema": {
-                        "enum": ["open"]
+                        "enum": [
+                          "open"
+                        ]
                       }
                     }
                   }
@@ -126,7 +138,11 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/subjects"
+      "scope": "#/properties/subjects",
+      "options": {
+        "useTableLayout": true,
+        "showSortButtons": true
+      }
     },
     {
       "type": "Control",
