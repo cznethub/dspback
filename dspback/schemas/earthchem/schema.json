@@ -106,7 +106,8 @@
       "default": "incomplete",
       "enum": [
         "incomplete",
-        "submitted"
+        "submitted",
+        "published"
       ]
     },
     "additionalTypes": {
