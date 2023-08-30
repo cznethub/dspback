@@ -148,4 +148,6 @@ async def test_earthchem_jsonld(earthchem_jsonld):
     assert jsonld.provider.name == "EarthChem Library"
     assert jsonld.context == "https://schema.org/"
     assert len(jsonld.funding) == 1
+    assert jsonld.funding[0].identifier == "http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=2012123"
     assert len(jsonld.clusters) == 1
+    assert jsonld.clusters[0] == "Big Data Cluster"
