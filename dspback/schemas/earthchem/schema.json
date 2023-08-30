@@ -230,8 +230,7 @@
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               },
               {
@@ -263,8 +262,7 @@
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               },
               {
@@ -296,8 +294,7 @@
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               },
               {
@@ -329,8 +326,7 @@
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               },
               {
@@ -362,8 +358,7 @@
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               },
               {
@@ -395,8 +390,7 @@
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               },
               {
@@ -428,8 +422,7 @@
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               },
               {
@@ -461,8 +454,7 @@
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               },
               {
@@ -494,8 +486,7 @@
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               },
               {
@@ -527,8 +518,7 @@
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               }
             ]
