@@ -141,7 +141,7 @@ class ZenodoRecord(BaseRecord):
 
     def to_submission(self, identifier) -> Submission:
         settings = get_settings()
-        view_url = settings.zenodo_view_url % identifier
+        view_url = settings.zenodo_public_view_url % identifier
         return Submission(
             title=self.title,
             authors=[creator.name for creator in self.creators],

@@ -44,6 +44,7 @@ class Settings(BaseSettings):
     zenodo_file_delete_url: HttpUrl
     zenodo_file_read_url: HttpUrl
     zenodo_view_url: HttpUrl
+    zenodo_public_view_url: HttpUrl
     zenodo_move_or_rename_url: HttpUrl
     zenodo_health_url: HttpUrl
 
