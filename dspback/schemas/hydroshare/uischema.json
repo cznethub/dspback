@@ -316,6 +316,7 @@
       "scope": "#/properties/relations",
       "options": {
         "showSortButtons": true,
+        "collapsed": true,
         "elementLabelProp": [
           "type",
           "value"
