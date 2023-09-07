@@ -142,6 +142,16 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         if response.status_code >= 300:
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
+        """
+        HydroShare maintenance mode
+          Parsing the response can fail if HydroShare is in maintenance mode.
+          The request to HydroShare will return status code 200, but contain an HTML response.
+        """
+        try:
+          json_metadata = json.loads(response.text)
+        except:
+          raise RepositoryException(status_code=500, detail="Failed to parse JSON response")
+        
         json_metadata = json.loads(response.text)
         json_metadata = from_hydroshare_format(json_metadata)
         return self.wrap_metadata(json_metadata, exists_and_is("published", json_metadata))
@@ -153,11 +163,21 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         tags=["HydroShare"],
         summary="Get a HydroShare resource",
         description="Retrieves the metadata for the HydroShare resource.",
-    )
+    )  
     async def get_metadata_repository(self, request: Request, identifier):
         json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
         await self.submit(request, identifier=identifier, json_metadata=json_metadata)
         return json_metadata
+    
+    @router.get(
+        '/submission/hydroshare/{identifier}',
+        tags=["HydroShare"],
+        summary="Update and get a HydroShare resource Submission",
+        description="Retrieves the metadata for the HydroShare resource and returns the updated Submission in the database.",
+    )  
+    async def update_and_get_submission(self, request: Request, identifier):
+        await self.get_metadata_repository(request, identifier)
+        return self.user.submission(identifier)
 
     @router.delete(
         '/metadata/hydroshare/{identifier}',
