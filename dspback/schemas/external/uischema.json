@@ -149,7 +149,31 @@
     {
       "type": "Control",
       "label": "Temporal coverage",
-      "scope": "#/properties/temporalCoverage"
+      "scope": "#/properties/temporalCoverage",
+      "options": {
+        "detail": {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/name"
+            },
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/start"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/end"
+                }
+              ]
+            }
+          ]
+        }
+      }
     },
     {
       "type": "Control",
