@@ -179,6 +179,7 @@ repository_config = {
         "file_delete": settings.earthchem_file_delete_url,
         "file_read": settings.earthchem_file_read_url,
         "view_url": settings.earthchem_view_url,
+        "public_view_url": settings.earthchem_public_view_url,
         "schema": "/api/schema/earthchem/schema.json",
         "uischema": "/api/schema/earthchem/uischema.json",
         "schema_defaults": "/api/schema/earthchem/defaults.json",

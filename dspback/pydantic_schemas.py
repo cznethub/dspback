@@ -264,6 +264,7 @@ class EarthChemRecord(BaseRecord):
 
     def to_submission(self, identifier) -> Submission:
         settings = get_settings()
+        # TODO: (Scott) View URL should be `earthchem_public_view`_url if the record is published, otherwise `earthchem_view_url`
         view_url = settings.earthchem_public_view_url % identifier
         authors = [contributor.name for contributor in self.contributors]
         authors.insert(0, self.leadAuthor.name)
