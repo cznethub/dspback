@@ -103,6 +103,9 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         response = requests.get(self.read_url % identifier, params={"access_token": access_token})
 
         if response.status_code >= 300:
+            response = requests.get(self.settings.zenodo_published_read_url % identifier, params={"access_token": access_token})
+
+        if response.status_code >= 300:
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         json_metadata = json.loads(response.text)
