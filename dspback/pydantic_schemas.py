@@ -141,7 +141,7 @@ class ZenodoRecord(BaseRecord):
 
     def to_submission(self, identifier) -> Submission:
         settings = get_settings()
-        view_url = settings.zenodo_view_url % identifier
+        view_url = settings.zenodo_public_view_url % identifier if self.publication_date else settings.zenodo_view_url % identifier
         return Submission(
             title=self.title,
             authors=[creator.name for creator in self.creators],
@@ -264,8 +264,7 @@ class EarthChemRecord(BaseRecord):
 
     def to_submission(self, identifier) -> Submission:
         settings = get_settings()
-        # TODO: (Scott) View URL should be `earthchem_public_view_url` if the record is published, otherwise `earthchem_view_url`
-        view_url = settings.earthchem_public_view_url % identifier
+        view_url = settings.earthchem_public_view_url % identifier if self.datePublished else settings.earthchem_view_url % identifier
         authors = [contributor.name for contributor in self.contributors]
         authors.insert(0, self.leadAuthor.name)
         return Submission(

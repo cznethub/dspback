@@ -44,6 +44,7 @@ class Settings(BaseSettings):
     zenodo_file_delete_url: HttpUrl
     zenodo_file_read_url: HttpUrl
     zenodo_view_url: HttpUrl
+    zenodo_public_view_url: HttpUrl
     zenodo_move_or_rename_url: HttpUrl
     zenodo_health_url: HttpUrl
 
@@ -145,6 +146,7 @@ repository_config = {
         "file_read": settings.zenodo_file_read_url,
         "move_or_rename_url": settings.zenodo_move_or_rename_url,
         "view_url": settings.zenodo_view_url,
+        "public_view_url": settings.zenodo_public_view_url,
         "schema": "/api/schema/zenodo/schema.json",
         "uischema": "/api/schema/zenodo/uischema.json",
         "schema_defaults": "/api/schema/zenodo/defaults.json",
@@ -164,6 +166,7 @@ repository_config = {
         "folder_delete": settings.hydroshare_folder_read_url,
         "move_or_rename_url": settings.hydroshare_move_or_rename_url,
         "view_url": settings.hydroshare_view_url,
+        "public_view_url": settings.hydroshare_view_url,
         "schema": "/api/schema/hydroshare/schema.json",
         "uischema": "/api/schema/hydroshare/uischema.json",
         "schema_defaults": "/api/schema/hydroshare/defaults.json",
