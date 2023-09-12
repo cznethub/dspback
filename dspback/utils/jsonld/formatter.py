@@ -71,6 +71,9 @@ def format_fields(json_ld):
 
     if "funder" in json_ld and "funder" in json_ld["funder"]:
         json_ld["funding"] = json_ld["funder"]["funder"]
+        for funding in json_ld["funding"]:
+            funding["identifier"] = funding["url"]
+            del funding["url"]
         del json_ld["funder"]
 
     return json_ld
