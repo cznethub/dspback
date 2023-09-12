@@ -148,10 +148,10 @@ class HydroShareMetadataRoutes(MetadataRoutes):
           The request to HydroShare will return status code 200, but contain an HTML response.
         """
         try:
-          json_metadata = json.loads(response.text)
+            json_metadata = json.loads(response.text)
         except:
-          raise RepositoryException(status_code=500, detail="Failed to parse JSON response")
-        
+            raise RepositoryException(status_code=500, detail="Failed to parse JSON response")
+
         json_metadata = json.loads(response.text)
         json_metadata = from_hydroshare_format(json_metadata)
         return self.wrap_metadata(json_metadata, exists_and_is("published", json_metadata))
@@ -168,13 +168,13 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
         await self.submit(request, identifier=identifier, json_metadata=json_metadata)
         return json_metadata
-    
+
     @router.get(
         '/submission/hydroshare/{identifier}',
         tags=["HydroShare"],
         summary="Update and get a HydroShare resource Submission",
         description="Retrieves the metadata for the HydroShare resource and returns the updated Submission in the database.",
-    )  
+    )
     async def update_and_get_submission(self, request: Request, identifier):
         await self.get_metadata_repository(request, identifier)
         return self.user.submission(identifier)

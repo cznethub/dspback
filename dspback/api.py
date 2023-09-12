@@ -3,11 +3,10 @@ from beanie import init_beanie
 from fastapi import FastAPI, status
 from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
+from pydantic import ValidationError
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import PlainTextResponse
-from pydantic import ValidationError
-
 
 from dspback.config import get_settings
 from dspback.dependencies import RepositoryException
@@ -52,10 +51,10 @@ app.include_router(discovery.router, prefix="/api/discovery", tags=["Discovery"]
 async def http_exception_handler(request, exc):
     return PlainTextResponse(f"Repository exception response[{str(exc.detail)}]", status_code=exc.status_code)
 
+
 @app.exception_handler(ValidationError)
 async def validation_exception_handler(request, exc: ValidationError):
-    return PlainTextResponse(f"Request data validation errors: {str(exc)}",
-                             status_code=status.HTTP_400_BAD_REQUEST)
+    return PlainTextResponse(f"Request data validation errors: {str(exc)}", status_code=status.HTTP_400_BAD_REQUEST)
 
 
 @app.on_event("startup")
