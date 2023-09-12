@@ -224,14 +224,12 @@
                   },
                   "url": {
                     "type": "string",
-                    "default": "https://ror.org/021nxhr62",
-                    "const": "https://ror.org/021nxhr62"
+                    "default": "https://ror.org/021nxhr62"
                   }
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               },
               {
@@ -258,14 +256,12 @@
                   },
                   "url": {
                     "type": "string",
-                    "default": "https://ror.org/052csg198",
-                    "const": "https://ror.org/052csg198"
+                    "default": "https://ror.org/052csg198"
                   }
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               },
               {
@@ -292,14 +288,12 @@
                   },
                   "url": {
                     "type": "string",
-                    "default": "https://ror.org/01bj3aw27",
-                    "const": "https://ror.org/01bj3aw27"
+                    "default": "https://ror.org/01bj3aw27"
                   }
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               },
               {
@@ -326,14 +320,12 @@
                   },
                   "url": {
                     "type": "string",
-                    "default": "https://ror.org/027ka1x80",
-                    "const": "https://ror.org/027ka1x80"
+                    "default": "https://ror.org/027ka1x80"
                   }
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               },
               {
@@ -360,14 +352,12 @@
                   },
                   "url": {
                     "type": "string",
-                    "default": "https://ror.org/0472cxd90",
-                    "const": "https://ror.org/0472cxd90"
+                    "default": "https://ror.org/0472cxd90"
                   }
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               },
               {
@@ -394,14 +384,12 @@
                   },
                   "url": {
                     "type": "string",
-                    "default": "https://ror.org/018mejw64",
-                    "const": "https://ror.org/018mejw64"
+                    "default": "https://ror.org/018mejw64"
                   }
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               },
               {
@@ -428,14 +416,12 @@
                   },
                   "url": {
                     "type": "string",
-                    "default": "https://ror.org/01h0zpd94",
-                    "const": "https://ror.org/01h0zpd94"
+                    "default": "https://ror.org/01h0zpd94"
                   }
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               },
               {
@@ -462,14 +448,12 @@
                   },
                   "url": {
                     "type": "string",
-                    "default": "https://ror.org/05mmh0f86",
-                    "const": "https://ror.org/05mmh0f86"
+                    "default": "https://ror.org/05mmh0f86"
                   }
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               },
               {
@@ -496,14 +480,12 @@
                   },
                   "url": {
                     "type": "string",
-                    "default": "https://ror.org/03y2gwe85",
-                    "const": "https://ror.org/03y2gwe85"
+                    "default": "https://ror.org/03y2gwe85"
                   }
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               },
               {
@@ -530,14 +512,12 @@
                   },
                   "url": {
                     "type": "string",
-                    "default": "https://ror.org/02b5d8509",
-                    "const": "https://ror.org/02b5d8509"
+                    "default": "https://ror.org/02b5d8509"
                   }
                 },
                 "required": [
                   "identifier",
-                  "funder",
-                  "url"
+                  "funder"
                 ]
               }
             ]
