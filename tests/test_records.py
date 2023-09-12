@@ -24,6 +24,7 @@ async def test_hydroshare_to_submission(hydroshare):
 
 async def test_zenodo_to_submission(zenodo):
     zenodo_record = ZenodoRecord(**zenodo)
+    zenodo_record.publication_date = None
     zenodo_submission = zenodo_record.to_submission("947940")
 
     assert zenodo_submission.title == zenodo_record.title
@@ -32,6 +33,18 @@ async def test_zenodo_to_submission(zenodo):
     assert zenodo_submission.submitted <= datetime.utcnow()
     assert zenodo_submission.identifier == zenodo_record.record_id
     assert zenodo_submission.url == get_settings().zenodo_view_url % zenodo_record.record_id
+
+
+async def test_zenodo_published_to_submission(zenodo):
+    zenodo_record = ZenodoRecord(**zenodo)
+    zenodo_submission = zenodo_record.to_submission("947940")
+
+    assert zenodo_submission.title == zenodo_record.title
+    assert zenodo_submission.authors == [creator.name for creator in zenodo_record.creators]
+    assert zenodo_submission.repo_type == RepositoryType.ZENODO
+    assert zenodo_submission.submitted <= datetime.utcnow()
+    assert zenodo_submission.identifier == zenodo_record.record_id
+    assert zenodo_submission.url == get_settings().zenodo_public_view_url % zenodo_record.record_id
 
 
 async def test_external_to_submission(external):
@@ -71,6 +84,21 @@ async def test_external_to_jsonld(external):
 
 
 async def test_earthchem_to_submission(earthchem):
+    earthchem_record = EarthChemRecord(**earthchem)
+    earthchem_record.datePublished = None
+    earthchem_submission = earthchem_record.to_submission("947940")
+
+    assert earthchem_submission.title == earthchem_record.title
+    authors = [f"{contributor.familyName}, {contributor.givenName}" for contributor in earthchem_record.contributors]
+    authors.insert(0, f"{earthchem_record.leadAuthor.familyName}, {earthchem_record.leadAuthor.givenName}")
+    assert earthchem_submission.authors == authors
+    assert earthchem_submission.repo_type == RepositoryType.EARTHCHEM
+    assert earthchem_submission.submitted <= datetime.utcnow()
+    assert earthchem_submission.identifier == "947940"
+    assert earthchem_submission.url == get_settings().earthchem_view_url % "947940"
+
+
+async def test_earthchem_published_to_submission(earthchem):
     earthchem_record = EarthChemRecord(**earthchem)
     earthchem_submission = earthchem_record.to_submission("947940")
 

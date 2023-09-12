@@ -131,6 +131,16 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         await self.submit(request, identifier=identifier, json_metadata=json_metadata)
         return json_metadata
 
+    @router.get(
+        '/submission/earthchem/{identifier}',
+        tags=["EarthChem"],
+        summary="Update and get an EarthChem record Submission",
+        description="Retrieves the metadata for the EarthChem record and returns the updated Submission in the database.",
+    )
+    async def update_and_get_submission(self, request: Request, identifier):
+        await self.get_metadata_repository(request, identifier)
+        return self.user.submission(identifier)
+
     @router.delete(
         '/metadata/earthchem/{identifier}',
         tags=["EarthChem"],

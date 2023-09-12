@@ -123,6 +123,16 @@ class ZenodoMetadataRoutes(MetadataRoutes):
 
         return json_metadata
 
+    @router.get(
+        '/submission/zenodo/{identifier}',
+        tags=["Zenodo"],
+        summary="Update and get a Zenodo record Submission",
+        description="Retrieves the metadata for the Zenodo record and returns the updated Submission in the database.",
+    )
+    async def update_and_get_submission(self, request: Request, identifier):
+        await self.get_metadata_repository(request, identifier)
+        return self.user.submission(identifier)
+
     @router.delete(
         '/metadata/zenodo/{identifier}',
         tags=["Zenodo"],

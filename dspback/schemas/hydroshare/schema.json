@@ -624,9 +624,6 @@
           "format": "date-time",
           "options": {
             "placeholder": "YYYY-MM-DDTHH:MM"
-          },
-          "formatMinimum": {
-            "$data": "1/start"
           }
         }
       },

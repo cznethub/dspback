@@ -28,8 +28,7 @@
     "description": {
       "title": "Abstract or Description",
       "type": "string",
-      "description": "Describe measurements, location, and purpose of the dataset",
-      "maxLength": 250
+      "description": "Describe measurements, location, and purpose of the dataset"
     },
     "community": {
       "title": "Community",
