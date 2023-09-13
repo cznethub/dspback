@@ -109,7 +109,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         json_metadata = json.loads(response.text)
-        return self.wrap_metadata(json_metadata, exists_and_is("publication_date", json_metadata))
+        return self.wrap_metadata(json_metadata, exists_and_is("publication_date", json_metadata["metadata"]))
 
     @router.get(
         '/metadata/zenodo/{identifier}',
