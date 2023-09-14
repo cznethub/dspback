@@ -111,21 +111,9 @@ class ZenodoRecord(BaseRecord):
     class Creator(BaseModel):
         name: str = None
 
-    class RelatedIdentifier(BaseModel):
-        identifier: str = None
-        relation: str = None
-
     title: str = None
-    description: str = None
-    keywords: List[str] = []
     creators: List[Creator] = []
-    license: Optional[str]
-    notes: str = ""
     publication_date: Optional[datetime]
-    relations: Optional[List[RelatedIdentifier]] = []
-    modified: Optional[datetime]
-    created: Optional[datetime]
-    record_id: str
 
     @root_validator(pre=True, allow_reuse=True)
     def extract_metadata(cls, values):

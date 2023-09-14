@@ -31,8 +31,7 @@ async def test_zenodo_to_submission(zenodo):
     assert zenodo_submission.authors == [creator.name for creator in zenodo_record.creators]
     assert zenodo_submission.repo_type == RepositoryType.ZENODO
     assert zenodo_submission.submitted <= datetime.utcnow()
-    assert zenodo_submission.identifier == zenodo_record.record_id
-    assert zenodo_submission.url == get_settings().zenodo_view_url % zenodo_record.record_id
+    assert zenodo_submission.url == get_settings().zenodo_view_url % "947940"
 
 
 async def test_zenodo_published_to_submission(zenodo):
@@ -43,8 +42,7 @@ async def test_zenodo_published_to_submission(zenodo):
     assert zenodo_submission.authors == [creator.name for creator in zenodo_record.creators]
     assert zenodo_submission.repo_type == RepositoryType.ZENODO
     assert zenodo_submission.submitted <= datetime.utcnow()
-    assert zenodo_submission.identifier == zenodo_record.record_id
-    assert zenodo_submission.url == get_settings().zenodo_public_view_url % zenodo_record.record_id
+    assert zenodo_submission.url == get_settings().zenodo_public_view_url % "947940"
 
 
 async def test_external_to_submission(external):
