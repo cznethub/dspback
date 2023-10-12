@@ -104,8 +104,10 @@ class HydroShareMetadataRoutes(MetadataRoutes):
 
         identifier = response.json()["resource_id"]
         # hydroshare doesn't accept all of the metadata on create, it also creates a creator with the user
+        # if our payload provides creators data, it should replace HydroShare's default creator
+        # Note that HydroShare resources must have at least one creator/author at all times.
         new_md = await self._retrieve_metadata_from_repository(request, identifier)
-        metadata.creators = new_md["metadata"]["creators"] + metadata.creators
+        metadata.creators = new_md["metadata"]["creators"] or metadata.creators
         metadata.citation = new_md["metadata"]["citation"]
         json_metadata = await self.update_metadata(request, metadata, identifier)
 
