@@ -9,7 +9,7 @@ from dspback.config import get_settings
 from dspback.pydantic_schemas import Submission
 
 '''
-This python script updates the ECL submission urls.
+This python script updates the Zenodo submission urls.
 
 Example call:
 
@@ -28,7 +28,7 @@ async def main():
     count = 0
     for submission in await Submission.find(Submission.repo_type == RepositoryType.ZENODO).to_list():
         metadata_json = json.loads(submission.metadata_json)
-        refreshed_submission = ZenodoRecord(metadata_json).to_submission(submission.identifier)
+        refreshed_submission = ZenodoRecord(**metadata_json).to_submission(submission.identifier)
         print(f"updating {submission.url}")
         submission.url = refreshed_submission.url
         await submission.save()
