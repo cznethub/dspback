@@ -24,7 +24,7 @@ async def test_hydroshare_to_submission(hydroshare):
 
 async def test_zenodo_to_submission(zenodo):
     zenodo_record = ZenodoRecord(**zenodo)
-    assert zenodo_record.state == "unsubmitted"
+    assert not zenodo_record.doi
     zenodo_submission = zenodo_record.to_submission("947940")
 
     assert zenodo_submission.title == zenodo_record.title
@@ -36,7 +36,7 @@ async def test_zenodo_to_submission(zenodo):
 
 async def test_zenodo_published_to_submission(zenodo):
     zenodo_record = ZenodoRecord(**zenodo)
-    zenodo_record.state = "done"
+    zenodo_record.doi = "https://doi.fake"
     zenodo_submission = zenodo_record.to_submission("947940")
 
     assert zenodo_submission.title == zenodo_record.title

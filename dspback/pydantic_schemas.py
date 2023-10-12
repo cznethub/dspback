@@ -110,7 +110,7 @@ class ZenodoRecord(BaseRecord):
 
     title: str = None
     creators: List[Creator] = []
-    state: str
+    doi: Optional[str]
 
     @root_validator(pre=True, allow_reuse=True)
     def extract_metadata(cls, values):
@@ -122,7 +122,7 @@ class ZenodoRecord(BaseRecord):
         settings = get_settings()
         view_url = (
             settings.zenodo_public_view_url % identifier
-            if self.state == "done"  # https://developers.zenodo.org/#representation
+            if self.doi  # https://developers.zenodo.org/#representation
             else settings.zenodo_view_url % identifier
         )
         return Submission(
