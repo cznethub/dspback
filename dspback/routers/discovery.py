@@ -342,12 +342,46 @@ async def creator_search(request: Request, name: str, pageSize: int = 30) -> lis
     return set(names)
 
 
+async def build_report(request: Request):
+    project = [
+        {
+            '$project': {
+                'name': 1,
+                'description': 1,
+                'keywords': 1,
+                'datePublished': 1,
+                'dateCreated': 1,
+                'provider': 1,
+                'funding': 1,
+                'clusters': 1,
+                'url': 1,
+                'legacy': 1,
+                '_id': 0,
+            }
+        }
+    ]
+    json_response = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(project).to_list(None)
+    for row in json_response:
+        row['provider'] = row['provider']['name']
+        if 'funding' in row:
+            funding_ids = []
+            for funding in row['funding']:
+                if 'identifier' in funding:
+                    funding_ids.append(funding['identifier'])
+            row['funding'] = funding_ids
+    return json_response
+
+
+@router.get("/json")
+async def report_json(request: Request):
+    return await build_report(request)
+
+
 @router.get("/csv")
 async def csv(request: Request):
-    project = [{'$project': {'name': 1, 'description': 1, 'keywords': 1, 'datePublished': 1, 'url': 1, '_id': 0}}]
-    json_response = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(project).to_list(None)
+    json_response = await build_report(request)
     df = pandas.read_json(json.dumps(json_response, default=str))
-    filename = "file.csv"
+    filename = "discover_report.csv"
     df.to_csv(filename)
     return FileResponse(filename, filename=filename, media_type='application/octet-stream')
 
