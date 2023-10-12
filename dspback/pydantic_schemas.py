@@ -103,9 +103,6 @@ class BaseRecord(BaseModel):
     def to_submission(self, identifier) -> Submission:
         raise NotImplementedError()
 
-    def to_submission(self, identifier) -> Submission:
-        raise NotImplementedError()
-
 
 class ZenodoRecord(BaseRecord):
     class Creator(BaseModel):
@@ -113,7 +110,7 @@ class ZenodoRecord(BaseRecord):
 
     title: str = None
     creators: List[Creator] = []
-    publication_date: Optional[datetime]
+    state: str
 
     @root_validator(pre=True, allow_reuse=True)
     def extract_metadata(cls, values):
@@ -121,17 +118,11 @@ class ZenodoRecord(BaseRecord):
         del values['metadata']
         return values
 
-    @validator('publication_date', pre=True)
-    def parse_publication_date(cls, value):
-        if isinstance(value, str):
-            return datetime.strptime(value, '%Y-%m-%d')
-        return value
-
     def to_submission(self, identifier) -> Submission:
         settings = get_settings()
         view_url = (
             settings.zenodo_public_view_url % identifier
-            if self.publication_date
+            if self.state == "done"  # https://developers.zenodo.org/#representation
             else settings.zenodo_view_url % identifier
         )
         return Submission(
