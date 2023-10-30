@@ -2443,16 +2443,5 @@
     "notes",
     "access_right",
     "license"
-  ],
-  "definitions": {
-    "UrlPattern": {
-      "type": "string",
-      "pattern": "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$",
-      "title": "Link",
-      "description": "URL pointing to a description of the license or rights statement",
-      "errorMessage": {
-        "pattern": "must match format \"url\""
-      }
-    }
-  }
+  ]
 }
