@@ -4,17 +4,20 @@
 
 # Example run `python fetch_zenodo_licenses.py`
 
-import requests
 import json
 
-response = requests.get("https://zenodo.org/api/vocabularies/licenses?page=1&size=10000&sort=title")  # size query param must be an arbitrarily large number
+import requests
+
+response = requests.get(
+    "https://zenodo.org/api/vocabularies/licenses?page=1&size=10000&sort=title"
+)  # size query param must be an arbitrarily large number
 
 vocabulary = response.json()
 licenses = vocabulary["hits"]["hits"]
 
 transformed_licenses = []
 for license in licenses:
-    transformed_license = { "const": license["id"], "title": license["title"]["en"]}
+    transformed_license = {"const": license["id"], "title": license["title"]["en"]}
     transformed_licenses.append(transformed_license)
 
 # Read the existing schema file
