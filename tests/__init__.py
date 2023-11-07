@@ -150,6 +150,12 @@ async def zenodo(change_test_dir):
 
 
 @pytest.fixture
+async def zenodo_no_name(change_test_dir):
+    with open("data/zenodo_no_name.json", "r") as f:
+        return json.loads(f.read())
+
+
+@pytest.fixture
 async def external(change_test_dir):
     with open("data/external.json", "r") as f:
         return json.loads(f.read())

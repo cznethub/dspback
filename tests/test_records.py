@@ -6,7 +6,7 @@ import pytest
 
 from dspback.config import get_settings
 from dspback.pydantic_schemas import EarthChemRecord, ExternalRecord, HydroShareRecord, RepositoryType, ZenodoRecord
-from tests import change_test_dir, earthchem, external, hydroshare, zenodo
+from tests import change_test_dir, earthchem, external, hydroshare, zenodo, zenodo_no_name
 
 
 async def test_hydroshare_to_submission(hydroshare):
@@ -29,6 +29,17 @@ async def test_zenodo_to_submission(zenodo):
 
     assert zenodo_submission.title == zenodo_record.title
     assert zenodo_submission.authors == [creator.name for creator in zenodo_record.creators]
+    assert zenodo_submission.repo_type == RepositoryType.ZENODO
+    assert zenodo_submission.submitted <= datetime.utcnow()
+    assert zenodo_submission.url == get_settings().zenodo_view_url % "947940"
+
+
+async def test_zenodo_to_submission_no_name(zenodo_no_name):
+    zenodo_record = ZenodoRecord(**zenodo_no_name)
+    zenodo_submission = zenodo_record.to_submission("947940")
+
+    assert zenodo_submission.title == zenodo_record.title
+    assert zenodo_submission.authors == ["0000-0001-2345-6789"]
     assert zenodo_submission.repo_type == RepositoryType.ZENODO
     assert zenodo_submission.submitted <= datetime.utcnow()
     assert zenodo_submission.url == get_settings().zenodo_view_url % "947940"
