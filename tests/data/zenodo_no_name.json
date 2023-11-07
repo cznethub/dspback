@@ -1,0 +1,78 @@
+{
+    "created": "2023-10-27T20:29:17.621668+00:00",
+    "modified": "2023-10-27T20:42:31.215334+00:00",
+    "id": 10048803,
+    "conceptrecid": "10048802",
+    "metadata": {
+      "title": "Test deposit",
+      "publication_date": "2023-10-27",
+      "description": "Test",
+      "access_right": "open",
+      "creators": [
+        {
+          "affiliation": "UWRL",
+          "orcid": "0000-0001-2345-6789"
+        }
+      ],
+      "keywords": [
+        "CZNet",
+        "one",
+        "two",
+        "three"
+      ],
+      "license": "cc-by-4.0",
+      "imprint_publisher": "Zenodo",
+      "communities": [
+        {
+          "identifier": "czdata"
+        }
+      ],
+      "notes": "Funding Agency Name: \nAward Title: \nAward Number: \nFunding Agency URL:",
+      "upload_type": "dataset",
+      "prereserve_doi": {
+        "doi": "10.5281/zenodo.10048803",
+        "recid": 10048803
+      }
+    },
+    "title": "Test deposit",
+    "links": {
+      "self": "https://zenodo.org/api/deposit/depositions/10048803",
+      "html": "https://zenodo.org/deposit/10048803",
+      "badge": "https://zenodo.org/badge/doi/.svg",
+      "files": "https://zenodo.org/api/deposit/depositions/10048803/files",
+      "bucket": "https://zenodo.org/api/files/6cc3f3cd-db72-4fbc-93d9-fa9cd3aaa2d2",
+      "latest_draft": "https://zenodo.org/api/deposit/depositions/10048803",
+      "latest_draft_html": "https://zenodo.org/deposit/10048803",
+      "publish": "https://zenodo.org/api/deposit/depositions/10048803/actions/publish",
+      "edit": "https://zenodo.org/api/deposit/depositions/10048803/actions/edit",
+      "discard": "https://zenodo.org/api/deposit/depositions/10048803/actions/discard",
+      "newversion": "https://zenodo.org/api/deposit/depositions/10048803/actions/newversion",
+      "registerconceptdoi": "https://zenodo.org/api/deposit/depositions/10048803/actions/registerconceptdoi"
+    },
+    "record_id": 10048803,
+    "owner": 367423,
+    "files": [
+      {
+        "id": "29209808-39e8-4658-8a08-3ab68b24ecc0",
+        "filename": "dpback-logs.txt",
+        "filesize": 762473,
+        "checksum": "fee1be2ae7a237646bd4b785b91626c6",
+        "links": {
+          "self": "https://zenodo.org/api/deposit/depositions/10048803/files/29209808-39e8-4658-8a08-3ab68b24ecc0",
+          "download": "https://zenodo.org/api/records/10048803/draft/files/dpback-logs.txt/content"
+        }
+      },
+      {
+        "id": "e573d8f5-3fdd-45b1-8641-d961a3577aab",
+        "filename": "logs.txt",
+        "filesize": 2526,
+        "checksum": "6408a6d5ddea8a01b8c4e4599b92acd4",
+        "links": {
+          "self": "https://zenodo.org/api/deposit/depositions/10048803/files/e573d8f5-3fdd-45b1-8641-d961a3577aab",
+          "download": "https://zenodo.org/api/records/10048803/draft/files/logs.txt/content"
+        }
+      }
+    ],
+    "state": "unsubmitted",
+    "submitted": false
+  }

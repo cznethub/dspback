@@ -107,6 +107,8 @@ class BaseRecord(BaseModel):
 class ZenodoRecord(BaseRecord):
     class Creator(BaseModel):
         name: str = None
+        affiliation: str = None
+        orcid: str = None
 
     title: str = None
     creators: List[Creator] = []
@@ -118,6 +120,17 @@ class ZenodoRecord(BaseRecord):
         del values['metadata']
         return values
 
+    def submission_authors(self):
+        authors = []
+        for creator in self.creators:
+            if creator.name:
+                authors.append(creator.name)
+            elif creator.orcid:
+                authors.append(creator.orcid)
+            elif creator.affiliation:
+                authors.append(creator.affiliation)
+        return authors
+
     def to_submission(self, identifier) -> Submission:
         settings = get_settings()
         view_url = (
@@ -127,7 +140,7 @@ class ZenodoRecord(BaseRecord):
         )
         return Submission(
             title=self.title,
-            authors=[creator.name for creator in self.creators],
+            authors=self.submission_authors(),
             repo_type=RepositoryType.ZENODO,
             submitted=datetime.utcnow(),
             identifier=identifier,
