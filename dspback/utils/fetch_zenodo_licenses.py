@@ -1,6 +1,6 @@
 # @deprecated
 # https://jsonforms.discourse.group/t/function-nested-too-deeply-error-when-enum-has-many-options/1451/5
-# oneOf of title, const pairs are limited to a max number of elements (presumably 200)
+# oneOf of title, const pairs are limited to a max number of elements (presumably 300)
 # and this array of licenses is longer than that
 # this causes an error in Firefox where the schema will fail to render due the resulting
 # iteration being too nested
