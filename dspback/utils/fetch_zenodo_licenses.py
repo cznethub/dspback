@@ -1,11 +1,9 @@
-# This script will fetch the zenodo licenses controlled vocabulary and generate a JSON object that can be used to populate
-# the `oneOf` subschema inside the license field of the zenodo schema file at `dspback\schemas\zenodo\schema.json`
-# The schema file will be modified with the new object
-
+# This script will fetch the zenodo licenses controlled vocabulary and generate an array of strings
+# that can be used to populate the `enum` array inside the license field of the zenodo schema file at `dspback\schemas\zenodo\schema.json`
+# The schema file will be modified with the new array items
 # Example run `python fetch_zenodo_licenses.py`
 
 import json
-
 import requests
 
 response = requests.get(
@@ -17,14 +15,15 @@ licenses = vocabulary["hits"]["hits"]
 
 transformed_licenses = []
 for license in licenses:
-    transformed_license = {"const": license["id"], "title": license["title"]["en"]}
-    transformed_licenses.append(transformed_license)
+    transformed_licenses.append(license["id"])
+
+transformed_licenses.sort()
 
 # Read the existing schema file
 with open("../schemas/zenodo/schema.json", "r") as f:
     schema = json.load(f)
     # Replace the property
-    schema["properties"]["license"]["oneOf"] = transformed_licenses
+    schema["properties"]["license"]["enum"] = transformed_licenses
 
 # Override the file
 with open("../schemas/zenodo/schema.json", "w") as f:
