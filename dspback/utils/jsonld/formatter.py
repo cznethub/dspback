@@ -46,6 +46,8 @@ def format_fields(json_ld):
     if "keywords" in json_ld:
         if json_ld["keywords"] is None:
             json_ld["keywords"] = []
+        elif isinstance(json_ld["keywords"], str):
+            json_ld["keywords"] = json_ld["keywords"].split(", ")
 
     if "creator" in json_ld:
         if isinstance(json_ld["creator"], list):
