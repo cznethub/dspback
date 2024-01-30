@@ -236,9 +236,11 @@ async def base_search(
         must.append({'text': {'path': '@type', 'query': contentType}})
     if clusters:
         stages.append({'$match': {'clusters': {'$all': clusters}}})
-    # Sort needs to happen before pagination
-    if sortBy:
-        stages.append({'$sort': {sortBy: 1}})
+    # Sort needs to happen before pagination, ignore all other values of sortBy
+    if sortBy == "name":
+        stages.append({'$sort': {"name": 1}})
+    if sortBy == "dateCreated":
+        stages.append({'$sort': {"dateCreated": -1}})
     stages.append({'$skip': (pageNumber - 1) * pageSize})
     stages.append(
         {'$limit': pageSize},
