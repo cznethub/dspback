@@ -52,8 +52,8 @@ async def watch_discovery_with_retry():
     while True:
         try:
             await watch_discovery()
-        except:
-            logger.exception("Discovery Watch Task failed, restarting the task after 1 second")
+        except Exception as exp:
+            logger.exception(f"Discovery Watch Task failed.\n Error:{str(exp)}\n Restarting the task after 1 second")
             await asyncio.sleep(1)
 
 
@@ -84,6 +84,6 @@ async def watch_submissions_with_retry():
     while True:
         try:
             await watch_submissions()
-        except:
-            logger.exception("Submission Watch Task failed, restarting the task after 1 second")
+        except Exception as exp:
+            logger.exception(f"Submission Watch Task failed.\n Error:{str(exp)}\n Restarting the task after 1 second")
             await asyncio.sleep(1)

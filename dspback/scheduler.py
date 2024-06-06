@@ -57,8 +57,8 @@ async def do_daily():
             else:
                 # remove
                 await db["discovery"].delete_one({rec_key_name: submission.identifier, "legacy": False})
-        except:
-            logger.exception(f"Failed to collect submission {submission.url}")
+        except Exception as exp:
+            logger.exception(f"Failed to collect submission {submission.url}\n Error: {str(exp)}")
 
 
 if __name__ == "__main__":
