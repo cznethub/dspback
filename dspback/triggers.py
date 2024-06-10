@@ -45,7 +45,7 @@ async def watch_discovery():
                     'keywords': [sanitize(keyword) for keyword in document['keywords']],
                 }
                 await db["typeahead"].find_one_and_replace({"_id": sanitized["_id"]}, sanitized, upsert=True)
-                logger.debug(f"Updating {change['"documentKey']['_id']}")
+                logger.debug(f"Updating {change['documentKey']['_id']}")
             else:
                 await db["typeahead"].delete_one({"_id": change["documentKey"]["_id"]})
                 logger.debug(f"Deleting {change['documentKey']['_id']}")
