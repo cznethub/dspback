@@ -63,23 +63,27 @@ async def search(
         term,
     )
 
-    compound = {'filter': filters, 'must': must}
+    compound = {}
+    if filters:
+        compound = {'filter': filters}
+    if must:
+        compound['must'] = must
+
     if term:
         should = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_paths]
         compound['should'] = should
 
-    stages.insert(
-        0,
-        {
-            '$search': {
-                'index': 'fuzzy_search',
-                'compound': compound,
-            }
-        },
-    )
-    stages.append(
-        {'$set': {'score': {'$meta': 'searchScore'}, 'highlights': {'$meta': 'searchHighlights'}}},
-    )
+    if compound:
+        stages.insert(
+            0,
+            {
+                '$search': {
+                    'index': 'fuzzy_search',
+                    'compound': compound,
+                }
+            },
+        )
+
     if term:
         stages[0]['$search']['highlight'] = {'path': search_paths}
         # get only results which meet minimum relevance score threshold
@@ -87,7 +91,6 @@ async def search(
         stages.append({'$match': {'score': {'$gt': score_threshold}}})
 
     results = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
-
     return results
 
 
@@ -216,7 +219,6 @@ async def base_search(
     must = []
     stages = []
     filters = []
-    must.append({'term': {'path': '@type', 'query': "Dataset"}})
     if publishedStart:
         filters.append(
             {
