@@ -35,6 +35,7 @@ async def watch_discovery():
     db = motor.motor_asyncio.AsyncIOMotorClient(get_settings().mongo_url)[get_settings().mongo_database]
     async with db["discovery"].watch(full_document="updateLookup") as stream:
         async for change in stream:
+            logger.debug(f"processing discovery watch for document: {change}")
             if change["operationType"] != "delete":
                 document = change["fullDocument"]
                 sanitized = {
@@ -44,8 +45,10 @@ async def watch_discovery():
                     'keywords': [sanitize(keyword) for keyword in document['keywords']],
                 }
                 await db["typeahead"].find_one_and_replace({"_id": sanitized["_id"]}, sanitized, upsert=True)
+                logger.debug(f"Updating {change['documentKey']['_id']}")
             else:
                 await db["typeahead"].delete_one({"_id": change["documentKey"]["_id"]})
+                logger.debug(f"Deleting {change['documentKey']['_id']}")
 
 
 async def watch_discovery_with_retry():
@@ -58,25 +61,29 @@ async def watch_discovery_with_retry():
 
 
 async def watch_submissions():
+    logger.info(f"Starting watching Submissions")
     db = motor.motor_asyncio.AsyncIOMotorClient(get_settings().mongo_url)[get_settings().mongo_database]
     async with db["Submission"].watch(
         full_document="updateLookup", full_document_before_change="whenAvailable"
     ) as stream:
         async for change in stream:
-            logger.warning(f"start with a {change}")
+            logger.debug(f"processing submission watch for document: {change}")
             if change["operationType"] != "delete":
                 document = change["fullDocument"]
                 public_json_ld = await retrieve_submission_json_ld(document)
 
                 if public_json_ld:
+                    logger.debug(f"Found public jsonld, updating the discovery record for {document['identifier']}")
                     await db["discovery"].find_one_and_replace(
                         {"repository_identifier": public_json_ld["repository_identifier"]}, public_json_ld, upsert=True
                     )
                 else:
+                    logger.debug(f"No public jsonld found, deleting the discovery record for {document['identifier']}")
                     result = await db["discovery"].delete_one({"repository_identifier": document["identifier"]})
                     logger.warning(f"delete count {result.deleted_count}")
             else:
                 document = change["fullDocumentBeforeChange"]
+                logger.debug(f"Deleting the discovery record for {document['identifier']}")
                 await db["discovery"].delete_one({"repository_identifier": document["identifier"]})
 
 
