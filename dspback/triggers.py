@@ -82,8 +82,8 @@ async def watch_submissions():
                     result = await db["discovery"].delete_one({"repository_identifier": document["identifier"]})
                     logger.warning(f"delete count {result.deleted_count}")
             else:
-                logger.debug(f"Deleting the discovery record for {document['identifier']}")
                 document = change["fullDocumentBeforeChange"]
+                logger.debug(f"Deleting the discovery record for {document['identifier']}")
                 await db["discovery"].delete_one({"repository_identifier": document["identifier"]})
 
 
