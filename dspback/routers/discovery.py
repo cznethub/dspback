@@ -35,7 +35,7 @@ def is_one_char_off(str1, str2):
 @router.get("/search")
 async def search(
     request: Request,
-    term: str,
+    term: str = None,
     sortBy: str = None,
     contentType: str = None,
     providerName: str = None,
@@ -63,21 +63,34 @@ async def search(
         term,
     )
 
-    should = [{'autocomplete': {'query': term, 'path': key}} for key in search_paths]
+    compound = {}
+    if filters:
+        compound = {'filter': filters}
+    if must:
+        compound['must'] = must
 
-    stages.insert(
-        0,
-        {
-            '$search': {
-                'index': 'fuzzy_search',
-                'compound': {'filter': filters, 'should': should, 'must': must, 'minimumShouldMatch': 1},
-                'highlight': {'path': search_paths},
-            }
-        },
-    )
+    if term:
+        should = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_paths]
+        compound['should'] = should
+
+    if compound:
+        stages.insert(
+            0,
+            {
+                '$search': {
+                    'index': 'fuzzy_search',
+                    'compound': compound,
+                }
+            },
+        )
+
+    if term:
+        stages[0]['$search']['highlight'] = {'path': search_paths}
+        # get only results which meet minimum relevance score threshold
+        score_threshold = get_settings().search_relevance_score_threshold
+        stages.append({'$match': {'score': {'$gt': score_threshold}}})
 
     results = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
-
     return results
 
 

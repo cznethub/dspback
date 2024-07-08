@@ -74,6 +74,7 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 12 * 60
     access_token_expiration_buffer_seconds: int = 30 * 60
+    search_relevance_score_threshold: float = 1.0
 
     session_secret_key: str
 
