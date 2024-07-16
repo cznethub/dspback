@@ -68,7 +68,6 @@
     "contributors": {
       "title": "Co-Authors",
       "type": "array",
-      "maxItems": 3,
       "items": { "$ref": "#/definitions/Contributor" }
     },
     "type": {
