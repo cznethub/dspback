@@ -177,6 +177,6 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         summary="Get an EarthChem record without validation",
         description="Retrieves the metadata for the EarthChem record without validation.",
     )
-    async def get_json_metadata_repository(self, request: Request, identifier) -> response_model:
+    async def get_json_metadata_repository(self, request: Request, identifier):
         json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
         return json_metadata
