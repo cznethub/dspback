@@ -1,7 +1,7 @@
 {
   "type": "VerticalLayout",
   "elements": [
-    { 
+    {
       "type": "Group",
       "label": "Basic Information",
       "elements": [
@@ -11,7 +11,10 @@
         },
         {
           "type": "Control",
-          "scope": "#/properties/url"
+          "scope": "#/properties/url",
+          "options": {
+            "description": "URL for the landing page that describes the resource and where the content of the resource can be accessed."
+          }
         },
         {
           "type": "HorizontalLayout",
@@ -65,7 +68,10 @@
       "type": "Control",
       "scope": "#/properties/creators",
       "options": {
-        "elementLabelProp": ["name"],
+        "elementLabelProp": [
+          "name"
+        ],
+        "showSortButtons": true,
         "detail": {
           "type": "VerticalLayout",
           "elements": [
@@ -103,7 +109,10 @@
       "type": "Control",
       "scope": "#/properties/contributors",
       "options": {
-        "elementLabelProp": ["name"],
+        "elementLabelProp": [
+          "name"
+        ],
+        "showSortButtons": true,
         "detail": {
           "type": "VerticalLayout",
           "elements": [
@@ -140,12 +149,134 @@
     {
       "type": "Control",
       "label": "Temporal coverage",
-      "scope": "#/properties/temporalCoverage"
+      "scope": "#/properties/temporalCoverage",
+      "options": {
+        "detail": {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/name"
+            },
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/start"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/end"
+                }
+              ]
+            }
+          ]
+        }
+      }
     },
     {
       "type": "Control",
       "label": "Spatial coverage",
-      "scope": "#/properties/spatialCoverage"
+      "scope": "#/properties/spatialCoverage",
+      "options": {
+        "detail": {
+          "0": {
+            "type": "VerticalLayout",
+            "elements": [
+              {
+                "type": "Control",
+                "scope": "#/properties/name"
+              },
+              {
+                "type": "MapLayout",
+                "options": {
+                  "map": {
+                    "type": "point",
+                    "north": "north",
+                    "east": "east"
+                  }
+                },
+                "elements": [
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/north"
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/east"
+                  }
+                ]
+              },
+              {
+                "type": "HorizontalLayout",
+                "elements": [
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/units"
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/projection"
+                  }
+                ]
+              }
+            ]
+          },
+          "1": {
+            "type": "VerticalLayout",
+            "elements": [
+              {
+                "type": "Control",
+                "scope": "#/properties/name"
+              },
+              {
+                "type": "MapLayout",
+                "options": {
+                  "map": {
+                    "type": "box",
+                    "northlimit": "northlimit",
+                    "eastlimit": "eastlimit",
+                    "southlimit": "southlimit",
+                    "westlimit": "westlimit"
+                  }
+                },
+                "elements": [
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/northlimit"
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/eastlimit"
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/southlimit"
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/westlimit"
+                  }
+                ]
+              },
+              {
+                "type": "HorizontalLayout",
+                "elements": [
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/units"
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/projection"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
     },
     {
       "type": "Control",
@@ -155,12 +286,68 @@
       "type": "Control",
       "scope": "#/properties/funders",
       "options": {
-        "elementLabelProp": ["fundingAgency"]
+        "elementLabelProp": [
+          "fundingAgency"
+        ],
+        "detail": {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/fundingAgency"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/awardNumber"
+                }
+              ]
+            },
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/awardName"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/awardURL"
+                }
+              ]
+            }
+          ]
+        }
       }
     },
     {
       "type": "Control",
-      "scope": "#/properties/license"
+      "scope": "#/properties/license",
+      "options": {
+        "detail": {
+          "type": "HorizontalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/name"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/description"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/url",
+              "options": {
+                "label": "License URL",
+                "description": "URL for a page that describes the license for the resource."
+              }
+            }
+          ]
+        }
+      }
     },
     {
       "type": "Control",
@@ -175,7 +362,11 @@
             },
             {
               "type": "Control",
-              "scope": "#/properties/url"
+              "scope": "#/properties/url",
+              "options": {
+                "label": "Provider URL",
+                "description": "A URL for the repository or organization that provides access to the resource."
+              }
             }
           ]
         }

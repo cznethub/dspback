@@ -2,4 +2,6 @@ black
 isort
 pytest-xdist
 pytest-cov
-datamodel-code-generator
+pytest-asyncio
+datamodel-code-generator==0.15.0
+asgi_lifespan==1.0.1

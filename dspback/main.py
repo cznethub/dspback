@@ -1,69 +1,40 @@
+import asyncio
+import logging
+
 import uvicorn as uvicorn
-from fastapi import FastAPI, Request, Response
-from fastapi.openapi.utils import get_openapi
-from fastapi.staticfiles import StaticFiles
-from starlette.middleware.sessions import SessionMiddleware
-from starlette.responses import PlainTextResponse
 
+from dspback.api import app as app_fastapi
 from dspback.config import get_settings
-from dspback.database.models import SessionLocal
-from dspback.dependencies import RepositoryException
-from dspback.routers import (
-    authentication,
-    earthchem,
-    external,
-    hydroshare,
-    repository_authorization,
-    submissions,
-    zenodo,
-)
-
-app = FastAPI()
-app.add_middleware(SessionMiddleware, secret_key=get_settings().session_secret_key)
-
-app.mount("/api/schema", StaticFiles(directory="dspback/schemas"), name="schemas")
-
-app.include_router(authentication.router, prefix="/api", tags=["Authentication"], include_in_schema=False)
-app.include_router(
-    repository_authorization.router, prefix="/api", tags=["Repository Authorization"], include_in_schema=False
-)
-app.include_router(hydroshare.router, prefix="/api")
-app.include_router(zenodo.router, prefix="/api")
-app.include_router(earthchem.router, prefix="/api")
-app.include_router(external.router, prefix="/api")
-app.include_router(submissions.router, prefix="/api", tags=["Submissions"])
+from dspback.scheduler import app as app_rocketry
+from dspback.triggers import watch_discovery_with_retry, watch_submissions_with_retry
 
 
-@app.exception_handler(RepositoryException)
-async def http_exception_handler(request, exc):
-    return PlainTextResponse(f"Repository exception response[{str(exc.detail)}]", status_code=exc.status_code)
+class Server(uvicorn.Server):
+    def handle_exit(self, sig: int, frame) -> None:
+        app_rocketry.session.shut_down()
+        return super().handle_exit(sig, frame)
 
 
-@app.middleware("http")
-async def db_session_middleware(request: Request, call_next):
-    response = Response("Internal server error", status_code=500)
-    try:
-        request.state.db = SessionLocal()
-        response = await call_next(request)
-    finally:
-        request.state.db.close()
-    return response
+async def main():
+    "Run Rocketry and FastAPI"
+    server = Server(config=uvicorn.Config(app_fastapi, workers=1, loop="asyncio", host="0.0.0.0", port=5002))
+    settings = get_settings()
+    if settings.local_development:
+        api = asyncio.create_task(server.serve())
+        await asyncio.wait([api])
+    else:
+        api = asyncio.create_task(server.serve())
+        sched = asyncio.create_task(app_rocketry.serve())
+        discovery_trigger = asyncio.create_task(watch_discovery_with_retry())
+        submissions_trigger = asyncio.create_task(watch_submissions_with_retry())
 
+        await asyncio.wait([api, discovery_trigger, submissions_trigger, sched])
 
-openapi_schema = get_openapi(
-    title="Data Submission Portal API",
-    version="1.0",
-    description="Standardized interface with validation for managing metadata across repositories",
-    routes=app.routes,
-)
-openapi_schema["info"]["contact"] = {
-    "name": "Learn more about this API",
-    "url": "https://github.com/cznethub/dspback",
-    "email": "sblack@cuahsi.org",
-}
-
-
-app.openapi_schema = openapi_schema
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=5002)
+    # Print Rocketry's logs to terminal
+    rocketry_logger = logging.getLogger("rocketry.task")
+    rocketry_logger.addHandler(logging.StreamHandler())
+
+    # Run all applications
+    asyncio.run(main())

@@ -4,6 +4,7 @@ import uuid
 from fastapi import Request
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
+from pydantic import BaseModel
 from starlette.responses import JSONResponse
 
 from dspback.database.procedures import delete_submission
@@ -14,11 +15,15 @@ from dspback.schemas.external.model import GenericDatasetSchemaForCzNetDataSubmi
 router = InferringRouter()
 
 
+class ExternalMetadataResponse(BaseModel):
+    metadata: GenericDatasetSchemaForCzNetDataSubmissionPortalV100
+    published: bool
+
+
 @cbv(router)
 class ExternalMetadataRoutes(MetadataRoutes):
-
     request_model = GenericDatasetSchemaForCzNetDataSubmissionPortalV100
-    response_model = GenericDatasetSchemaForCzNetDataSubmissionPortalV100
+    response_model = ExternalMetadataResponse
     repository_type = RepositoryType.EXTERNAL
 
     @router.post(
@@ -32,7 +37,7 @@ class ExternalMetadataRoutes(MetadataRoutes):
     async def create_metadata_repository(self, request: Request, metadata: request_model):
         metadata.identifier = str(uuid.uuid4())
         metadata_json = json.loads(metadata.json())
-        metadata_json = await self.submit(request, metadata.identifier, metadata_json)
+        metadata_json = await self.submit(request, metadata.identifier, {"metadata": metadata_json, "published": True})
         return JSONResponse(metadata_json, status_code=201)
 
     @router.put(
@@ -44,7 +49,7 @@ class ExternalMetadataRoutes(MetadataRoutes):
         description="update an external record along with the submission record.",
     )
     async def update_metadata(self, request: Request, metadata: request_model, identifier):
-        return await self.submit(request, identifier, metadata.dict())
+        return await self.submit(request, identifier, self.wrap_metadata(metadata.dict(), False))
 
     @router.get(
         '/metadata/external/{identifier}',
@@ -55,10 +60,10 @@ class ExternalMetadataRoutes(MetadataRoutes):
         description="Get an external record along with the submission record.",
     )
     async def get_metadata_repository(self, identifier):
-        submission = self.user.submission(self.db, identifier)
+        submission = self.user.submission(identifier)
         metadata_json_str = submission.metadata_json
         metadata_json = json.loads(metadata_json_str)
-        return metadata_json
+        return self.wrap_metadata(metadata_json, False)
 
     @router.delete(
         '/metadata/external/{identifier}',
@@ -67,4 +72,4 @@ class ExternalMetadataRoutes(MetadataRoutes):
         description="Deletes an external record.",
     )
     async def delete_metadata_repository(self, identifier):
-        delete_submission(self.db, self.repository_type, identifier, self.user)
+        await delete_submission(identifier, self.user)

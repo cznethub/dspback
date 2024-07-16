@@ -24,9 +24,13 @@
       "items": {
         "type": "string"
       },
-      "default": ["CZNet"],
+      "default": [
+        "CZNet"
+      ],
       "contains": {
-        "enum": ["CZNet"]
+        "enum": [
+          "CZNet"
+        ]
       }
     },
     "creators": {
@@ -66,8 +70,6 @@
           "description": "Text of the license or description of the license for the resource."
         },
         "url": {
-          "title": "License URL",
-          "description": "URL for a page that describes the license for the resource.",
           "$ref": "#/definitions/UrlPattern"
         }
       },
@@ -136,9 +138,8 @@
       "description": "A version tag string for the resource - e.g., v1.0.0. Mostly relevant for software and dataset uploads. Any string will be accepted, but semantically-versioned tag is recommended."
     },
     "url": {
-      "$ref": "#/definitions/UrlPattern",
-      "title": "URL",
-      "description": "URL for the landing page that describes the resource and where the content of the resource can be accessed."
+      "title": "Url",
+      "$ref": "#/definitions/UrlPattern"
     },
     "identifier": {
       "title": "Identifier",
@@ -160,14 +161,18 @@
           "description": "A datetime object containing the instant corresponding to the commencement of the time interval (ISO8601 formatted date) - YYYY-MM-DDTHH:MM.",
           "type": "string",
           "format": "date-time",
-          "options": { "placeholder": "YYYY-MM-DDTHH:MM" }
+          "options": {
+            "placeholder": "YYYY-MM-DDTHH:MM"
+          }
         },
         "end": {
           "title": "End",
           "description": "A datetime object containing the instant corresponding to the termination of the time interval (ISO8601 formatted date) - YYYY-MM-DDTHH:MM.",
           "type": "string",
           "format": "date-time",
-          "options": { "placeholder": "YYYY-MM-DDTHH:MM" }
+          "options": {
+            "placeholder": "YYYY-MM-DDTHH:MM"
+          }
         }
       },
       "required": [
@@ -183,41 +188,6 @@
           "title": "Point Coverage Metadata",
           "description": "Geographic coverage metadata for a resource or aggregation expressed as a point location",
           "type": "object",
-          "options": { 
-            "detail": {
-              "type": "VerticalLayout",
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/name"
-                },
-                {
-                  "type": "MapLayout",
-                  "options": {
-                    "map": { "type": "point", "north": "north", "east": "east" }
-                  },
-                  "elements": [
-                    {
-                      "type": "Control",
-                      "scope": "#/properties/east"
-                    },
-                    {
-                      "type": "Control",
-                      "scope": "#/properties/north"
-                    }
-                  ]
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/units"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/projection"
-                }
-              ]
-            }
-          },
           "properties": {
             "name": {
               "title": "Name",
@@ -264,50 +234,6 @@
           "title": "Box Coverage Metadata",
           "description": "Geographic coverage metadata for a resource expressed as a latitude-longitude bounding box.",
           "type": "object",
-          "options": {
-            "detail": {
-              "type": "VerticalLayout",
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/name"
-                },
-                {
-                  "type": "MapLayout",
-                  "options": {
-                    "map": { "type": "box", "northlimit": "northlimit", "eastlimit": "eastlimit", "southlimit": "southlimit", "westlimit": "westlimit" }
-                  },
-                  "elements": [
-                    {
-                      "type": "Control",
-                      "scope": "#/properties/northlimit"
-                    },
-                    {
-                      "type": "Control",
-                      "scope": "#/properties/eastlimit"
-                    },
-                    {
-                      "type": "Control",
-                      "scope": "#/properties/southlimit"
-                    },
-                    {
-                      "type": "Control",
-                      "scope": "#/properties/westlimit"
-                    }
-                  ]
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/units"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/projection"
-                }
-                
-              ]
-            }
-          },
           "properties": {
             "name": {
               "title": "Name",
@@ -374,7 +300,6 @@
     "provider": {
       "title": "Provider",
       "type": "object",
-      "options": { "flat": false },
       "description": "The repository or organization that provides access to the resource.",
       "additionalProperties": false,
       "properties": {
@@ -384,8 +309,6 @@
           "description": "The name of the repository or organization that provides access to the resource."
         },
         "url": {
-          "title": "Provider URL",
-          "description": "A URL for the repository or organization that provides access to the resource.",
           "$ref": "#/definitions/UrlPattern"
         }
       },
@@ -398,14 +321,18 @@
       "title": "Date created",
       "type": "string",
       "format": "date-time",
-      "options": { "placeholder": "YYYY-MM-DDTHH:MM" },
+      "options": {
+        "placeholder": "YYYY-MM-DDTHH:MM"
+      },
       "description": "The date on which the resource was originally created (ISO8601 formatted date) - YYYY-MM-DDTHH:MM."
     },
     "dateModified": {
       "title": "Date modified",
       "type": "string",
       "format": "date-time",
-      "options": { "placeholder": "YYYY-MM-DDTHH:MM" },
+      "options": {
+        "placeholder": "YYYY-MM-DDTHH:MM"
+      },
       "description": "The date on which the resource was last modified (ISO8601 formatted date) - YYYY-MM-DDTHH:MM."
     },
     "datePublished": {
@@ -415,21 +342,25 @@
         {
           "title": "Year",
           "type": "integer",
-          "options": { "placeholder": "YYYY" },
+          "options": {
+            "placeholder": "YYYY"
+          },
           "description": "Publication year (YYYY)."
         },
         {
           "title": "Date",
           "type": "string",
           "format": "date-time",
-          "options": { "placeholder": "YYYY-MM-DDTHH:MM" },
+          "options": {
+            "placeholder": "YYYY-MM-DDTHH:MM"
+          },
           "description": "ISO8601 formatted date (YYYY-MM-DDTHH:MM)."
         }
       ]
     },
     "status": {
       "title": "Data collection is ongoing",
-      "type":  "boolean",
+      "type": "boolean",
       "description": "Indicate whether data collection is ongoing for this dataset",
       "default": false
     }
@@ -462,7 +393,7 @@
           "title": "ORCID",
           "description": "ORCID identifier for creator.",
           "type": "string",
-          "pattern": "(\\d{4}-){3}\\d{4}",
+          "pattern": "\\b\\d{4}-\\d{4}-\\d{4}-\\d{3}[0-9X]\\b",
           "options": {
             "placeholder": "e.g. '0000-0001-2345-6789'"
           },
@@ -503,7 +434,7 @@
           "title": "ORCID",
           "description": "ORCID identifier for contributor.",
           "type": "string",
-          "pattern": "(\\d{4}-){3}\\d{4}",
+          "pattern": "\\b\\d{4}-\\d{4}-\\d{4}-\\d{3}[0-9X]\\b",
           "options": {
             "placeholder": "e.g. '0000-0001-2345-6789'"
           },

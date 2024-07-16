@@ -4,12 +4,13 @@ import requests
 from fastapi import Request
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
+from pydantic import BaseModel
 from starlette.responses import JSONResponse
 
 from dspback.database.procedures import delete_submission
 from dspback.dependencies import RepositoryException
-from dspback.pydantic_schemas import RepositoryType, SubmissionBase
-from dspback.routers.metadata_class import MetadataRoutes
+from dspback.pydantic_schemas import RepositoryType, Submission
+from dspback.routers.metadata_class import MetadataRoutes, exists_and_is
 from dspback.schemas.zenodo.model import ZenodoDatasetsSchemaForCzNetV100
 
 router = InferringRouter()
@@ -30,15 +31,19 @@ def from_zenodo_format(json_metadata):
     Prepares Zenodo storage for our forms.  Notes is a string field we are using to store required funding
     information. Our forms only use properties within the metadata property.
     """
-    json_metadata = json_metadata["metadata"]
+    json_metadata["metadata"] = json_metadata["metadata"]["metadata"]
     return json_metadata
+
+
+class ZenodoMetadataResponse(BaseModel):
+    metadata: ZenodoDatasetsSchemaForCzNetV100
+    published: bool
 
 
 @cbv(router)
 class ZenodoMetadataRoutes(MetadataRoutes):
-
     request_model = ZenodoDatasetsSchemaForCzNetV100
-    response_model = ZenodoDatasetsSchemaForCzNetV100
+    response_model = ZenodoMetadataResponse
     repository_type = RepositoryType.ZENODO
 
     @router.post(
@@ -78,14 +83,12 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         description="Validates the incoming metadata and updates the Zenodo record associated with the provided identifier.",
     )
     async def update_metadata(self, request: Request, metadata: request_model, identifier):
-        existing_metadata = await self.get_metadata_repository(request, identifier)
         incoming_metadata = metadata.json(skip_defaults=True, exclude_unset=True)
-        merged_metadata = {**existing_metadata, **json.loads(incoming_metadata)}
-        merged_metadata = to_zenodo_format(merged_metadata)
+        zenodo_metadata = to_zenodo_format(json.loads(incoming_metadata))
         access_token = await self.access_token(request)
         response = requests.put(
             self.update_url % identifier,
-            json=merged_metadata,
+            json=zenodo_metadata,
             headers={"Content-Type": "application/json"},
             params={"access_token": access_token},
         )
@@ -93,7 +96,6 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         if response.status_code >= 300:
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
-        # await self.submit(identifier)
         return await self.get_metadata_repository(request, identifier)
 
     async def _retrieve_metadata_from_repository(self, request: Request, identifier):
@@ -101,10 +103,15 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         response = requests.get(self.read_url % identifier, params={"access_token": access_token})
 
         if response.status_code >= 300:
+            response = requests.get(
+                self.settings.zenodo_published_read_url % identifier, params={"access_token": access_token}
+            )
+
+        if response.status_code >= 300:
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         json_metadata = json.loads(response.text)
-        return json_metadata
+        return self.wrap_metadata(json_metadata, exists_and_is("doi", json_metadata["metadata"]))
 
     @router.get(
         '/metadata/zenodo/{identifier}',
@@ -121,6 +128,16 @@ class ZenodoMetadataRoutes(MetadataRoutes):
 
         return json_metadata
 
+    @router.get(
+        '/submission/zenodo/{identifier}',
+        tags=["Zenodo"],
+        summary="Update and get a Zenodo record Submission",
+        description="Retrieves the metadata for the Zenodo record and returns the updated Submission in the database.",
+    )
+    async def update_and_get_submission(self, request: Request, identifier):
+        await self.get_metadata_repository(request, identifier)
+        return self.user.submission(identifier)
+
     @router.delete(
         '/metadata/zenodo/{identifier}',
         tags=["Zenodo"],
@@ -128,7 +145,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         description="Deletes the Zenodo record along with the submission record.",
     )
     async def delete_metadata_repository(self, request: Request, identifier):
-        delete_submission(self.db, self.repository_type, identifier, self.user)
+        await delete_submission(identifier, self.user)
 
         access_token = await self.access_token(request)
         response = requests.delete(self.delete_url % identifier, params={"access_token": access_token})
@@ -138,13 +155,13 @@ class ZenodoMetadataRoutes(MetadataRoutes):
     @router.put(
         '/submit/zenodo/{identifier}',
         name="submit",
-        response_model=SubmissionBase,
+        response_model=Submission,
         tags=["Zenodo"],
         summary="Register a Zenodo record",
         description="Creates a submission record of the Zenodo record.",
     )
-    async def submit_repository_record(self, identifier: str):
-        json_metadata = await self.submit(identifier)
+    async def submit_repository_record(self, request: Request, identifier: str):
+        json_metadata = await self.submit(request, identifier)
         return json_metadata["metadata"]
 
     @router.get(

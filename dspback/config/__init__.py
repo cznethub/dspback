@@ -39,11 +39,13 @@ class Settings(BaseSettings):
     zenodo_create_url: HttpUrl
     zenodo_update_url: HttpUrl
     zenodo_read_url: HttpUrl
+    zenodo_published_read_url: HttpUrl
     zenodo_delete_url: HttpUrl
     zenodo_file_create_url: HttpUrl
     zenodo_file_delete_url: HttpUrl
     zenodo_file_read_url: HttpUrl
     zenodo_view_url: HttpUrl
+    zenodo_public_view_url: HttpUrl
     zenodo_move_or_rename_url: HttpUrl
     zenodo_health_url: HttpUrl
 
@@ -59,13 +61,14 @@ class Settings(BaseSettings):
     earthchem_file_delete_url: HttpUrl
     earthchem_file_read_url: HttpUrl
     earthchem_view_url: HttpUrl
+    earthchem_public_view_url: HttpUrl
     earthchem_health_url: HttpUrl
 
-    database_username: str
-    database_password: str
-    database_name: str
-    database_port: int = 5432
-    database_host: str
+    mongo_username: str
+    mongo_password: str
+    mongo_host: str
+    mongo_database: str
+    mongo_protocol: str
 
     jwt_secret_key: str
     jwt_algorithm: str = "HS256"
@@ -77,8 +80,12 @@ class Settings(BaseSettings):
     outside_host: str
 
     @property
-    def database_url(self):
-        return f'postgresql://{self.database_username}:{self.database_password}@{self.database_host}:{self.database_port}/{self.database_name}'
+    def local_development(self):
+        return self.outside_host == "localhost"
+
+    @property
+    def mongo_url(self):
+        return f"{self.mongo_protocol}://{self.mongo_username}:{self.mongo_password}@{self.mongo_host}/?retryWrites=true&w=majority"
 
     class Config:
         env_file = dotenv_file
@@ -140,6 +147,7 @@ repository_config = {
         "file_read": settings.zenodo_file_read_url,
         "move_or_rename_url": settings.zenodo_move_or_rename_url,
         "view_url": settings.zenodo_view_url,
+        "public_view_url": settings.zenodo_public_view_url,
         "schema": "/api/schema/zenodo/schema.json",
         "uischema": "/api/schema/zenodo/uischema.json",
         "schema_defaults": "/api/schema/zenodo/defaults.json",
@@ -159,6 +167,7 @@ repository_config = {
         "folder_delete": settings.hydroshare_folder_read_url,
         "move_or_rename_url": settings.hydroshare_move_or_rename_url,
         "view_url": settings.hydroshare_view_url,
+        "public_view_url": settings.hydroshare_view_url,
         "schema": "/api/schema/hydroshare/schema.json",
         "uischema": "/api/schema/hydroshare/uischema.json",
         "schema_defaults": "/api/schema/hydroshare/defaults.json",
@@ -174,6 +183,7 @@ repository_config = {
         "file_delete": settings.earthchem_file_delete_url,
         "file_read": settings.earthchem_file_read_url,
         "view_url": settings.earthchem_view_url,
+        "public_view_url": settings.earthchem_public_view_url,
         "schema": "/api/schema/earthchem/schema.json",
         "uischema": "/api/schema/earthchem/uischema.json",
         "schema_defaults": "/api/schema/earthchem/defaults.json",

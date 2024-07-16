@@ -4,12 +4,13 @@ import requests
 from fastapi import Request
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
+from pydantic import BaseModel
 from starlette.responses import JSONResponse
 
 from dspback.database.procedures import delete_submission
 from dspback.dependencies import RepositoryException
 from dspback.pydantic_schemas import RepositoryType
-from dspback.routers.metadata_class import MetadataRoutes
+from dspback.routers.metadata_class import MetadataRoutes, exists_and_is
 from dspback.schemas.earthchem.model import Record
 
 router = InferringRouter()
@@ -26,12 +27,16 @@ def prepare_metadata_for_ecl(json_metadata):
     return json_metadata
 
 
+class EarthChemMetadataResponse(BaseModel):
+    metadata: Record
+    published: bool
+
+
 @cbv(router)
 class EarthChemMetadataRoutes(MetadataRoutes):
-
     request_model = Record
     request_model_update = Record
-    response_model = Record
+    response_model = EarthChemMetadataResponse
     repository_type = RepositoryType.EARTHCHEM
 
     @router.post(
@@ -73,24 +78,20 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         description="Validates the incoming metadata and updates the EarthChem resource associated with the provided identifier.",
     )
     async def update_metadata(self, request: Request, metadata: request_model_update, identifier) -> response_model:
-        existing_metadata = await self.get_metadata_repository(request, identifier)
         incoming_metadata = metadata.json(skip_defaults=True, exclude_unset=True)
         json_metadata = json.loads(incoming_metadata)
-
-        merged_metadata = {**existing_metadata, **json_metadata}
-        merged_metadata = prepare_metadata_for_ecl(merged_metadata)
+        earthchem_metadata = prepare_metadata_for_ecl(json_metadata)
 
         access_token = await self.access_token(request)
         response = requests.put(
             self.update_url % identifier,
-            json=merged_metadata,
+            json=earthchem_metadata,
             headers={"Content-Type": "application/json", "Authorization": "Bearer " + str(access_token)},
         )
 
         if response.status_code >= 300:
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
-        # await self.submit(identifier)
         return await self.get_metadata_repository(request, identifier)
 
     async def _retrieve_metadata_from_repository(self, request: Request, identifier):
@@ -115,7 +116,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
                 json_metadata["leadAuthor"] = lead_author
                 json_metadata["contributors"] = all_contributors
 
-        return json_metadata
+        return self.wrap_metadata(json_metadata, "status" in json_metadata and json_metadata["status"] == "published")
 
     @router.get(
         '/metadata/earthchem/{identifier}',
@@ -130,6 +131,16 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         await self.submit(request, identifier=identifier, json_metadata=json_metadata)
         return json_metadata
 
+    @router.get(
+        '/submission/earthchem/{identifier}',
+        tags=["EarthChem"],
+        summary="Update and get an EarthChem record Submission",
+        description="Retrieves the metadata for the EarthChem record and returns the updated Submission in the database.",
+    )
+    async def update_and_get_submission(self, request: Request, identifier):
+        await self.get_metadata_repository(request, identifier)
+        return self.user.submission(identifier)
+
     @router.delete(
         '/metadata/earthchem/{identifier}',
         tags=["EarthChem"],
@@ -137,7 +148,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         description="Deletes the EarthChem record along with the submission record.",
     )
     async def delete_metadata_repository(self, request: Request, identifier):
-        delete_submission(self.db, self.repository_type, identifier, self.user)
+        await delete_submission(identifier, self.user)
 
         access_token = await self.access_token(request)
         response = requests.delete(
@@ -156,8 +167,8 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         summary="Register an EarthChem record",
         description="Creates a submission record of the EarthChem record.",
     )
-    async def submit_repository_record(self, identifier: str):
-        json_metadata = await self.submit(identifier)
+    async def submit_repository_record(self, request: Request, identifier: str):
+        json_metadata = await self.submit(request, identifier)
         return json_metadata
 
     @router.get(

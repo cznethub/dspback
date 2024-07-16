@@ -1,61 +1,26 @@
-from sqlalchemy.orm import Session
+import json
 
-from dspback.database.models import AuthorTable, RepositorySubmissionTable, UserTable
-from dspback.pydantic_schemas import RepositoryToken, RepositoryType, Submission
+from beanie import DeleteRules, WriteRules
 
-
-def create_or_update_submission(
-    db: Session, submission: Submission, user: UserTable, metadata_json
-) -> RepositorySubmissionTable:
-    submission_row = (
-        db.query(RepositorySubmissionTable)
-        .filter(RepositorySubmissionTable.identifier == submission.identifier)
-        .filter(RepositorySubmissionTable.user_id == user.id)
-        .first()
-    )
-    if submission_row:
-        db.delete(submission_row)
-
-    db_repository_submission = RepositorySubmissionTable(
-        title=submission.title,
-        repo_type=submission.repo_type,
-        identifier=submission.identifier,
-        user_id=user.id,
-        metadata_json=metadata_json,
-        url=submission.url,
-    )
-    db.add(db_repository_submission)
-    db.flush()
-    for author in submission.authors:
-        author = AuthorTable(name=author, repository_submission_id=db_repository_submission.id)
-        db.add(author)
-
-    db.commit()
-    db.refresh(db_repository_submission)
-    return db_repository_submission
+from dspback.pydantic_schemas import User
 
 
-def delete_submission(db: Session, repository: RepositoryType, identifier: str, user: UserTable):
-    submission_row = (
-        db.query(RepositorySubmissionTable)
-        .filter(RepositorySubmissionTable.identifier == identifier)
-        .filter(RepositorySubmissionTable.user_id == user.id)
-        .filter(RepositorySubmissionTable.repo_type == repository)
-        .first()
-    )
-    if submission_row:
-        db.delete(submission_row)
-    db.commit()
+async def delete_submission(identifier: str, user: User):
+    submission = user.submission(identifier)
+    await submission.delete(link_rule=DeleteRules.DELETE_LINKS)
 
 
-def delete_repository_access_token(db: Session, repository, user: UserTable):
-    repository_token: RepositoryToken = user.repository_token(db, repository)
-    if repository_token:
-        db.delete(repository_token)
-        db.commit()
+async def delete_repository_access_token(repository, user: User):
+    repository_token = user.repository_token(repository)
+    await repository_token.delete(link_rule=DeleteRules.DELETE_LINKS)
 
 
-def delete_access_token(db: Session, user: UserTable):
-    user.access_token = None
-    db.add(user)
-    db.commit()
+async def create_or_update_submission(identifier, record, user: User, metadata_json):
+    submission = record.to_submission(identifier)
+    submission.metadata_json = json.dumps(metadata_json, default=str)
+    existing_submission = user.submission(identifier)
+    if existing_submission:
+        await existing_submission.set(submission.dict(exclude_unset=True))
+    else:
+        user.submissions.append(submission)
+        await user.save(link_rule=WriteRules.WRITE)

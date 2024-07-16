@@ -4,21 +4,19 @@ import requests
 from authlib.integrations.starlette_client import OAuthError
 from fastapi import APIRouter, Request
 from fastapi.params import Depends
-from sqlalchemy.orm import Session
+from motor.motor_asyncio import AsyncIOMotorCollection as Session
 from starlette import status
 from starlette.responses import HTMLResponse, RedirectResponse, Response
 
 from dspback.config import Settings, get_settings, oauth
-from dspback.database.models import UserTable
-from dspback.database.procedures import delete_access_token
-from dspback.dependencies import create_or_update_user, get_current_user, get_db, url_for
+from dspback.dependencies import create_or_update_user, get_current_user, url_for
 from dspback.pydantic_schemas import ORCIDResponse, User
 
 router = APIRouter()
 
 
 @router.get('/')
-def home(user: UserTable = Depends(get_current_user)):
+def home(user: User = Depends(get_current_user)):
     return f"{user.name} is logged in"
 
 
@@ -33,24 +31,24 @@ async def login(request: Request, window_close: bool = False, settings: Settings
 
 @router.get('/logout')
 async def logout(
-    db: Session = Depends(get_db),
     settings: Settings = Depends(get_settings),
-    user: UserTable = Depends(get_current_user),
+    user: User = Depends(get_current_user),
 ):
     response = RedirectResponse(url="/")
     response.delete_cookie("Authorization", domain=settings.outside_host)
-    delete_access_token(db, user)
+    user.access_token = None
+    await user.save()
     return response
 
 
 @router.get('/auth')
-async def auth(request: Request, window_close: bool = False, db: Session = Depends(get_db)):
+async def auth(request: Request, window_close: bool = False):
     try:
         orcid_response = await oauth.orcid.authorize_access_token(request)
         orcid_response = ORCIDResponse(**orcid_response)
     except OAuthError as error:
         return HTMLResponse(f'<h1>{error.error}</h1>')
-    user: UserTable = create_or_update_user(db, orcid_response)
+    user: User = await create_or_update_user(orcid_response)
     token = user.access_token
     if window_close:
         responseHTML = '<html><head><title>CzHub Sign In</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
@@ -63,15 +61,16 @@ async def auth(request: Request, window_close: bool = False, db: Session = Depen
 
 
 @router.get('/health', status_code=status.HTTP_200_OK)
-async def perform_health_check(db: Session = Depends(get_db), settings: Settings = Depends(get_settings)):
+async def perform_health_check(settings: Settings = Depends(get_settings)):
     db_health = False
     orcid_health = False
     hydroshare_health = False
     zenodo_health = False
 
     try:
-        db.execute('SELECT 1')
-        db_health = True
+        # db.execute('SELECT 1')
+        # db_health = True
+        pass
     except Exception as e:
         output = str(e)
 
