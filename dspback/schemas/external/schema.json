@@ -163,6 +163,12 @@
           "format": "date-time",
           "options": {
             "placeholder": "YYYY-MM-DDTHH:MM"
+          },
+          "formatMaximum": {
+            "$data": "1/end"
+          },
+          "errorMessage": {
+            "formatMaximum": "must be lesser than or equal to End date"
           }
         },
         "end": {
@@ -172,6 +178,12 @@
           "format": "date-time",
           "options": {
             "placeholder": "YYYY-MM-DDTHH:MM"
+          },
+          "formatMinimum": {
+            "$data": "1/start"
+          },
+          "errorMessage": {
+            "formatMinimum": "must be greater than or equal to Start date"
           }
         }
       },
