@@ -178,18 +178,6 @@
           "amount": 1,
           "unit": "day"
         }
-      },
-      "if": {
-        "properties": {
-          "access_right": {
-            "const": "embargoed"
-          }
-        }
-      },
-      "then": {
-        "required": [
-          "embargo_date"
-        ]
       }
     },
     "notes": {
@@ -1103,6 +1091,18 @@
       ],
       "type": "string"
     }
+  },
+  "if": {
+    "properties": {
+      "access_right": {
+        "const": "embargoed"
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "embargo_date"
+    ]
   },
   "required": [
     "title",
