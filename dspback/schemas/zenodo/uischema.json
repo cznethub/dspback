@@ -69,6 +69,37 @@
       }
     },
     {
+      "type": "Control",
+      "scope": "#/properties/grants",
+      "options": {
+        "showSortButtons": true,
+        "elementLabelProp": "title",
+        "childLabelProp": "-",
+        "vocabulary": {
+          "jsonUrl": "https://zenodo.org/api/awards?page=1&size=5000000",
+          "queryParams": {
+            "search": "q"
+          },
+          "items": "hits.hits",
+          "value": {
+            "id": {
+              "contents": "id",
+              "hidden": true
+            },
+            "title": {
+              "contents": "title.en"
+            },
+            "number": {
+              "contents": "number"
+            },
+            "funder": {
+              "contents": "funder.name"
+            }
+          }
+        }
+      }
+    },
+    {
       "type": "Group",
       "label": "Related Resource Information",
       "elements": [
@@ -110,7 +141,7 @@
                   "type": "Control",
                   "scope": "#/properties/embargo_date",
                   "rule": {
-                    "effect": "DISABLE",
+                    "effect": "HIDE",
                     "condition": {
                       "scope": "#/properties/access_right",
                       "schema": {

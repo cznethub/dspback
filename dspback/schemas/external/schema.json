@@ -345,6 +345,12 @@
       "options": {
         "placeholder": "YYYY-MM-DDTHH:MM"
       },
+      "formatMinimum": {
+        "$data": "1/dateCreated"
+      },
+      "errorMessage": {
+        "formatMinimum": "must be greater than or equal to Date Created"
+      },
       "description": "The date on which the resource was last modified (ISO8601 formatted date) - YYYY-MM-DDTHH:MM."
     },
     "datePublished": {
