@@ -141,7 +141,7 @@
                   "type": "Control",
                   "scope": "#/properties/embargo_date",
                   "rule": {
-                    "effect": "DISABLE",
+                    "effect": "HIDE",
                     "condition": {
                       "scope": "#/properties/access_right",
                       "schema": {
