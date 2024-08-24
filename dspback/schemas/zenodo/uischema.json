@@ -92,7 +92,7 @@
             "number": {
               "contents": "number"
             },
-            "funder": {
+            "fundingAgency": {
               "contents": "funder.name"
             }
           }
