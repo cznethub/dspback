@@ -116,7 +116,11 @@ class ZenodoMetadataRoutes(MetadataRoutes):
 
         json_metadata = json.loads(response.text)
         grants_url = "https://zenodo.org/api/awards?q="
-        grants = json_metadata['metadata']['grants'] or []
+        
+        try:
+            grants = json_metadata['metadata']['grants']
+        except Exception as exp:
+            grants = []
 
         for grant in grants:
             number = grant['id'].split("::")[-1]
@@ -141,7 +145,8 @@ class ZenodoMetadataRoutes(MetadataRoutes):
                 continue
 
         # Filter out the ones not found in vocabulary search
-        json_metadata['metadata']['grants'] = [g for g in grants if g['id'] is not None]
+        if len(grants) > 0:
+            json_metadata['metadata']['grants'] = [g for g in grants if g['id'] is not None]
         
         return self.wrap_metadata(json_metadata, exists_and_is("doi", json_metadata["metadata"]))
 
