@@ -181,13 +181,9 @@
       }
     },
     "notes": {
-      "title": "Funding Agency Metadata",
-      "description": "Add metadata associated with funding agency credits for a resource in the format provided. Please separate multiple entries with an empty line.",
-      "type": "string",
-      "default": "Funding Agency Name: \nAward Title: \nAward Number: \nFunding Agency URL: ",
-      "options": {
-        "placeholder": "Funding Agency Name: \nAward Title: \nAward Number: \nFunding Agency URL: \n\nFunding Agency Name: \nAward Title: \nAward Number: \nFunding Agency URL: "
-      }
+      "title": "Notes",
+      "description": "Add any additional notes.",
+      "type": "string"
     },
     "keywords": {
       "title": "Keywords",
@@ -221,16 +217,16 @@
             "type": "string"
           },
           "number": {
-            "type": "string",
-            "title": "Award/Grant Number"
+            "title": "Award Number",
+            "type": "string"
           },
           "title": {
-            "type": "string",
-            "title": "Award/Grant Title"
+            "title": "Award Title",
+            "type": "string"
           },
-          "funder": {
-            "type": "string",
-            "title": "Funder"
+          "fundingAgency": {
+            "title": "Funding Agency Name",
+            "type": "string"
           }
         }
       }
@@ -1135,7 +1131,6 @@
     "title",
     "description",
     "keywords",
-    "notes",
     "access_right",
     "license"
   ]

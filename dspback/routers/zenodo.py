@@ -6,6 +6,7 @@ from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
 from pydantic import BaseModel
 from starlette.responses import JSONResponse
+from urllib.parse import quote
 
 from dspback.database.procedures import delete_submission
 from dspback.dependencies import RepositoryException
@@ -110,7 +111,38 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         if response.status_code >= 300:
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
+        # The grant metadata returned by zenodo is useless
+        # The only thing we can do is use the last fragment and perform a vocabulary search
+
         json_metadata = json.loads(response.text)
+        grants_url = "https://zenodo.org/api/awards?q="
+        grants = json_metadata['metadata']['grants'] or []
+
+        for grant in grants:
+            number = grant['id'].split("::")[-1]
+
+            # We will filter out the ones not found later
+            grant['id'] = None
+            
+            try:
+                response = requests.get(grants_url + quote(number, safe=''))
+                response_json = json.loads(response.text)
+                results = response_json['hits']['hits']
+
+                for result in results:
+                    if result['number'] == number:
+                        # Populate the schema fields
+                        grant["id"] = result['id']
+                        grant["number"] = result['number']
+                        grant["title"] = result['title']['en']
+                        grant["fundingAgency"] = result['funder']['name']
+                        break
+            except Exception as exp:
+                continue
+
+        # Filter out the ones not found in vocabulary search
+        json_metadata['metadata']['grants'] = [g for g in grants if g['id'] is not None]
+        
         return self.wrap_metadata(json_metadata, exists_and_is("doi", json_metadata["metadata"]))
 
     @router.get(
