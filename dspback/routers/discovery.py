@@ -14,6 +14,7 @@ from dspback.schemas.discovery import DiscoveryResult, PathEnum, TypeAhead
 
 router = APIRouter()
 
+SUPPORTED_REPOSITORIES = ['HydroShare', 'EarthChem Library', 'Zenodo']
 
 def is_one_char_off(str1, str2):
     if str1 == str2:
@@ -244,7 +245,10 @@ async def base_search(
     if creatorName:
         must.append({'text': {'path': 'creator.@list.name', 'query': creatorName}})
     if providerName:
-        must.append({'text': {'path': 'provider.name', 'query': providerName}})
+        if providerName == 'Other':
+            stages.append({'$match': {'provider.name': {'$nin': SUPPORTED_REPOSITORIES}}})
+        else:
+            must.append({'text': {'path': 'provider.name', 'query': providerName}})
     if contentType:
         must.append({'text': {'path': '@type', 'query': contentType}})
     if clusters:
