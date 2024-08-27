@@ -90,8 +90,43 @@ async def search(
         # get only results which meet minimum relevance score threshold
         score_threshold = get_settings().search_relevance_score_threshold
         stages.append({'$match': {'score': {'$gt': score_threshold}}})
+        stages[0]['$search']['count'] = {'type': 'total'}
+
+        stages.append({'$project': {'meta':  "$$SEARCH_META",
+                                    '_id': 0,
+                                    '@context': 1,
+                                    'repository_identifier': 1,
+                                    'url': 1,
+                                    '@type': 1,
+                                    'provider': 1,
+                                    'name': 1,
+                                    'description': 1,
+                                    'keywords': 1,
+                                    'creator': 1,
+                                    'funding': 1,
+                                    'temporalCoverage': 1,
+                                    'spatialCoverage': 1,
+                                    'license': 1,
+                                    'datePublished': 1,
+                                    'dateCreated': 1,
+                                    'relations': 1,
+                                    'legacy': 1,
+                                    'clusters': 1,
+                                    'score': 1,
+                                    'highlights': {'$meta': 'searchHighlights'}
+                                    }
+                       })
 
     results = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
+
+    if term:
+        meta = None
+        for result in results:
+            meta = result.pop('meta', None)
+        if meta:
+            results = {"meta": meta, "docs": results}
+    else:
+        results = {"docs": results}
     return results
 
 
