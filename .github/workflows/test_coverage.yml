@@ -20,6 +20,9 @@ jobs:
     - name: Download default .env file
       run: make default-env
 
+    - name: Setup docker-compose
+      uses: docker/setup-docker-compose@v1
+
     - name: Build containers
       run: make build
 
