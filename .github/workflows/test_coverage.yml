@@ -20,6 +20,9 @@ jobs:
     - name: Download default .env file
       run: make default-env
 
+    - name: Run docker-compose
+      uses: hoverkraft-tech/compose-action@v2.0.1
+
     - name: Build containers
       run: make build
 
