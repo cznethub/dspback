@@ -95,9 +95,12 @@ async def search(
     # Insert a facet stage before pagination to extract the total count
     stages.append({ "$facet": {"results": [{ "$skip": (pageNumber - 1) * pageSize }, { "$limit": pageSize }], "totalCount": [{ "$count": 'count'}]}})
     aggregation = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
+    total_count = aggregation[0]["totalCount"][0]["count"] if len(aggregation[0]["totalCount"]) else None
 
-    results = {"docs": aggregation[0]["results"], "meta": {"count": {"total": aggregation[0]["totalCount"][0]["count"] } }}
-    return results
+    if total_count is not None:
+        return {"docs": aggregation[0]["results"], "meta": {"count": {"total": total_count}}}
+    
+    return {"docs": aggregation[0]["results"]}
 
 
 @router.get("/search/fuzzy")
