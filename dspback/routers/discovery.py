@@ -10,7 +10,7 @@ from fastapi.responses import FileResponse
 from fuzzywuzzy import fuzz
 
 from dspback.config import get_settings
-from dspback.schemas.discovery import DiscoveryResult, PathEnum, TypeAhead
+from dspback.schemas.discovery import PathEnum, TypeAhead
 
 router = APIRouter()
 
@@ -31,6 +31,19 @@ def is_one_char_off(str1, str2):
             if mismatch_count == 1 and length_difference == 1:
                 return False
     return True
+
+
+async def aggregate_stages(request, stages, pageNumber = 1, pageSize = 30):
+    # Insert a `$facet` to extract the total count. We specify pagination here too.
+    stages.append({ "$facet": {"docs": [{ "$skip": (pageNumber - 1) * pageSize }, { "$limit": pageSize }], "totalCount": [{ "$count": 'count'}]}})
+
+    aggregation = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
+    total_count = aggregation[0]["totalCount"][0]["count"] if len(aggregation[0]["totalCount"]) else None
+
+    if total_count is not None:
+        return {"docs": aggregation[0]["docs"], "meta": {"count": {"total": total_count}}}
+    
+    return {"docs": aggregation[0]["docs"]}
 
 
 @router.get("/search")
@@ -55,13 +68,10 @@ async def search(
         creatorName,
         dataCoverageEnd,
         dataCoverageStart,
-        pageNumber,
-        pageSize,
         providerName,
         publishedEnd,
         publishedStart,
         sortBy,
-        term,
     )
 
     compound = {}
@@ -91,16 +101,7 @@ async def search(
         score_threshold = get_settings().search_relevance_score_threshold
         stages.append({'$match': {'score': {'$gt': score_threshold}}})
 
-    # TODO: implement for other search methods
-    # Insert a facet stage before pagination to extract the total count
-    stages.append({ "$facet": {"results": [{ "$skip": (pageNumber - 1) * pageSize }, { "$limit": pageSize }], "totalCount": [{ "$count": 'count'}]}})
-    aggregation = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
-    total_count = aggregation[0]["totalCount"][0]["count"] if len(aggregation[0]["totalCount"]) else None
-
-    if total_count is not None:
-        return {"docs": aggregation[0]["results"], "meta": {"count": {"total": total_count}}}
-    
-    return {"docs": aggregation[0]["results"]}
+    return await aggregate_stages(request, stages, pageNumber, pageSize)
 
 
 @router.get("/search/fuzzy")
@@ -125,13 +126,10 @@ async def search(
         creatorName,
         dataCoverageEnd,
         dataCoverageStart,
-        pageNumber,
-        pageSize,
         providerName,
         publishedEnd,
         publishedStart,
         sortBy,
-        term,
     )
 
     should = [{'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_paths]
@@ -147,9 +145,8 @@ async def search(
         },
     )
 
-    results = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
+    return await aggregate_stages(request, stages, pageNumber, pageSize)
 
-    return results
 
 
 @router.get("/search/fuzzy/feedback")
@@ -174,13 +171,10 @@ async def search_fuzzy_feedback(
         creatorName,
         dataCoverageEnd,
         dataCoverageStart,
-        pageNumber,
-        pageSize,
         providerName,
         publishedEnd,
         publishedStart,
         sortBy,
-        term,
     )
 
     should = [{'autocomplete': {'query': term, 'path': key}} for key in search_paths]
@@ -196,15 +190,15 @@ async def search_fuzzy_feedback(
         },
     )
 
-    results = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
+    results = await aggregate_stages(request, stages, pageNumber, pageSize)
 
-    if len(results) == 0:
+    if len(results["docs"]) == 0:
         fuzzy_should = [
             {'autocomplete': {'query': term, 'path': key, 'fuzzy': {'maxEdits': 1}}} for key in search_paths
         ]
         stages[0]['$search']['compound']['should'] = fuzzy_should
-        results = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
-        result_hits = await determine_fuzzy_result_terms(results, term)
+        results = await aggregate_stages(request, stages, pageNumber, pageSize)
+        result_hits = await determine_fuzzy_result_terms(results["docs"], term)
         return {"results": results, "fuzzy_search_terms": result_hits}
 
     return {"results": results, "fuzzy_search_terms": {}}
@@ -216,13 +210,10 @@ async def base_search(
     creatorName,
     dataCoverageEnd,
     dataCoverageStart,
-    pageNumber,
-    pageSize,
     providerName,
     publishedEnd,
     publishedStart,
     sortBy,
-    term,
 ):
     search_paths = PathEnum.values()
     must = []
@@ -267,10 +258,6 @@ async def base_search(
     if sortBy == "dateCreated":
         stages.append({'$sort': {"dateCreated": -1}})
 
-    # stages.append({'$skip': (pageNumber - 1) * pageSize})
-    # stages.append(
-    #     {'$limit': pageSize},
-    # )
     stages.append({'$unset': ['_id']})
     stages.append(
         {'$set': {'score': {'$meta': 'searchScore'}, 'highlights': {'$meta': 'searchHighlights'}}},
