@@ -84,50 +84,19 @@ async def search(
                 }
             },
         )
-        stages[0]['$search']['count'] = {'type': 'total'}
-        stages.append({'$project': {'meta': "$$SEARCH_META",
-                                    '_id': 0,
-                                    '@context': 1,
-                                    'repository_identifier': 1,
-                                    'url': 1,
-                                    '@type': 1,
-                                    'provider': 1,
-                                    'name': 1,
-                                    'description': 1,
-                                    'keywords': 1,
-                                    'creator': 1,
-                                    'funding': 1,
-                                    'temporalCoverage': 1,
-                                    'spatialCoverage': 1,
-                                    'license': 1,
-                                    'datePublished': 1,
-                                    'dateCreated': 1,
-                                    'relations': 1,
-                                    'legacy': 1,
-                                    'clusters': 1,
-                                    'score': 1
-                                    }
-                       })
 
     if term:
         stages[0]['$search']['highlight'] = {'path': search_paths}
         # get only results which meet minimum relevance score threshold
         score_threshold = get_settings().search_relevance_score_threshold
         stages.append({'$match': {'score': {'$gt': score_threshold}}})
-        for stage in stages:
-            if '$project' in stage:
-                stage['$project']['highlights'] = {'$meta': 'searchHighlights'}
-                break
 
-    results = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
+    # TODO: implement for other search methods
+    # Insert a facet stage before pagination to extract the total count
+    stages.append({ "$facet": {"results": [{ "$skip": (pageNumber - 1) * pageSize }, { "$limit": pageSize }], "totalCount": [{ "$count": 'count'}]}})
+    aggregation = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
 
-    meta = None
-    for result in results:
-        meta = result.pop('meta', None)
-    if meta:
-        results = {"meta": meta, "docs": results}
-    else:
-        results = {"docs": results}
+    results = {"docs": aggregation[0]["results"], "meta": {"count": {"total": aggregation[0]["totalCount"][0]["count"] } }}
     return results
 
 
@@ -294,10 +263,11 @@ async def base_search(
         stages.append({'$sort': {"name": 1}})
     if sortBy == "dateCreated":
         stages.append({'$sort': {"dateCreated": -1}})
-    stages.append({'$skip': (pageNumber - 1) * pageSize})
-    stages.append(
-        {'$limit': pageSize},
-    )
+
+    # stages.append({'$skip': (pageNumber - 1) * pageSize})
+    # stages.append(
+    #     {'$limit': pageSize},
+    # )
     stages.append({'$unset': ['_id']})
     stages.append(
         {'$set': {'score': {'$meta': 'searchScore'}, 'highlights': {'$meta': 'searchHighlights'}}},
