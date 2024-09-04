@@ -33,9 +33,10 @@ def is_one_char_off(str1, str2):
     return True
 
 
-async def aggregate_stages(request, stages, pageNumber = 1, pageSize = 30):
+async def aggregate_stages(request, stages, pageNumber=1, pageSize=30):
     # Insert a `$facet` to extract the total count. We specify pagination here too.
-    stages.append({ "$facet": {"docs": [{ "$skip": (pageNumber - 1) * pageSize }, { "$limit": pageSize }], "totalCount": [{ "$count": 'count'}]}})
+    stages.append({"$facet": {"docs": [{"$skip": (pageNumber - 1) * pageSize},
+                                       {"$limit": pageSize}], "totalCount": [{"$count": 'count'}]}})
 
     aggregation = await request.app.db[get_settings().mongo_database]["discovery"].aggregate(stages).to_list(pageSize)
     total_count = aggregation[0]["totalCount"][0]["count"] if len(aggregation[0]["totalCount"]) else None
