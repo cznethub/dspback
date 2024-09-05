@@ -19,9 +19,11 @@ router = InferringRouter()
 
 def to_zenodo_format(metadata_json):
     """
-    Prepares form input for Storage in Zenodo.  Notes is a string field we are using to store required funding
-    information. Our forms only use properties within the metadata property.
+    Prepares form input for Storage in Zenodo.
     """
+
+    if metadata_json["license"] and metadata_json["license"]["id"]:
+        metadata_json["license"] = metadata_json["license"]["id"]
 
     metadata_json = {"metadata": metadata_json}
     return metadata_json
@@ -29,8 +31,7 @@ def to_zenodo_format(metadata_json):
 
 def from_zenodo_format(json_metadata):
     """
-    Prepares Zenodo storage for our forms.  Notes is a string field we are using to store required funding
-    information. Our forms only use properties within the metadata property.
+    Prepares Zenodo storage for our forms.
     """
     json_metadata["metadata"] = json_metadata["metadata"]["metadata"]
     return json_metadata
@@ -111,12 +112,12 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         if response.status_code >= 300:
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
-        # The grant metadata returned by zenodo is useless
-        # The only thing we can do is use the last fragment and perform a vocabulary search
-
         json_metadata = json.loads(response.text)
-        grants_url = "https://zenodo.org/api/awards?q="
         
+        # ==== GRANTS ====
+        # Zenodo only returns an grant id as a string that references their vocabulary.
+        # The grant metadata returned by zenodo is useless, as the id they return might not match their vocabulary.
+        # The only thing we can do is use the last fragment and perform a vocabulary search.
         try:
             grants = json_metadata['metadata']['grants']
         except Exception as exp:
@@ -129,7 +130,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
             grant['id'] = None
             
             try:
-                response = requests.get(grants_url + quote(number, safe=''))
+                response = requests.get("https://zenodo.org/api/awards?q=" + quote(number, safe=''))
                 response_json = json.loads(response.text)
                 results = response_json['hits']['hits']
 
@@ -147,6 +148,35 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         # Filter out the ones not found in vocabulary search
         if len(grants) > 0:
             json_metadata['metadata']['grants'] = [g for g in grants if g['id'] is not None]
+
+        # ==== LICENSE ====
+        # Similarly, Zenodo only returns the selected license as an id string reference to their vocabulary.
+        # This id is not even guaranteed to match the one in their vocabulary.
+        # Attempt to fetch the rest of the license metadata.
+        # Example vocabulary entry: https://zenodo.org/api/vocabularies/licenses/glide
+
+        # default license
+        license = {
+            "id": "cc-by-4.0",
+            "name": "Creative Commons Attribution 4.0 International",
+            "description": "The Creative Commons Attribution license allows re-distribution and re-use of a licensed work on the condition that the creator is appropriately credited.",
+            "url": "https://creativecommons.org/licenses/by/4.0/legalcode",
+        }
+
+        try:
+            license_id = json_metadata['metadata']['license']
+            if license_id:
+                response = requests.get("https://zenodo.org/api/vocabularies/licenses/" + quote(license_id, safe=''))
+                result = json.loads(response.text)
+                license["id"] = result['id']
+                license["name"] = result['title']['en']
+                license["description"] = result['description']['en']
+                license["url"] = result['props']['url']
+            
+        except Exception as exp:
+            pass
+
+        json_metadata['metadata']['license'] = license
         
         return self.wrap_metadata(json_metadata, exists_and_is("doi", json_metadata["metadata"]))
 

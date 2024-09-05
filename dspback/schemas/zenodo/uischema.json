@@ -155,13 +155,34 @@
               ]
             },
             {
-              "type": "HorizontalLayout",
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/license"
+              "type": "Control",
+              "scope": "#/properties/license",
+              "options": {
+                "vocabulary": {
+                  "jsonUrl": "https://zenodo.org/api/vocabularies/licenses?page=1&size=5000",
+                  "default": "https://zenodo.org/api/vocabularies/licenses?page=1&size=5000",
+                  "queryParams": {
+                    "search": "q"
+                  },
+                  "items": "hits.hits",
+                  "value": {
+                    "id": {
+                      "contents": "id",
+                      "hidden": true
+                    },
+                    "name": {
+                      "contents": "title.en"
+                    },
+                    "description": {
+                      "contents": "description.en"
+                    },
+                    "url": {
+                      "contents": "props.url",
+                      "format": "url"
+                    }
+                  }
                 }
-              ]
+              }
             }
           ]
         }
