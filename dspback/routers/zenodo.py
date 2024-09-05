@@ -124,10 +124,16 @@ class ZenodoMetadataRoutes(MetadataRoutes):
             grants = []
 
         for grant in grants:
-            number = grant['id'].split("::")[-1]
+            # Grant metadata coming from their 'records' url have different properties. The grant id will the 'code' property
+            number = None
+            print(grant)
+            if "id" in grant:
+                number = grant["id"].split("::")[-1]
+            elif "code" in grant:
+                number = grant["code"]
 
             # We will filter out the ones not found later
-            grant['id'] = None
+            grant["id"] = None
             
             try:
                 response = requests.get("https://zenodo.org/api/awards?q=" + quote(number, safe=''))
