@@ -1,5 +1,4 @@
 import json
-from datetime import datetime, timedelta
 
 from authlib.integrations.starlette_client import OAuthError
 from fastapi import APIRouter, HTTPException, Request, status
@@ -36,11 +35,12 @@ async def auth_repository(
         repo = getattr(oauth, repository)
         token = await repo.authorize_access_token(request)
     except OAuthError as error:
-        return HTMLResponse(f'<h1>{error.error}</h1>')
+        responseHTML = '<html><head><title>Authorize CzHub</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
+        responseHTML = responseHTML.replace("%value%", json.dumps({'error': error.error}))
+        return HTMLResponse(responseHTML)
 
-    # TODO sort out await
     await create_or_update_repository_token(user, repository, token)
-    responseHTML = '<html><head><title>CzHub Sign In</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
+    responseHTML = '<html><head><title>Authorize CzHub</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
     responseHTML = responseHTML.replace("%value%", json.dumps({'token': token}))
     return HTMLResponse(responseHTML)
 
@@ -55,7 +55,7 @@ async def get_access_token(
     try:
         repository_token = await get_current_repository_token(request, repository, user, settings)
     except HTTPException as http_exception:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=http_exception.detail)
+        raise HTTPException(status_code=http_exception.status_code, detail=http_exception.detail)
     return {"access_token": repository_token.access_token}
 
 

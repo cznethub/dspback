@@ -96,28 +96,28 @@ class Settings(BaseSettings):
 def get_settings():
     return Settings()
 
-
+# https://docs.authlib.org/en/v0.15.5/client/frameworks.html#using-oauth-2-0-to-log-in
 settings = get_settings()
 config = Config(dotenv_file)
 oauth = OAuth(config)
 oauth.register(
     name='orcid',
     authorize_url=settings.orcid_authorize_url,
-    token_endpoint=settings.orcid_token_url,
+    access_token_url=settings.orcid_token_url,
     client_kwargs={'scope': 'openid'},
 )
 
 oauth.register(
     name='hydroshare',
     authorize_url=settings.hydroshare_authorize_url,
-    token_endpoint=settings.hydroshare_token_url,
+    access_token_url=settings.hydroshare_token_url,
 )
 
 oauth.register(
     name='zenodo',
     authorize_url=settings.zenodo_authorize_url,
     client_kwargs={'scope': 'deposit:write deposit:actions', 'response_type': "code"},
-    token_endpoint=settings.zenodo_token_url,
+    access_token_url=settings.zenodo_token_url,
     access_token_params={
         'grant_type': 'authorization_code',
         'scope': 'deposit:write deposit:actions',
@@ -129,7 +129,7 @@ oauth.register(
 oauth.register(
     name='earthchem',
     authorize_url=settings.earthchem_authorize_url,
-    token_endpoint=settings.earthchem_token_url,
+    access_token_url=settings.earthchem_token_url,
     client_kwargs={'scope': 'openid', 'response_type': 'code'},
     access_token_params={
         'client_id': settings.earthchem_client_id,
