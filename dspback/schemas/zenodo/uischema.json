@@ -76,9 +76,20 @@
         "elementLabelProp": "title",
         "childLabelProp": "-",
         "vocabulary": {
-          "jsonUrl": "https://zenodo.org/api/awards?page=1&size=5000000",
+          "jsonUrl": "https://zenodo.org/api/awards?page=1&size=10000",
           "queryParams": {
-            "search": "q"
+            "search": "q",
+            "facets": [
+              {
+                "vocabulary": "https://zenodo.org/api/awards?page=1&size=1",
+                "param": "funders",
+                "label": "Funder",
+                "items": "aggregations.funders.buckets",
+                "itemValue": "key",
+                "itemLabel": "label",
+                "defaultValue": "021nxhr62"
+              }
+            ]
           },
           "items": "hits.hits",
           "value": {
