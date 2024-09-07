@@ -195,7 +195,7 @@ async def get_current_repository_token(
     expiration_buffer: int = settings.access_token_expiration_buffer_seconds
     now = int(datetime.utcnow().timestamp())
 
-    if now > repository_token.expires_at - expiration_buffer:
+if now > repository_token.expires_at - expiration_buffer:
         # Token has expired or is about to expire. Attempt to refresh it.
         if repository_token.refresh_token:
             client = getattr(oauth, repository)
