@@ -10,6 +10,7 @@ from fastapi.security.utils import get_authorization_scheme_param
 from jose import JWTError, jwt
 from pydantic import BaseModel
 from starlette import status
+from authlib.integrations.starlette_client import OAuthError
 
 from dspback.config import Settings, get_settings, oauth
 from dspback.database.procedures import delete_repository_access_token
@@ -194,14 +195,19 @@ async def get_current_repository_token(
     expiration_buffer: int = settings.access_token_expiration_buffer_seconds
     now = int(datetime.utcnow().timestamp())
 
-    if now > repository_token.expires_at:
-        await delete_repository_access_token(repository, user)
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"User token for {repository} has expired")
-    if now > repository_token.expires_at - expiration_buffer:
+    if now > repository_token.expires_at - expiration_buffer or True:
+        # Token has expired or is about to expire. Attempt to refresh it.
         if repository_token.refresh_token:
             client = getattr(oauth, repository)
-            repository_token = await client.authorize_access_token(
-                request, grant_type='refresh_token', refresh_token=repository_token.refresh_token
-            )
-            repository_token = await create_or_update_repository_token(user, repository, repository_token)
+            try:
+                repository_token = await client.authorize_access_token(
+                    request, grant_type='refresh_token', refresh_token=repository_token.refresh_token
+                )
+                repository_token = await create_or_update_repository_token(user, repository, repository_token)
+            except OAuthError as error:
+                # Token refresh failed. If the token is expired, delete it.
+                if now > repository_token.expires_at:
+                    await delete_repository_access_token(repository, user)
+                    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Access token for {repository} has expired and could not be refreshed: {error.error}")
+            
     return repository_token
