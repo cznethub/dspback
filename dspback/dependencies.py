@@ -151,9 +151,6 @@ async def get_user_from_token(token: str, settings) -> User:
         token_data = TokenData(**payload)
         if token_data.orcid is None:
             raise TokenException(message="Token is missing the orcid")
-        if token_data.expiration < datetime.utcnow().timestamp():
-            # TODO register token in db for requested expiration
-            raise TokenException(message="Token is expired")
     except JWTError as e:
         raise TokenException(message=f"Exception occurred while decoding token [{str(e)}]")
     user: User = await User.find_one(User.orcid == token_data.orcid)
@@ -163,6 +160,27 @@ async def get_user_from_token(token: str, settings) -> User:
         raise TokenException(message="Access token is missing")
     if user.access_token != token:
         raise TokenException(message="Access token is invalid")
+    
+    # TODO: In progress...
+    expiration_buffer: int = settings.access_token_expiration_buffer_seconds
+    now = int(datetime.utcnow().timestamp())
+    print("===============---------------==================")
+    print(user)
+    print("Expires at: ", datetime.fromtimestamp(token_data.expiration))
+    print ("Refresh at: ", datetime.fromtimestamp(token_data.expiration - expiration_buffer))
+    print ("Time now: ", datetime.fromtimestamp(now))
+    print("===============---------------==================")
+
+    if token_data.expiration < now - expiration_buffer:
+        # TODO: attempt to refresh token
+        try:
+            orcid_response = await oauth.orcid.authorize_access_token(grant_type='refresh_token', refresh_token=user.refresh_token)
+            orcid_response = ORCIDResponse(**orcid_response)
+            user: User = await create_or_update_user(orcid_response)
+        except OAuthError as error:
+            # TODO register token in db for requested expiration
+            raise TokenException(message="Token is expired")
+        
     return user
 
 

@@ -7,6 +7,7 @@ from fastapi.params import Depends
 from motor.motor_asyncio import AsyncIOMotorCollection as Session
 from starlette import status
 from starlette.responses import HTMLResponse, RedirectResponse, Response
+from starlette.responses import JSONResponse
 
 from dspback.config import Settings, get_settings, oauth
 from dspback.dependencies import create_or_update_user, get_current_user, url_for
@@ -17,7 +18,7 @@ router = APIRouter()
 
 @router.get('/')
 def home(user: User = Depends(get_current_user)):
-    return f"{user.name} is logged in"
+    return JSONResponse({'token': user.access_token, 'expiresAt': user.expires_at})
 
 
 @router.get('/login')
@@ -53,11 +54,11 @@ async def auth(request: Request, window_close: bool = False):
     if window_close:
         responseHTML = '<html><head><title>CzHub Sign In</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
         responseHTML = responseHTML.replace(
-            "%value%", json.dumps({'token': token, 'expiresIn': orcid_response.expires_in})
+            "%value%", json.dumps({'token': token, 'expiresAt': orcid_response.expires_at, 'expiresIn': orcid_response.expires_in})
         )
         return HTMLResponse(responseHTML)
 
-    return Response(token)
+    return JSONResponse({'token': token, 'expiresAt': orcid_response.expires_at, 'expiresIn': orcid_response.expires_in})
 
 
 @router.get('/health', status_code=status.HTTP_200_OK)
