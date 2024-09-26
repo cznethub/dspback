@@ -1,12 +1,10 @@
 import json
-import os
 from datetime import datetime
-
-import pytest
 
 from dspback.config import get_settings
 from dspback.pydantic_schemas import EarthChemRecord, ExternalRecord, HydroShareRecord, RepositoryType, ZenodoRecord
-from tests import change_test_dir, earthchem, external, hydroshare, zenodo, zenodo_no_name
+from dspback.scheduler import parse_submission_notes_for_funding
+from tests import change_test_dir, earthchem, external, hydroshare, zenodo, zenodo_no_name, zenodo_notes_with_funder
 
 
 async def test_hydroshare_to_submission(hydroshare):
@@ -55,6 +53,13 @@ async def test_zenodo_published_to_submission(zenodo):
     assert zenodo_submission.repo_type == RepositoryType.ZENODO
     assert zenodo_submission.submitted <= datetime.utcnow()
     assert zenodo_submission.url == get_settings().zenodo_public_view_url % "947940"
+
+
+async def test_zenodo_notes_with_funder_to_submission(zenodo_notes_with_funder):
+    public_json_ld = zenodo_notes_with_funder
+    metadata_json = json.dumps(public_json_ld)
+    await parse_submission_notes_for_funding(public_json_ld,  metadata_json)
+    assert public_json_ld["funding"][0]["identifier"] == "2012082"
 
 
 async def test_external_to_submission(external):
