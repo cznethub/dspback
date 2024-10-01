@@ -43,6 +43,20 @@ async def retrieve_discovery_jsonld(identifier, repository_type, url):
     # only Zenodo does not have provider in the json ld
     if repository_type == RepositoryType.ZENODO:
         resource_json_ld['provider'] = {'name': 'Zenodo'}
+        parse_funding_jsonld(resource_json_ld)
+
     resource_json_ld["repository_identifier"] = identifier
     jsonld = JSONLD(**resource_json_ld)
     return jsonld.dict(by_alias=True, exclude_none=True)
+
+
+def parse_funding_jsonld(resource_json_ld):
+    if 'funding' in resource_json_ld:
+        funding_items = resource_json_ld['funding']
+        all_funding = []
+        for funder_item in funding_items:
+            funder_name = funder_item['funder']['name']
+            identifier = funder_item['identifier'].split('::')[1]
+            funding_name = funder_item['name']
+            all_funding.append({'name': funding_name, 'identifier': identifier, 'funder': {'name': funder_name}})
+        resource_json_ld['funding'] = all_funding

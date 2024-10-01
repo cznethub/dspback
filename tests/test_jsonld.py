@@ -3,11 +3,11 @@ import json
 import pytest
 from pydantic import BaseModel
 
-from dspback.pydantic_schemas import RepositoryType, Submission
+from dspback.pydantic_schemas import RepositoryType
 from dspback.scheduler import retrieve_submission_json_ld
-from dspback.schemas.discovery import JSONLD
+from dspback.schemas.discovery import JSONLD, Funding
 from dspback.utils.jsonld.clusters import clusters
-from dspback.utils.jsonld.scraper import format_fields
+from dspback.utils.jsonld.scraper import format_fields, parse_funding_jsonld
 from tests import change_test_dir, earthchem_jsonld
 
 ids_and_cluster = [
@@ -72,6 +72,23 @@ async def test_substring_match():
     matched_clusters = clusters(jsonld)
     assert len(matched_clusters) == 1
     assert "Bedrock Cluster" in matched_clusters
+
+
+@pytest.mark.asyncio
+async def test_parse_funding_zenodo():
+    jsonld = {"funding": [{"funder": {"@id": "021nxhr62", "@type": "Organization",
+                                      "name": "National Science Foundation"},
+                           "identifier": "021nxhr62::2011910",
+                           "name": "Collaborative Research: Network Cluster: Dust in the Critical Zone from the Great Basin to the Rocky Mountains (2011910)"},
+                          {"funder": {"@id": "021nxhr62", "@type": "Organization",
+                                      "name": "National Science Foundation"},
+                           "identifier": "021nxhr62::1926559",
+                           "name": "MSA:  Dust as an ecosystem driver: determining the ecosystem consequences of cross-system subsidies of nutrients and microorganisms in dusts (1926559)"}]}
+    parse_funding_jsonld(jsonld)
+    funding = Funding(**jsonld["funding"][0])
+    assert funding.identifier == "2011910"
+    funding = Funding(**jsonld["funding"][1])
+    assert funding.identifier == "1926559"
 
 
 @pytest.mark.asyncio
