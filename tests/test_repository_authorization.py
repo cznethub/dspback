@@ -34,7 +34,7 @@ async def test_get_access_token_not_found(client_test, user_cookie):
     response = await client_test.get(
         prefix + "/access_token/zenodo?access_token=" + user_cookie, follow_redirects=False
     )
-    assert response.status_code == 404
+    assert response.status_code == 401
 
 
 async def test_get_access_token(client_test, user_cookie, authorize_response):
@@ -55,4 +55,4 @@ async def test_get_access_token_expired(client_test, user_cookie, authorize_resp
     response = await client_test.get(
         prefix + "/access_token/zenodo?access_token=" + user_cookie, follow_redirects=False
     )
-    assert response.status_code == 404
+    assert response.status_code == 401
