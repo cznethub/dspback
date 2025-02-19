@@ -95,17 +95,27 @@ class EarthChemMetadataRoutes(MetadataRoutes):
         return await self.get_metadata_repository(request, identifier)
 
     async def _retrieve_metadata_from_repository(self, request: Request, identifier):
-        access_token = await self.access_token(request)
         response = requests.get(
             self.read_url % identifier,
-            headers={"accept": "application/json", "Authorization": "Bearer " + str(access_token)},
+            headers={"accept": "application/json"},
         )
+
+        if response.status_code == 401:
+            access_token = await self.access_token(request)
+            response = requests.get(
+                self.read_url % identifier,
+                headers={"accept": "application/json", "Authorization": "Bearer " + str(access_token)},
+            )
 
         if response.status_code >= 300:
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
+        try:
+            json_metadata = json.loads(response.text)
+        except json.JSONDecodeError:
+            raise RepositoryException(status_code=500, detail="Failed to parse JSON response")
+
         # split first contributors to leadAuthor
-        json_metadata = json.loads(response.text)
         if "contributors" in json_metadata:
             all_contributors = json_metadata["contributors"]
             for contributor in json_metadata["contributors"]:

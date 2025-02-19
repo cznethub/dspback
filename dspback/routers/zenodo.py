@@ -101,18 +101,24 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         return await self.get_metadata_repository(request, identifier)
 
     async def _retrieve_metadata_from_repository(self, request: Request, identifier):
-        access_token = await self.access_token(request)
-        response = requests.get(self.read_url % identifier, params={"access_token": access_token})
+        response = requests.get(self.read_url % identifier)
 
-        if response.status_code >= 300:
-            response = requests.get(
-                self.settings.zenodo_published_read_url % identifier, params={"access_token": access_token}
-            )
+        if response.status_code == 401:
+            access_token = await self.access_token(request)
+            response = requests.get(self.read_url % identifier, params={"access_token": access_token})
+
+            if response.status_code >= 300:
+                response = requests.get(
+                    self.settings.zenodo_published_read_url % identifier, params={"access_token": access_token}
+                )
 
         if response.status_code >= 300:
             raise RepositoryException(status_code=response.status_code, detail=response.text)
 
-        json_metadata = json.loads(response.text)
+        try:
+            json_metadata = json.loads(response.text)
+        except json.JSONDecodeError:
+            raise RepositoryException(status_code=500, detail="Failed to parse JSON response")
         
         # ==== GRANTS ====
         # Zenodo only returns an grant id as a string that references their vocabulary.
