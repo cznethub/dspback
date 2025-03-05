@@ -1,6 +1,5 @@
 from fastapi import Depends
 from fastapi_restful.inferring_router import InferringRouter
-from pydantic import BaseModel
 
 from dspback.config import Settings, get_settings, repository_config
 from dspback.dependencies import get_current_repository_token, get_current_user

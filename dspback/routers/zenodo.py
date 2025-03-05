@@ -126,7 +126,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         # The only thing we can do is use the last fragment and perform a vocabulary search.
         try:
             grants = json_metadata['metadata']['grants']
-        except Exception as exp:
+        except Exception:
             grants = []
 
         for grant in grants:
@@ -153,7 +153,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
                         grant["title"] = result['title']['en']
                         grant["fundingAgency"] = result['funder']['name']
                         break
-            except Exception as exp:
+            except Exception:
                 continue
 
         # Filter out the ones not found in vocabulary search
@@ -184,7 +184,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
                 license["description"] = result['description']['en']
                 license["url"] = result['props']['url']
             
-        except Exception as exp:
+        except Exception:
             pass
 
         json_metadata['metadata']['license'] = license

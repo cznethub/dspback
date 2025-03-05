@@ -10,7 +10,7 @@ from starlette.responses import JSONResponse
 from dspback.database.procedures import delete_submission
 from dspback.dependencies import RepositoryException
 from dspback.pydantic_schemas import RepositoryType
-from dspback.routers.metadata_class import MetadataRoutes, exists_and_is
+from dspback.routers.metadata_class import MetadataRoutes
 from dspback.schemas.earthchem.model import Record
 
 router = InferringRouter()

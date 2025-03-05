@@ -6,7 +6,7 @@ from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
 from hsmodels.schemas import ResourceMetadata as Res_MD
 from hsmodels.schemas import rdf_string
-from pydantic import BaseModel, create_model
+from pydantic import BaseModel
 from starlette.responses import JSONResponse
 
 from dspback.database.procedures import delete_submission
