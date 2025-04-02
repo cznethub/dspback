@@ -1,5 +1,4 @@
 import json
-
 import requests
 from fastapi import Request
 from fastapi_restful.cbv import cbv
@@ -44,61 +43,8 @@ class ZenodoMetadataResponse(BaseModel):
 
 @cbv(router)
 class ZenodoMetadataRoutes(MetadataRoutes):
-    request_model = ZenodoDatasetsSchemaForCzNetV100
     response_model = ZenodoMetadataResponse
     repository_type = RepositoryType.ZENODO
-
-    @router.post(
-        '/metadata/zenodo',
-        response_model_exclude_unset=True,
-        response_model=response_model,
-        tags=["Zenodo"],
-        summary="Create a Zenodo resource",
-        description="Validates the incoming metadata, creates a new Zenodo record and creates a submission record.",
-    )
-    async def create_metadata_repository(self, request: Request, metadata: request_model):
-        metadata_json = json.loads(metadata.json(exclude_none=True))
-        metadata_json = to_zenodo_format(metadata_json)
-        access_token = await self.access_token(request)
-        response = requests.post(
-            self.create_url,
-            json=metadata_json,
-            params={"access_token": access_token},
-            headers={"Content-Type": "application/json"},
-            timeout=15.0,
-        )
-
-        if response.status_code >= 300:
-            raise RepositoryException(status_code=response.status_code, detail=response.text)
-
-        identifier = response.json()["record_id"]
-        json_metadata = await self.get_metadata_repository(request, identifier)
-
-        return JSONResponse(json_metadata, status_code=201)
-
-    @router.put(
-        '/metadata/zenodo/{identifier}',
-        response_model_exclude_unset=True,
-        response_model=response_model,
-        tags=["Zenodo"],
-        summary="Update a Zenodo record",
-        description="Validates the incoming metadata and updates the Zenodo record associated with the provided identifier.",
-    )
-    async def update_metadata(self, request: Request, metadata: request_model, identifier):
-        incoming_metadata = metadata.json(skip_defaults=True, exclude_unset=True)
-        zenodo_metadata = to_zenodo_format(json.loads(incoming_metadata))
-        access_token = await self.access_token(request)
-        response = requests.put(
-            self.update_url % identifier,
-            json=zenodo_metadata,
-            headers={"Content-Type": "application/json"},
-            params={"access_token": access_token},
-        )
-
-        if response.status_code >= 300:
-            raise RepositoryException(status_code=response.status_code, detail=response.text)
-
-        return await self.get_metadata_repository(request, identifier)
 
     async def _retrieve_metadata_from_repository(self, request: Request, identifier):
         access_token = await self.access_token(request)
@@ -247,3 +193,4 @@ class ZenodoMetadataRoutes(MetadataRoutes):
         json_metadata = from_zenodo_format(json_metadata)
 
         return json_metadata
+
