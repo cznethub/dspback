@@ -43,6 +43,7 @@ class ZenodoMetadataResponse(BaseModel):
 
 @cbv(router)
 class ZenodoMetadataRoutes(MetadataRoutes):
+    request_model = ZenodoDatasetsSchemaForCzNetV100
     response_model = ZenodoMetadataResponse
     repository_type = RepositoryType.ZENODO
 
