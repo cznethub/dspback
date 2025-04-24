@@ -139,10 +139,15 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         return json_metadata
 
     async def _retrieve_metadata_from_repository(self, request: Request, identifier):
-        access_token = await self.access_token(request)
-        response = requests.get(self.read_url % identifier, params={"access_token": access_token})
+        # Try to fetch the resource. Published/public resources can be accessed without an access token.
+        response = requests.get(self.read_url % identifier)
+
         if response.status_code >= 300:
-            raise RepositoryException(status_code=response.status_code, detail=response.text)
+        # If permission is required, try using the access token
+            access_token = await self.access_token(request)
+            response = requests.get(self.read_url % identifier, params={"access_token": access_token})
+            if response.status_code >= 300:
+                raise RepositoryException(status_code=response.status_code, detail=response.text)
 
         """
         HydroShare maintenance mode
