@@ -97,7 +97,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
     async def _retrieve_metadata_from_repository(self, request: Request, identifier):
         # Try to fetch the resource. Published/public resources can be accessed without an access token.
         response = requests.get(self.read_url % identifier)
-
+        access_token = None
         if response.status_code >= 300:
             # If permission is required, try using the access token
             access_token = await self.access_token(request)
@@ -121,7 +121,8 @@ class EarthChemMetadataRoutes(MetadataRoutes):
                 json_metadata["leadAuthor"] = lead_author
                 json_metadata["contributors"] = all_contributors
 
-        return self.wrap_metadata(json_metadata, "status" in json_metadata and json_metadata["status"] == "published")
+        # TODO: add another flag indicating if the user has edit permit on this resource
+        return self.wrap_metadata(json_metadata, "status" in json_metadata and json_metadata["status"] == "published", access_token is None)
 
     @router.get(
         '/metadata/earthchem/{identifier}',

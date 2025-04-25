@@ -32,8 +32,8 @@ class MetadataRoutes:
         repository_token = await get_current_repository_token(request, self.repository_type, self.user, self.settings)
         return repository_token.access_token
 
-    def wrap_metadata(self, metadata: dict, published: bool):
-        return {"metadata": metadata, "published": published}
+    def wrap_metadata(self, metadata: dict, published: bool, is_public):
+        return {"metadata": metadata, "published": published, "public": is_public or False}
 
     def __init__(self):
         if self.request_model is None:

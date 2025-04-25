@@ -142,6 +142,7 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         # Try to fetch the resource. Published/public resources can be accessed without an access token.
         response = requests.get(self.read_url % identifier)
 
+        access_token = None
         if response.status_code >= 300:
         # If permission is required, try using the access token
             access_token = await self.access_token(request)
@@ -159,9 +160,10 @@ class HydroShareMetadataRoutes(MetadataRoutes):
         except:
             raise RepositoryException(status_code=500, detail="Failed to parse JSON response")
 
-        json_metadata = json.loads(response.text)
         json_metadata = from_hydroshare_format(json_metadata)
-        return self.wrap_metadata(json_metadata, exists_and_is("published", json_metadata))
+
+        # TODO: add another flag indicating if the user has edit permit on this resource
+        return self.wrap_metadata(json_metadata, exists_and_is("published", json_metadata), access_token is None)
 
     @router.get(
         '/metadata/hydroshare/{identifier}',
