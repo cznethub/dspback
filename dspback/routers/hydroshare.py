@@ -162,7 +162,6 @@ class HydroShareMetadataRoutes(MetadataRoutes):
 
         json_metadata = from_hydroshare_format(json_metadata)
 
-        # TODO: add another flag indicating if the user has edit permit on this resource
         return self.wrap_metadata(json_metadata, exists_and_is("published", json_metadata), access_token is None)
 
     @router.get(

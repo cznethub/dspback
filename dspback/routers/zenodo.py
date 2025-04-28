@@ -180,7 +180,7 @@ class ZenodoMetadataRoutes(MetadataRoutes):
 
         json_metadata['metadata']['license'] = license
         
-        return self.wrap_metadata(json_metadata, exists_and_is("doi", json_metadata["metadata"]))
+        return self.wrap_metadata(json_metadata, exists_and_is("doi", json_metadata["metadata"]), True)
 
     @router.get(
         '/metadata/zenodo/{identifier}',
