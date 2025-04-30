@@ -50,7 +50,7 @@ class ExternalMetadataRoutes(MetadataRoutes):
     )
     async def update_metadata(self, request: Request, metadata: request_model, identifier):
         metadata_json = json.loads(metadata.json())
-        return await self.submit(request, identifier, self.wrap_metadata(metadata_json, False))
+        return await self.submit(request, identifier, self.wrap_metadata(metadata=metadata_json, published=False, is_public=False))
 
     @router.get(
         '/metadata/external/{identifier}',
@@ -64,7 +64,7 @@ class ExternalMetadataRoutes(MetadataRoutes):
         submission = self.user.submission(identifier)
         metadata_json_str = submission.metadata_json
         metadata_json = json.loads(metadata_json_str)
-        return self.wrap_metadata(metadata_json, False)
+        return self.wrap_metadata(metadata=metadata_json, published=False, is_public=False)
 
     @router.delete(
         '/metadata/external/{identifier}',
