@@ -35,10 +35,11 @@ jobs:
       run: sleep 10s
       shell: bash
       
-    - name: Run Tests and Build Coverage
-      run: make test-cov-gh-action
+    - name: Run Tests
+      run: docker exec dsp_dev_dspback pytest tests --cov=dspback --cache-clear 2>&1 | tee pytest-coverage.txt
 
     - name: Comment coverage
+      if: success()
       uses: coroo/pytest-coverage-commentator@v1.0.2
       with:
         pytest-coverage: pytest-coverage.txt
