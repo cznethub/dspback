@@ -270,7 +270,7 @@ async def base_search(
     if contentType:
         must.append({'text': {'path': '@type', 'query': contentType}})
     if clusters:
-        stages.append({'$match': {'clusters': {'$all': clusters}}})
+        stages.append({'$match': {'clusters': {'$in': clusters}}})
     # Sort needs to happen before pagination, ignore all other values of sortBy
     if sortBy == "name":
         stages.append({'$sort': {"name": 1}})
