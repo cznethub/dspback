@@ -36,11 +36,17 @@ jobs:
       shell: bash
       
     - name: Run Tests and Build Coverage
-      id: tests
-      run: make test-cov-gh-action
+      run: |
+        set -e
+        make test-cov-gh-action
+        exit_code=$?
+        if [ $exit_code -ne 0 ]; then
+          echo "Tests failed with exit code $exit_code"
+          exit $exit_code
+        fi
 
     - name: Comment coverage
-      if: success()  # Only run if tests passed
+      if: success()
       uses: coroo/pytest-coverage-commentator@v1.0.2
       with:
         pytest-coverage: pytest-coverage.txt
