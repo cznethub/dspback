@@ -36,7 +36,7 @@ jobs:
       shell: bash
       
     - name: Run Tests
-      run: docker exec dsp_dev_dspback pytest tests --cov=dspback --cache-clear > pytest-coverage.txt 2>&1
+      run: docker exec dsp_dev_dspback pytest tests --cov=dspback --cache-clear 2>&1 | tee pytest-coverage.txt
 
     - name: Comment coverage
       if: success()
