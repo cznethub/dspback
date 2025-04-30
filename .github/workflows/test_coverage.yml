@@ -36,9 +36,11 @@ jobs:
       shell: bash
       
     - name: Run Tests and Build Coverage
+      id: tests
       run: make test-cov-gh-action
 
     - name: Comment coverage
+      if: success()  # Only run if tests passed
       uses: coroo/pytest-coverage-commentator@v1.0.2
       with:
         pytest-coverage: pytest-coverage.txt
