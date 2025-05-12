@@ -32,9 +32,9 @@ class MetadataRoutes:
         repository_token = await get_current_repository_token(request, self.repository_type, self.user, self.settings)
         return repository_token.access_token
 
-    def wrap_metadata(self, metadata: dict, published: bool, is_public):
+    def wrap_metadata(self, metadata: dict, is_published: bool, is_public):
         # TODO: add another flag `can_edit` indicating if the user has edit permit on this resource
-        return {"metadata": metadata, "published": published, "public": is_public or False}
+        return {"metadata": metadata, "published": is_published, "public": is_public or False}
 
     def __init__(self):
         if self.request_model is None:
