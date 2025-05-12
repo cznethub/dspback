@@ -182,6 +182,7 @@ class HydroShareRecord(BaseRecord):
 
     class Creator(BaseModel):
         name: str = None
+        organization: str = None
 
     class Award(BaseModel):
         funding_agency_name: str = None
