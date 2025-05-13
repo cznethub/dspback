@@ -182,6 +182,7 @@ class HydroShareRecord(BaseRecord):
 
     class Creator(BaseModel):
         name: str = None
+        organization: str = None
 
     class Award(BaseModel):
         funding_agency_name: str = None
@@ -218,7 +219,7 @@ class HydroShareRecord(BaseRecord):
         view_url = view_url % identifier
         return Submission(
             title=self.title,
-            authors=[creator.name for creator in self.creators],
+            authors=[creator.name if creator.name else creator.organization for creator in self.creators],
             repo_type=RepositoryType.HYDROSHARE,
             submitted=datetime.utcnow(),
             identifier=identifier,

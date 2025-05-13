@@ -445,8 +445,9 @@
           "$ref": "#/definitions/ProfileUrlPattern"
         }
       },
-      "required": [
-        "name"
+      "anyOf": [
+        {"required": ["name"]},
+        {"required": ["organization"]}
       ]
     },
     "Contributor": {
