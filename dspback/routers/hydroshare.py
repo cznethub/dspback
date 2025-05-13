@@ -167,10 +167,9 @@ class HydroShareMetadataRoutes(MetadataRoutes):
     @router.get(
         '/metadata/hydroshare/{identifier}',
         response_model_exclude_unset=True,
-        response_model=response_model,
         tags=["HydroShare"],
         summary="Get a HydroShare resource",
-        description="Retrieves the metadata for the HydroShare resource.",
+        description="Retrieves the metadata for the HydroShare resource and saves it to our database.",
     )
     async def get_metadata_repository(self, request: Request, identifier):
         json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
