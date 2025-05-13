@@ -100,7 +100,7 @@ async def test_external_to_jsonld(external):
 
 async def test_earthchem_to_submission(earthchem):
     earthchem_record = EarthChemRecord(**earthchem)
-    earthchem_record.datePublished = None
+    earthchem_record.status = "incomplete"
     earthchem_submission = earthchem_record.to_submission("947940")
 
     assert earthchem_submission.title == earthchem_record.title
@@ -115,6 +115,7 @@ async def test_earthchem_to_submission(earthchem):
 
 async def test_earthchem_published_to_submission(earthchem):
     earthchem_record = EarthChemRecord(**earthchem)
+    earthchem_record.status = "published"
     earthchem_submission = earthchem_record.to_submission("947940")
 
     assert earthchem_submission.title == earthchem_record.title

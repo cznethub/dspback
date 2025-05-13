@@ -256,14 +256,14 @@ class EarthChemRecord(BaseRecord):
     leadAuthor: Contributor
     license: Optional[License]
     fundings: List[Funding] = []
-    datePublished: Optional[date]
+    status: str = "incomplete"
     relatedResources: Optional[List[RelatedResource]] = []
 
     def to_submission(self, identifier) -> Submission:
         settings = get_settings()
         view_url = (
             settings.earthchem_public_view_url % identifier
-            if self.datePublished
+            if self.status == "published"
             else settings.earthchem_view_url % identifier
         )
         authors = [contributor.name for contributor in self.contributors]

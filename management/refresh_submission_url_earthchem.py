@@ -1,4 +1,5 @@
 import asyncio
+import json
 from dspback.pydantic_schemas import RepositoryType
 
 import motor
@@ -27,7 +28,13 @@ async def main():
     count = 0
     for submission in await Submission.find(Submission.repo_type == RepositoryType.EARTHCHEM).to_list():
         print(f"updating {submission.url}")
-        submission.url = get_settings().earthchem_public_view_url % submission.identifier
+        # load the metadata_json and check if it is published using the status field
+        metadata_json = json.loads(submission.metadata_json)
+        status = metadata_json.get("status", "incomplete")
+        if status == "published":
+            submission.url = get_settings().earthchem_public_view_url % submission.identifier
+        else:
+            submission.url = get_settings().earthchem_view_url % submission.identifier
         await submission.save()
         print(f"to {submission.url}")
         count = count + 1
