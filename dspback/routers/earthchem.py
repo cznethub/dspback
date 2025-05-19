@@ -127,7 +127,6 @@ class EarthChemMetadataRoutes(MetadataRoutes):
     @router.get(
         '/metadata/earthchem/{identifier}',
         response_model_exclude_unset=True,
-        response_model=response_model,
         tags=["EarthChem"],
         summary="Get an EarthChem record",
         description="Retrieves the metadata for the EarthChem record.",
