@@ -104,6 +104,8 @@ oauth.register(
     name='orcid',
     authorize_url=settings.orcid_authorize_url,
     access_token_url=settings.orcid_token_url,
+    client_id=settings.orcid_client_id,
+    client_secret=settings.orcid_client_secret,
     client_kwargs={'scope': 'openid'},
 )
 
