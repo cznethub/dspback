@@ -131,7 +131,6 @@ class ZenodoMetadataRoutes(MetadataRoutes):
 
     @router.get(
         '/metadata/zenodo/{identifier}',
-        response_model_exclude_unset=True,
         tags=["Zenodo"],
         summary="Get a Zenodo record",
         description="Retrieves the metadata for the Zenodo record.",

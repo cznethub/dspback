@@ -1,5 +1,4 @@
 import json
-
 import requests
 from fastapi import Request
 from fastapi_restful.cbv import cbv
@@ -126,12 +125,11 @@ class EarthChemMetadataRoutes(MetadataRoutes):
 
     @router.get(
         '/metadata/earthchem/{identifier}',
-        response_model_exclude_unset=True,
         tags=["EarthChem"],
         summary="Get an EarthChem record",
         description="Retrieves the metadata for the EarthChem record.",
     )
-    async def get_metadata_repository(self, request: Request, identifier) -> response_model:
+    async def get_metadata_repository(self, request: Request, identifier):
         json_metadata = await self._retrieve_metadata_from_repository(request, identifier)
         await self.submit(request, identifier=identifier, json_metadata=json_metadata)
         return json_metadata
