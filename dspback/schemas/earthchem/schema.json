@@ -195,7 +195,7 @@
       "type": "array",
       "items": {
         "title": "Funding Source",
-        "anyOf": [
+        "oneOf": [
           {
             "title": "Select one",
             "anyOf": [
@@ -525,8 +525,7 @@
             "type": "object",
             "title": "Other",
             "required": [
-              "identifier",
-              "funder"
+              "identifier"
             ],
             "properties": {
               "identifier": {
@@ -539,15 +538,27 @@
                 "description": "A person or organization that provides money for a particular purpose",
                 "type": "object",
                 "default": {
-                  "alternateName": "Other"
+                  "alternateName": "Other",
+                  "name": "Other funding source",
+                  "identifiers": []
                 },
                 "const": {
-                  "alternateName": "Other"
+                  "alternateName": "Other",
+                  "name": "Other funding source",
+                  "identifiers": []
                 },
                 "properties": {
                   "alternateName": {
                     "type": "string",
                     "default": "Other"
+                  },
+                  "name": {
+                    "type": "string",
+                    "default": "Other funding source"
+                  },
+                  "identifiers": {
+                    "type": "array",
+                    "default": []
                   }
                 }
               }
