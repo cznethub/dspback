@@ -309,6 +309,7 @@
       "scope": "#/properties/fundings",
       "options": {
         "flat": true,
+        "elementLabelProp": "identifier",
         "detail": {
           "type": "Control",
           "scope": "#",
