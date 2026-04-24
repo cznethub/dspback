@@ -95,7 +95,7 @@ class EarthChemMetadataRoutes(MetadataRoutes):
 
     async def _retrieve_metadata_from_repository(self, request: Request, identifier):
         # Try to fetch the resource. Published/public resources can be accessed without an access token.
-        response = requests.get(self.public_view_url % identifier)
+        response = requests.get(self.read_url % identifier)
         if response.status_code >= 300:
                 raise RepositoryException(status_code=response.status_code, detail=response.text)
 

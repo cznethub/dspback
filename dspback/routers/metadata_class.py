@@ -62,6 +62,3 @@ class MetadataRoutes:
         if "delete" not in repository_config[self.repository_type]:
             raise ValueError(f"No 'delete' value found for {self.repository_type} configuration")
         self.delete_url = repository_config[self.repository_type]["delete"]
-
-        if "public_view_url" in repository_config[self.repository_type]:
-            self.public_view_url = repository_config[self.repository_type]["public_view_url"]
