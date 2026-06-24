@@ -1,7 +1,6 @@
+import aiohttp
 import html
 import json
-
-import aiohttp
 from bs4 import BeautifulSoup
 
 from dspback.pydantic_schemas import RepositoryType
@@ -34,7 +33,11 @@ async def retrieve_discovery_jsonld(identifier, repository_type, url):
     script_match = (
         {"id": "schemaorg"} if repository_type == RepositoryType.HYDROSHARE else {"type": "application/ld+json"}
     )
-    resource_json_ld = scrape_jsonld(resource_data, script_match=script_match)
+    try:
+        resource_json_ld = scrape_jsonld(resource_data, script_match=script_match)
+    except Exception as e:
+        logging.error(f"Error scraping JSON-LD for record in {repository_type} with identifier {identifier}: {str(e)}")
+        raise e
     if not resource_json_ld:
         return None
     if repository_type == RepositoryType.HYDROSHARE and resource_json_ld["creativeWorkStatus"] == "Private":
